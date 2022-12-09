@@ -21,7 +21,7 @@ const data = d3.csv("https://gist.githubusercontent.com/curran/a08a1080b88344b0c
    
 const scatterplot = (dataset) => {
 
-  const l = [...new Set(data.map(d => d.species))];
+  const l = [...new Set(dataset.map(d => d.species))];
   
   // https://observablehq.com/@d3/chart-template
   const margin = ({top: 30, right: 100, bottom: 40, left: 50})

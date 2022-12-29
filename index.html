@@ -46,119 +46,44 @@ console.log(document.getElementById("amount").value)
 <script>
 
 function drawSlider(dataset) {
+    const minDate = d3.min(dataset.map(d => d.date))
+    const maxDate = d3.max(dataset.map(d => d.date))
     $("#slider-range").slider({
                 range: true,
-                min: new Date('2010 01 01').getTime() / 1000,
-                max: new Date('2014 01 01').getTime() / 1000,
+                min: new Date(minDate).getTime() / 1000,
+                max: new Date(maxDate).getTime() / 1000,
                 step: 86400,
-                values: [new Date('2011 01 01').getTime() / 1000, new Date('2013 02 01').getTime() / 1000],
+                values: [new Date(minDate).getTime() / 1000, new Date(maxDate).getTime() / 1000],
                 slide: function (event, ui) {
                     $("#amount").val((new Date(ui.values[0] * 1000).toDateString()) + " - " + (new Date(ui.values[1] * 1000)).toDateString());
                 }
             });
             $("#amount").val((new Date($("#slider-range").slider("values", 0) * 1000).toDateString()) +
-                " - " + (new Date($("#slider-range").slider("values", 1) * 1000)).toDateString());
-
-            
+                " - " + (new Date($("#slider-range").slider("values", 1) * 1000)).toDateString())            
     }
 
-
-d3.select("#slider-range").on("mouseout", function() {
-    let arr = document.getElementById("amount").value.split("-")
-    console.log(arr[0])
-  });
-
-    
 
 
 
 function BakeryViz1(dataset) {
     
-    //console.log(dataset)
-    console.log("hey")
-
-    const margin = ({top: 20, right: 100, bottom: 35, left: 50})
-  
+    const margin = ({top: 35, right: 70, bottom: 35, left: 70})
     const w = 1200
     const h = 400
 
-    const svg = d3.select("#number_clients").append("svg").attr("height", h).attr("width", w)
+    var svg = d3.select("#number_clients").append("svg").attr("height", h).attr("width", w)
 
-
-    const binX = d3.bin()
-    const buckets1 = binX(dataset.map((d) => d.date))
-
-    
-    const x = d3.scaleTime()
-        .domain([d3.min(buckets1.map(d => d.x0)),  d3.max(buckets1.map(d => d.x1))])
-        .range([margin.left, w - margin.left - margin.right])
-    
-    svg.append("g")
-       .attr("transform", `translate(0,${h - margin.bottom})`)
-       .call(d3.axisBottom(x));
-
-    // const bin = d3.bin().domain(x.domain()).thresholds(x.ticks(20));
-    // const buckets_time = bin(dataset.map((d) => d.date));
-
-
-    const my_map = d3.groups(dataset, d => d.ticket_number)
-
-    //console.log(my_map.map(d => d[1].map(j => j)).map(k => k[0].date) )
-
-    const y = d3.scaleLinear()
-        .domain([0, d3.count(my_map, d => d[0])])
-        .range([h-margin.bottom, margin.top])
-    
-    svg.append("g")
-            .attr("transform", `translate(${margin.left},0)`)
-            .call(d3.axisLeft(y));
-
-
-
-
-    let test = [my_map.map(d => d[0]), my_map.map(d => d[1].map(j => j)).map(k => k[0].date)]
-   
-    let test3 = d3.intersection(my_map.map(d => d[1].map(j => j)).map(k => k[0].date))
-
-    //var myObject = [{ticket:my_map.map(d => d[0]), date:my_map.map(d => d[1].map(j => j)).map(k => k[0].date)}]
-    
-    //const myObject2 = d3.index(my_map, d => d[1].date)
-
-    //console.log(my_map.map(d => d[1].map(j => j)).map(k => k[0].date))
-
-
-    const bin_for_tickets = d3.bin().domain(x.domain()).thresholds(x.ticks(5));
-    // we keep only one date for a single ticket (before a ticket could have duplicated dates if there are several articles in it)
-    const buckets_nb_tickets = bin_for_tickets(my_map.map(d => d[1].map(j => j)).map(k => k[0].date))
-
-
-
-
-     svg.selectAll("rect_clients")
-         .data(buckets_nb_tickets)
-         .enter()
-         .append("rect") 
-    //     .transition()
-    //     .duration(1000)
-         .attr("transform", d => "translate(" + x(d.x0) + "," + y(d.length) + ")" )
-           .attr("width", d => x(d.x1) - x(d.x0) -1 )
-           .attr("height", d => h - y(d.length) - margin.bottom)
-           .style("fill",  "red")
-          .style("opacity", 0.6)
-
-    // axis label
-
-        // Title
-       svg.append('text')
-        .attr('x',w/2 -30)
-        .attr('y', 20)
-        .attr('text-anchor', 'middle')
-        .style('font-family', 'Helvetica')
-        .style('font-size', 20)
-        .text('Number of clients by time');
+    // Title
+    svg.append('text')
+       .attr('x',w/2 -30)
+       .attr('y', 20)
+       .attr('text-anchor', 'middle')
+       .style('font-family', 'Helvetica')
+       .style('font-size', 20)
+       .text('Number of clients by time');
   
       // X label
-        svg.append('text')
+      svg.append('text')
         .attr('x', w/2 - 30)
         .attr('y', h - margin.bottom +30)
         .attr('text-anchor', 'middle')
@@ -173,6 +98,97 @@ function BakeryViz1(dataset) {
         .style('font-family', 'Helvetica')
         .style('font-size', 12)
         .text("Number");
+
+
+    //console.log(my_map.map(d => d[1].map(j => j)).map(k => k[0].date) )
+    //let test = [my_map.map(d => d[0]), my_map.map(d => d[1].map(j => j)).map(k => k[0].date)]
+    //let test3 = d3.intersection(my_map.map(d => d[1].map(j => j)).map(k => k[0].date))
+    //var myObject = [{ticket:my_map.map(d => d[0]), date:my_map.map(d => d[1].map(j => j)).map(k => k[0].date)}]
+    //const myObject2 = d3.index(my_map, d => d[1].date)
+    //console.log(my_map.map(d => d[1].map(j => j)).map(k => k[0].date))
+
+
+
+    // X axis range init
+    var x = d3.scaleTime().range([margin.left, w - margin.left - margin.right])
+    var xAxis = svg.append("g").attr("transform", `translate(0,${h - margin.bottom})`)
+                    //.domain([d3.min(buckets1.map(d => d.x0)),  d3.max(buckets1.map(d => d.x1))])
+
+    // Y axis range init
+    var y = d3.scaleLinear().range([h-margin.bottom, 0+margin.top])
+    var yAxis = svg.append("g").attr("transform", `translate(${margin.left},0)`)
+
+
+
+    function update(nbBins, startDate, endDate) {
+        
+        console.log("ici")
+
+
+        const binX = d3.bin()
+        const bucketsX = binX(dataset.filter(s => s.date >= startDate && s.date <= endDate).map( d => d.date))
+  
+         
+        x.domain([d3.min(bucketsX.map(d => d.x0)), d3.max(bucketsX.map(d => d.x1))])
+        xAxis.transition()
+             .duration(1000)
+             .call(d3.axisBottom(x))
+
+        // const bin = d3.bin().domain(x.domain()).thresholds(x.ticks(20));
+        // const buckets_time = bin(dataset.map((d) => d.date));
+
+        var my_map = d3.groups(dataset, d => d.ticket_number)
+        var bin_for_tickets = d3.bin().domain(x.domain()).thresholds(x.ticks(nbBins));
+        var buckets_nb_tickets = bin_for_tickets(my_map.map(d => d[1].map(j => j)).map(k => k[0].date))
+
+        console.log(buckets_nb_tickets)
+
+        // Y axis Update
+        y.domain([0, d3.max(buckets_nb_tickets.map(d => d.length))])
+        yAxis.transition()
+             .duration(1000)
+             .call(d3.axisLeft(y));
+
+
+
+        // Join the rect with the bins data
+        var current_rects = svg.selectAll("rect")
+            .data(buckets_nb_tickets)
+
+        current_rects.enter()
+            .append("rect") 
+            .merge(current_rects)
+            .transition()
+            .duration(1000)
+            .attr("transform", d => "translate(" + x(d.x0) + "," + y(d.length) + ")" )
+            .attr("width", d => x(d.x1) - x(d.x0) )
+            .attr("height", d => h - y(d.length) - margin.bottom)
+            .style("fill",  "red")
+            .style("opacity", 0.6)
+
+        // Removing rects not in use
+        current_rects.exit()
+            .remove()
+    }
+
+
+    //FIRST INIT
+    let initStartDate = d3.min(dataset.map(d => d.date))
+    let initEndDate = d3.max(dataset.map(d => d.date))
+    update(10, initStartDate, initEndDate)
+
+    //DYNAMIC
+    d3.select("#slider-range").on("mouseout", function() {
+        //Dates of the slider
+        let arr = document.getElementById("amount").value.split(" - ")
+        let parseTime = d3.timeParse("%a %b %d %Y");   
+        let startDate = parseTime(arr[0])
+        let endDate = parseTime(arr[1])
+        //console.log(startDate)
+        //console.log(endDate)
+
+        update(30, startDate, endDate )
+    })
 }
 
 

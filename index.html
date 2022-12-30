@@ -14,7 +14,7 @@
 
 <p>
     <label for="amount">Date range:</label>
-    <input type="text" id="amount" style="border: 0; color: #f6931f; font-weight: bold;" size="100" />
+    <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;" size="100" />
 </p>
 
 <div id="slider-range"></div>
@@ -31,10 +31,10 @@
 
 
 
-<p>
+<!-- <p>
     <label for="nombreBins">Nombre de bins : </label>
     <input type="number" min="1" max="300" step="10" value="20" id="nombreBins">
-</p>
+</p> -->
 
 <!-- <script>
 console.log(d3.select("#nombreBins").node().value)
@@ -45,22 +45,7 @@ console.log(document.getElementById("amount").value)
 
 <script>
 
-function drawSlider(dataset) {
-    const minDate = d3.min(dataset.map(d => d.date))
-    const maxDate = d3.max(dataset.map(d => d.date))
-    $("#slider-range").slider({
-                range: true,
-                min: new Date(minDate).getTime() / 1000,
-                max: new Date(maxDate).getTime() / 1000,
-                step: 86400,
-                values: [new Date(minDate).getTime() / 1000, new Date(maxDate).getTime() / 1000],
-                slide: function (event, ui) {
-                    $("#amount").val((new Date(ui.values[0] * 1000).toDateString()) + " - " + (new Date(ui.values[1] * 1000)).toDateString());
-                }
-            });
-            $("#amount").val((new Date($("#slider-range").slider("values", 0) * 1000).toDateString()) +
-                " - " + (new Date($("#slider-range").slider("values", 1) * 1000)).toDateString())            
-    }
+
 
 
 
@@ -124,8 +109,9 @@ function BakeryViz1(dataset) {
         
         console.log("ici")
 
+        var essai = d3.scaleTime().domain([startDate, endDate])
 
-        const binX = d3.bin()
+        const binX = d3.bin().domain(essai.domain()).thresholds(essai.ticks(nbBins))
         const bucketsX = binX(dataset.filter(s => s.date >= startDate && s.date <= endDate).map( d => d.date))
   
          
@@ -177,21 +163,45 @@ function BakeryViz1(dataset) {
     let initEndDate = d3.max(dataset.map(d => d.date))
     update(10, initStartDate, initEndDate)
 
+    
     //DYNAMIC
-    d3.select("#slider-range").on("mouseout", function() {
-        //Dates of the slider
-        let arr = document.getElementById("amount").value.split(" - ")
-        let parseTime = d3.timeParse("%a %b %d %Y");   
-        let startDate = parseTime(arr[0])
-        let endDate = parseTime(arr[1])
-        //console.log(startDate)
-        //console.log(endDate)
+    // d3.select("#slider-range").on("click", function() {
+    //     //Dates of the slider
+    //     let arr = document.getElementById("amount").value.split(" - ")
+    //     let parseTime = d3.timeParse("%a %b %d %Y");   
+    //     let startDate = parseTime(arr[0])
+    //     let endDate = parseTime(arr[1])
+    //     //console.log(startDate)
+    //     //console.log(endDate)
+    //     update(30, startDate, endDate )
+    // })
 
-        update(30, startDate, endDate )
-    })
+
+    //DYNAMIC (better with JQuery slider)
+    const minDate = d3.min(dataset.map(d => d.date))
+    const maxDate = d3.max(dataset.map(d => d.date))
+    $("#slider-range").slider({
+                range: true,
+                min: new Date(minDate).getTime() / 1000,
+                max: new Date(maxDate).getTime() / 1000,
+                step: 86400,
+                values: [new Date(minDate).getTime() / 1000, new Date(maxDate).getTime() / 1000],
+                slide: function (event, ui) {
+                    $("#amount").val((new Date(ui.values[0] * 1000).toDateString()) + " - " + (new Date(ui.values[1] * 1000)).toDateString());
+                },
+                change: function (event, ui) {
+                    let arr = document.getElementById("amount").value.split(" - ")
+                    let parseTime = d3.timeParse("%a %b %d %Y");   
+                    let startDate = parseTime(arr[0])
+                    let endDate = parseTime(arr[1])
+                    update(30, startDate, endDate )
+                }
+            })
+            
+    $("#amount").val((new Date($("#slider-range").slider("values", 0) * 1000).toDateString()) +
+        " - " + (new Date($("#slider-range").slider("values", 1) * 1000)).toDateString())            
+    
 }
-
-
 
 
 
@@ -210,11 +220,7 @@ async function LoadBakeryAndDraw() {
         "https://simon-klop.github.io/Data-Viz/Bakery_clean.csv",
         conversor,
         function(data) {
-            //console.log(d)
             BakeryViz1(data)
-            drawSlider(data)
-
-
         })
 }
 

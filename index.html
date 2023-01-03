@@ -21,7 +21,7 @@
 
 
 <!-- Create a div where the graph will take place -->
-<div id="corr"></div>
+<div id="number_clients"></div>
 
 <div id="my_dataviz2"></div>
 
@@ -202,10 +202,9 @@ function BakeryViz1(dataset) {
         " - " + (new Date($("#slider-range").slider("values", 1) * 1000)).toDateString())            
     
 }
-    
-    
-    
- 
+
+
+
 
 function conversor(d){
     const parseTime = d3.timeParse("%Y-%m-%d");

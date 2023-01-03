@@ -12,6 +12,9 @@
 <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
 <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 
+
+
+<!------ VIZ 1 ------->
 <p>
     <label for="amount">Date range:</label>
     <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;" size="100" />
@@ -19,12 +22,20 @@
 
 <div id="slider-range"></div>
 
-
-<!-- Create a div where the graph will take place -->
 <div id="number_clients"></div>
 
-<div id="my_dataviz2"></div>
 
+<!------- VIZ 2 ------>
+<div class="slider">
+    <input type="range" min="8" max="20" value="8"  id="sliderCorr" oninput="rangeValue.innerText = this.value">
+    <p id="rangeValue">8</p>
+</div>
+
+<div id="corr_viz"></div>
+
+
+
+<!-------- VIZ 3 ---------->
 <div id="my_dataviz3"></div>
 
 
@@ -44,12 +55,7 @@ console.log(document.getElementById("amount").value)
 
 
 <script>
-
-
-
-
-
-
+//------------------------------- VIZ 1 SIMON -----------------------------------------
 function BakeryViz1(dataset) {
     
     const margin = ({top: 35, right: 70, bottom: 35, left: 70})
@@ -205,8 +211,169 @@ function BakeryViz1(dataset) {
 
 
 
+//-----------------VIZ 2 LINA ---------------------
+function getFrequentItemCorr (dataset, hour_value) {
+    console.log(dataset)
+      const sortedData = dataset.slice().sort((a, b) => d3.descending(a.article, b.article))
+      const datasetByHours = d3.group(sortedData, d => d.hours)
 
-function conversor(d){
+      const datasetByHour = datasetByHours.get(hour_value)
+      let articles = [];
+      let item_count = [];
+  
+      // Get list of item
+
+      console.log(datasetByHours)
+      d3.groups(datasetByHour, d => d.article).map(
+        article => !articles.includes(article[0]) ? (articles.push(article[0])) :  console.log()
+      )
+      console.log("la")
+      // Init
+      for (let i = 0; i < articles.length; i++) {
+        item_count[i] = new Array(articles.length).fill(0);
+      }
+  
+      //get frequent item
+      const article_by_client = d3.groups(datasetByHour, d => d.ticket_number)
+      for (let i = 0; i < article_by_client.length; i++) {
+        let tmp = []
+        for (let j = 0; j < article_by_client[i][1].length; j++){
+          tmp.push(article_by_client[i][1][j].article)
+        }
+        
+        for (let item_a = 0; item_a < tmp.length; item_a++) {
+          for (let item_b = 0; item_b < tmp.length; item_b++) {
+            item_count[articles.indexOf(tmp[item_a])][articles.indexOf(tmp[item_b])] += 1
+          }
+        }
+      }
+
+      // transform in percentage
+      for (let i = 0; i < articles.length; i++) {
+        let divisor = item_count[i][i]
+        for (let j = 0; j < articles.length; j++){
+          item_count[i][j] = item_count[i][j] / divisor
+        }
+      }
+    
+      return [articles, item_count]
+}
+
+
+
+function corr(dataset) {
+  
+  // Static Part
+  const margin = ({top: 10, right: 250, bottom: 30, left: 40})
+  const w = 3000
+  const h = 400
+  const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
+  var myColor = d3.scaleLinear().domain([0.01, 1]).range(["#f4cccc", "#cc0000"])
+  
+
+
+  //Dynamic Part
+  function update() {
+
+    // Cleaning of the SVG
+    svg.selectAll("rect").remove()
+    svg.selectAll("g").remove()
+
+
+    //Computation with the value of the slider
+    hour_value = Number(document.getElementById("sliderCorr").value)
+    data = getFrequentItemCorr(dataset, hour_value)
+    x = data[0]
+    y = data[1]
+
+
+    for (let i = 0; i < y.length; i++) {
+        for (let j = 0; j < y[i].length; j++) {
+            svg.append("rect")
+            .attr('x', 155 + i * 100)
+            .attr('y', 67 + 30 * j)
+            .attr('width', 95)
+            .attr('height', 25)
+            .attr('fill', function() {return myColor(y[i][j])})
+            .on('mouseover', function (d, i) {
+                //Tooltip.style("opacity", 1)
+                d3.select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '.80')
+                
+            })
+            .on("mousemove", function (d, i) {
+                //Tooltip
+                //  .html("PLOP ")
+                //  .style("left", (d3.pointer(this)[0]+70) + "px")
+                //  .style("top", (d3.pointer(this)[1]) + "px")
+            })
+            .on('mouseout', function (d, i) {
+                //Tooltip
+                    //.style("opacity", 0)
+                d3
+                    .select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '1')
+            })
+        }
+    }
+
+
+    // Axe X
+    svg.append("g").selectAll("text").data(x).enter()
+        .append("text")
+        .attr("x", (d, i) =>  170 + i * 100)
+        .attr("y", d => 40)   
+        .text(d => d)
+        .attr("font-size","7.5px")
+
+    // Axe Y
+    svg.append("g").selectAll("text").data(x).enter()
+        .append("text")
+        .attr("x", d =>  10)
+        .attr("y", (d, i) => 75 + i * 30)   
+        .text(d => d)
+        .attr("font-size","8px")
+
+
+    // Legend 
+    svg.append("g").selectAll("text").data(d3.range(0, 1, 0.1)).enter()
+        .append("rect")
+        .attr('x', (d, i) =>  200 + 90 * i)
+        .attr('y', 380)
+        .attr('width', 90)
+        .attr('height', 10)
+        .attr('fill', function(d) {return myColor(d)})
+
+    // Legend info
+    svg.append("g").selectAll("text").data(d3.range(0, 110, 10)).enter()
+        .append("text")
+        .attr('x', (d, i) =>  200 + 90 * i)
+        .attr('y', 400)
+        .text(d => d)
+        .attr("font-size","10px")
+
+    // Title
+    svg.append("text")
+        .attr("x", 5)
+        .attr("y", margin.top+5)
+        //.text("Produits les plus vendus avec un/une "+ articles[item]+ " à " + hour_value + " heure")
+    }    
+
+
+    // first init
+    update()
+
+    // DYNAMIC
+    d3.select("#sliderCorr").on("click", function() {
+        update()
+    }) 
+}
+
+
+
+function conversor1(d){
     const parseTime = d3.timeParse("%Y-%m-%d");
     d.date = parseTime(d.date)
     d.unit_price = +d.unit_price
@@ -215,18 +382,42 @@ function conversor(d){
     return d;
 }
 
-async function LoadBakeryAndDraw() {
+
+function conversor2(d){
+    d.ticket_number += d.ticket_number
+    d.Quantity = +d.Quantity
+    d.datetime = d3.timeParse("%Y-%M-%d:%H:%M")(d.date + ":" + d.time)
+    d.weekday = d.datetime.getDay()
+    d.hours = d.datetime.getHours()
+    d.month = d.datetime.getMonth()
+    return d
+}
+
+
+
+async function LoadBakeryAndDrawV1() {
     d3.csv(
-        "https://simon-klop.github.io/Data-Viz/Bakery_clean.csv",
-        conversor,
+        "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
+        conversor1,
         function(data) {
             BakeryViz1(data)
         })
 }
 
 
+async function LoadBakeryAndDrawV2() {
+    d3.csv(
+        "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
+        conversor2,
+        function(data) {
+            corr(data)
+        })
+}
 
-LoadBakeryAndDraw()
+
+
+LoadBakeryAndDrawV1()
+LoadBakeryAndDrawV2()
 
 
 

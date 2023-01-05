@@ -117,9 +117,16 @@
                         Quelles offres faut-il créer et à quelle heure ?
                     </div>
                     <div class="card-body">
-                      <h5 class="card-title">Special title treatment</h5>
-                      <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    <label for="customRange3" class="form-label"></label>
+                    <div class="slider">
+                        Heure de l'observation sélectionné : <p id="rangeValueFp">8</p>
+                        <input type="range" min="8" max="20" value="8"  id="sliderFp" oninput="rangeValueFp.innerText = this.value">
+                        </div>
+                        <div class="dropdown">
+                             Produit observé : 
+                        <input type="dropdown" value="BAGUETTE" id="menuFp" oninput="selectedProduct.innerText = this.value">
+                        </div>
+                        <div id="fp_viz"></div>
                     </div>
                     <div class="card-footer text-muted">
                         TO DO : Blabla ou commentaire
@@ -387,11 +394,11 @@
           }
       
           //get frequent item
-          const article_by_client = d3.groups(datasetByHour, d => d.ticket_number)
-          for (let i = 0; i < article_by_client.length; i++) {
+          const articleByClient = d3.groups(datasetByHour, d => d.ticket_number)
+          for (let i = 0; i < articleByClient.length; i++) {
             let tmp = []
-            for (let j = 0; j < article_by_client[i][1].length; j++){
-              tmp.push(article_by_client[i][1][j].article)
+            for (let j = 0; j < articleByClient[i][1].length; j++){
+              tmp.push(articleByClient[i][1][j].article)
             }
             
             for (let item_a = 0; item_a < tmp.length; item_a++) {
@@ -443,6 +450,7 @@
             .style("border-width", "2px")
             .style("border-radius", "5px")
             .style("padding", "5px")
+
     
         //Computation with the value of the slider
         hour_value = Number(document.getElementById("sliderCorr").value)
@@ -535,8 +543,189 @@
         }) 
     }
     
+    //-----------------VIZ 3 EMIE ---------------------
+    function getArticles(dataset) {
+          let articles = [];
+          // Get list of articles
+          d3.groups(dataset, d => d.article).map(
+            article => !articles.includes(article[0]) ? (articles.push(article[0])) :  console.log()
+             )
+        return articles
+    }
     
+    function getFrequentItemfp(dataset, articles, product, hours) {
+        const sortedData = dataset.slice().sort((a, b) => d3.descending(a.article, b.article))
+          
+        const datasetByArticles = d3.group(sortedData, d => d.article)
+        const datasetByArticle = datasetByArticles.get(product)
+  
+        const datasetByHours = d3.group(datasetByArticle, d => d.hours)
+        const datasetByHour = datasetByHours.get(hours) // Les PRODUCTS à HOURS heures
+        const tickets = datasetByHour.map(d => d.ticket_number) // Les TICKETS contenants au moins un PRODUCTS à HOURS heures 
+
+        const articleByClient = d3.groups(sortedData, d => d.ticket_number)
+   //   console.log(article_by_client)
+        const ArticlesInTickets = articleByClient.filter(d => tickets.indexOf(d[0]) != -1)
+
+        let item_count = [];
+
+        // init
+        for (let i = 0; i < articles.length; i++) {
+        item_count[i] = new Array(articles.length).fill(0);
+      }
+  
+      //get frequent item
+      
+      for (let i = 0; i < ArticlesInTickets.length; i++) {
+        let tmp = []
+        for (let j = 0; j < articleByClient[i][1].length; j++){
+          tmp.push(articleByClient[i][1][j].article)
+        }
+        
+        for (let item_a = 0; item_a < tmp.length; item_a++) {
+          for (let item_b = 0; item_b < tmp.length; item_b++) {
+            item_count[articles.indexOf(tmp[item_a])][articles.indexOf(tmp[item_b])] += 1
+          }
+        }
+      }
+
+      //transform in percentage
+     for (let i = 0; i < articles.length; i++) {
+        let divisor = item_count[i][i]
+       item_count[i][i] = item_count[i][i]-1
+        for (let j = 0; j < articles.length; j++){
+          item_count[i][j] = item_count[i][j] / divisor
+        }
+      }
+
+    for (let i = 0; i < articles.length; i++) {
+      for (let j = 0; j < item_count.length; j++) {
+         item_count[i][j] = { article : articles[j], count : item_count[i][j]}
+        
+        }
+      }
+
+      return item_count
+    }
     
+     
+    function fp(dataset) {
+      
+      // Static Part
+      const margin = ({top: 10, right: 250, bottom: 30, left: 40})
+      const top = 10
+      const w = 3000
+      const h = 400
+
+      const articles = getArticles(dataset)
+
+     
+    //   const x = d3.range(0, 100, 1)
+    //   const y = item_tab
+
+      var myColor = d3.scaleLinear().domain([0.01, 1]).range(["#f4cccc", "#cc0000"])
+    
+    //   const svg = d3.create("svg").attr("height", h).attr("width", w)    
+      const svg = d3.select("#fp_viz").append("svg").attr("height", h).attr("width", w)
+
+      //Dynamic Part
+      function update() {
+    
+        // Cleaning of the SVG
+        svg.selectAll("rect").remove()
+        svg.selectAll("g").remove()
+    
+
+        // create a tooltip
+        var Tooltip = d3.select("#fp_viz")
+            .append("div")
+            .style("opacity", 0)
+            .attr("class", "tooltip")
+            .style("background-color", "white")
+            .style("border", "solid")
+            .style("border-width", "2px")
+            .style("border-radius", "5px")
+            .style("padding", "5px")
+    
+        //Computation with the value of the slider
+        hour_value = Number(document.getElementById("sliderFp").value)
+        product = document.getElementById("menuFp").value
+
+
+        item = articles.indexOf(product)
+        data = getFrequentItemfp(dataset, articles, product, hour_value)[item].sort((a, b) => (a.count > b.count) ? -1 : 1)
+      
+        // x = data[0]
+        x = d3.range(0, 100, 1)
+        // y = data[1]
+        y = data
+      
+ for (let i = 0; i < top; i++)
+  {
+      svg.append("rect")
+      .attr('x', 200)
+      .attr('y', 65 + i * 30)
+      .attr('width', data[i].count* 880)
+      .attr('height', 10)
+      .attr('fill', function() {return myColor(y[i].count)})
+      .on('mouseover', function (d, i) {
+          d3.select(this).transition()
+               .duration('50')
+               .attr('opacity', '.80')
+        
+      })
+      .on('mouseout', function (d, i) {
+          d3.select(this).transition()
+               .duration('50')
+               .attr('opacity', '1')
+      })
+    }
+
+  // Axe Y
+  svg.append("g").selectAll("text").data(y.slice(0, top)).enter()
+    .append("text")
+    .attr("x", 0)
+    .attr("y", (d, j) => 75 + j * 30)   
+    .text(d => d.article)
+    .attr("font-size","15px")
+
+  //Legend 
+ svg.append("g").selectAll("text").data(d3.range(0, 1, 0.1)).enter()
+    .append("rect")
+    .attr('x', (d, i) =>  200 + 90 * i)
+    .attr('y', 380)
+    .attr('width', 90)
+    .attr('height', 10)
+    .attr('fill', function(d) {return myColor(d)})
+
+    svg.append("g").selectAll("text").data(d3.range(0, 110, 10)).enter()
+    .append("text")
+    .attr('x', (d, i) =>  200 + 90 * i)
+    .attr('y', 400)
+    .text(d => d)
+    .attr("font-size","10px")
+  
+  
+  // Titre
+  svg.append("text")
+    .attr("x", 5)
+    .attr("y", margin.top+5)
+    .text("Produits les plus vendus avec un/une "+ articles[item]+ " à " + hour_value.toFixed(1) + " heure")
+}
+        // first init
+        update()
+    
+        // DYNAMIC
+        d3.select("#sliderFp").on("click", function() {
+            update()
+        }) 
+        d3.select("#menuFp").on("click", function() {
+            update()
+        }) 
+    }
+
+
+    //--------------------------------------
     function conversor1(d){
         const parseTime = d3.timeParse("%Y-%m-%d");
         d.date = parseTime(d.date)
@@ -577,9 +766,20 @@
                 corr(data)
             })
     }
+
+    async function LoadBakeryAndDrawV3() {
+        d3.csv(
+            "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
+            conversor2,
+            function(data) {
+                fp(data)
+            })
+    }
     
     
     
     LoadBakeryAndDrawV1()
     LoadBakeryAndDrawV2()
+    LoadBakeryAndDrawV3()
+
 </script>

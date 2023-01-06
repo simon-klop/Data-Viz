@@ -1,585 +1,245 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>Oui, oui Baguette!</title>
-        <!-- Favicon-->
-        <link rel="icon" type="image/x-icon" href="assets/favicon.png" />
-        <!-- Font Awesome icons (free version)-->
-        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
-        <!-- Simple line icons-->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css" rel="stylesheet" />
-        <!-- Google fonts-->
-        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css" />
-        <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="css/styles.css" rel="stylesheet" />
-    </head>
-    <body id="page-top">
+<html lang="fr">
 
-        <!-- Navigation-->
-        <a class="menu-toggle rounded" href="#"><i class="fas fa-bars"></i></a>
-        <nav id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-                <li class="sidebar-brand"><a href="#page-top">Oui, Oui Baguette!</a></li>
-                <li class="sidebar-nav-item"><a href="#about">À propos</a></li>
-                <li class="sidebar-nav-item"><a href="#Visualization">Visualization</a></li>
-                <li class="sidebar-nav-item"><a href="#team">Team</a></li>
-            </ul>
-        </nav>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Oui, oui Baguette!</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.png" />
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Simple line icons-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css"
+        rel="stylesheet" />
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic"
+        rel="stylesheet" type="text/css" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
 
-        <!-- Header-->
-        <header class="masthead d-flex align-items-center">
-            <div class="container px-4 px-lg-5 text-center">
-                <h1 class="mb-1">Oui, oui Baguette!</h1>
-                <h3 class="mb-5"><em>Ce projet a pour but d'analyser, grâce à des graphiques, les ventes d'une boulangerie française afin d'optimiser celles-ci ainsi que son personnel.</em></h3>
-                <a class="btn btn-primary btn-xl" href="#about">En savoir plus</a>
-            </div>
-        </header>
+<body id="page-top">
 
-        <!-- About-->
-        <section class="content-section bg-primary text-white" id="about">
-            <div class="container px-4 px-lg-5 text-center">
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-lg-10">
-                        <h2>Nous répondons aux questions suivantes :</h2>
-                        <p class="lead mb-5">
-                            
-                            Comment placer les articles pour que ceux qui sont souvent acheter ensembles soient côte à côte ?</br>
-                            Quelles offres faut-il créer et à quelle heure ?</br>
-                            Combien de vendeur-euse-s sont nécessaires à des heures précises ?</br>
-                        </p>
-                        <a class="btn btn-dark btn-xl" href="#Visualization">Voir les visualisations</a>
-                    </div>
+    <!-- Navigation-->
+    <a class="menu-toggle rounded" href="#"><i class="fas fa-bars"></i></a>
+    <nav id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <li class="sidebar-brand"><a href="#page-top">Oui, Oui Baguette!</a></li>
+            <li class="sidebar-nav-item"><a href="#about">À propos</a></li>
+            <li class="sidebar-nav-item"><a href="#Visualization">Visualization</a></li>
+            <li class="sidebar-nav-item"><a href="#team">Team</a></li>
+        </ul>
+    </nav>
+
+    <!-- Header-->
+    <header class="masthead d-flex align-items-center">
+        <div class="container px-4 px-lg-5 text-center">
+            <h1 class="mb-1">Oui, oui Baguette!</h1>
+            <h3 class="mb-5"><em>Ce projet a pour but d'analyser, grâce à des graphiques, les ventes d'une boulangerie
+                    française afin d'optimiser celles-ci ainsi que son personnel.</em></h3>
+            <a class="btn btn-primary btn-xl" href="#about">En savoir plus</a>
+        </div>
+    </header>
+
+    <!-- About-->
+    <section class="content-section bg-primary text-white" id="about">
+        <div class="container px-4 px-lg-5 text-center">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-lg-10">
+                    <h2>Nous répondons aux questions suivantes :</h2>
+                    <p class="lead mb-5">
+
+                        Comment placer les articles pour que ceux qui sont souvent acheter ensembles soient côte à côte
+                        ?</br>
+                        Quelles offres faut-il créer et à quelle heure ?</br>
+                        Combien de vendeur-euse-s sont nécessaires à des heures précises ?</br>
+                    </p>
+                    <a class="btn btn-dark btn-xl" href="#Visualization">Voir les visualisations</a>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Visualisation-->
-        <section class="content-section bg-light text-center" id="Visualization">
-            <h2>Visualisation</h2>
-            Sélectionnez un mode d'affichage : </br></br>
-            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-                <label class="btn btn-outline-primary" for="btnradio1">Visualisation</label>
-              
-                <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" disabled>
-                <label class="btn btn-outline-primary" for="btnradio2" >Prototype</label>
-            </div></br></br>
-            
-            <div class="col d-flex justify-content-center">
-                <div class="card text-center w-75 ">
-                    <div class="card-header">
-                        Combien de vendeur-euse-s sont nécessaires à des heures précises ?
-                    </div>
-                    <div class="card-body">
-                        <p>
-                            <label for="amount">Intervalle choisi:</label>
-                            <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;" size="100" />
-                        </p>
-                        
-                        <div id="slider-range"></div>
-                        
-                        <div id="number_clients"></div>
-                    </div>
-                    <div class="card-footer text-muted">
-                        TO DO : Blabla ou commentaire
-                    </div>
-                  </div>
-            </div></br>
+    <!-- Visualisation-->
+    <section class="content-section bg-light text-center" id="Visualization">
+        <h2>Visualisation</h2>
+        Sélectionnez un mode d'affichage : </br></br>
 
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" onclick="displayMode(0)" name="btnradio" id="btnradio1"
+                autocomplete="off" checked>
+            <label class="btn btn-outline-primary" for="btnradio1">Visualisation</label>
 
-            <div class="col d-flex justify-content-center">
-                <div class="card text-center w-75 ">
-                    <div class="card-header">
-                        Comment placer les articles pour que ceux qui sont souvent acheter ensembles soient côte à côte ?
-                    </div>
-                    <div class="card-body">
-                        <label for="customRange3" class="form-label"></label>
-                        <div class="slider">
-                            Heure de l'observation sélectionné : <p id="rangeValue">8</p>
-                            <input type="range" min="8" max="20" value="8"  id="sliderCorr" oninput="rangeValue.innerText = this.value">
-                            
-                        </div>
-                        <div id="corr_viz"></div>
-                    </div>
-                    <div class="card-footer text-muted">
-                        TO DO : Blabla ou commentaire
-                    </div>
-                  </div>
-            </div></br>
+            <input type="radio" onclick="displayMode(1)" class="btn-check" name="btnradio" id="btnradio2"
+                autocomplete="off">
+            <label class="btn btn-outline-primary" for="btnradio2">Prototype</label>
+        </div></br></br>
 
-            <div class="col d-flex justify-content-center">
-                <div class="card text-center w-75 ">
-                    <div class="card-header">
-                        Quelles offres faut-il créer et à quelle heure ?
-                    </div>
-                    <div class="card-body">
-                      <h5 class="card-title">Special title treatment</h5>
-                      <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                      <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                    <div class="card-footer text-muted">
-                        TO DO : Blabla ou commentaire
-                    </div>
+        <div class="col d-flex justify-content-center">
+            <div class="card text-center w-75" id="vis1">
+                <div class="card-header">
+                    Combien de vendeur-euse-s sont nécessaires à des heures précises ?
                 </div>
-            </div></br>
+                <div class="card-body">
 
 
-            <div class="col d-flex justify-content-center">
-                <div class="card text-center w-100">
-                    <div class="card-header">
-                        Quels seront les coûts de production?
-                    </div>
+                    <div id="number_clients"></div>
+                </div>
+                <div class="card-footer text-muted">
+                    <p>
+                        <label for="amount">Intervalle choisi:</label>
+                        <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;"
+                            size="100" />
+                    </p>
+
+                    <div id="slider-range"></div>
+                </div>
+            </div>
+        </div></br>
+
+
+        <div class="col d-flex justify-content-center">
+            <div class="card text-center w-75" id="vis2">
+                <div class="card-header">
+                    Comment placer les articles pour que ceux qui sont souvent acheter ensembles soient côte à côte ?
+                </div>
+                <div class="card-body">
+
+                    <div id="corr_viz"></div>
+                </div>
+                <div class="card-footer text-muted">
                     <div class="row">
-                        <div class="col-sm-6 mb-3 mb-sm-0 w-50">
-                            <div class="card-header">
-                                Les ingrédients nécessaires : 
-                            </div>
-                            <div class="card-body">
-                                <h5 class="card-title">Special title treatment</h5>
-                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                                <a href="#" class="btn btn-primary">Go somewhere</a>
-                                </div>
-                            </div>
-
-                        <div class="col-sm-6 w-50">
-                            <div class="card-header">
-                                Leurs coûts : 
-                            </div>
-                            <div class="card-body">
-                            <h5 class="card-title">Special title treatment</h5>
-                            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        <div class="col-sm-6">
+                            <label for="customRange3" class="form-label"></label>
+                            <div class="slider">
+                                Heure de l'observation sélectionné : <p id="rangeValue">8</p>
+                                <input type="range" min="8" max="20" value="8" id="sliderCorr"
+                                    oninput="rangeValue.innerText = this.value">
                             </div>
                         </div>
+                        <div class="col-sm-6">
+                            <select class="form-select" id="aricleName" aria-label="Default select example">
+                            </select>
+                        </div>
                     </div>
-                    
-                    <div class="card-footer text-muted">
-                        TO DO : Blabla ou commentaire
-                    </div>
-                  </div>
-            </div></br>
-            
-            
-        </section>
-
-        
-
-
-
-        <!-- Team-->
-        <section class="content-section bg-primary text-white text-center" id="team">
-            Ryan FORESTIER - Lina ISMAIL - Simon KLOPFENSTEIN - Emie LAFOURCADE
-        </section>
-
-        <!-- Footer-->
-        <footer class="footer text-center">
-            <div class="container px-4 px-lg-5">
-                Projet réalisé dans le cadre de l'unité d'enseignement Data Visualization de la formation Master 2 - Data Science UCBL
-                <p class="text-muted small mb-0">Copyright &copy; Oui, Oui Baguette! 2022</p>
+                </div>
             </div>
-        </footer>
+        </div></br>
 
-        <!-- Scroll to Top Button-->
-        <a class="scroll-to-top rounded" href="#page-top"><i class="fas fa-angle-up"></i></a>
-
-        <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-        <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
-
-        <!-- Load d3.js -->
-        <script src="https://d3js.org/d3.v4.js"></script>
-        <script src="https://d3js.org/d3-array.v2.min.js"></script>
+        <div class="col d-flex justify-content-center">
+            <div class="card text-center w-75" id="vis3">
+                <div class="card-header">
+                    Quelles offres faut-il créer et à quelle heure?
+                </div>
+                <div class="card-body">
+                    <div id="linechart"></div>
+                </div>
+            </div>
+        </div></br>
 
 
-        <!-- Load JQuey (for the double range slider that do not exist in d3.js)-->
-        <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
-        <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
-        <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
-    </body>
+        <div class="row" id="vis4">
+
+            <div class="col-sm-3">
+                <div class="card">
+                    <div class="card-header">
+                        Quel article souhaitez-vous observer?
+                    </div>
+                    <div class="card-body">
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="checkbox" value=""
+                                    aria-label="Checkbox for following text input">
+                            </div>
+                            <select class="form-select" disabled aria-label="Default select example">
+                                <option selected>Observer CROISSANT?</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="checkbox" value=""
+                                    aria-label="Checkbox for following text input">
+                            </div>
+                            <select class="form-select" disabled aria-label="Default select example">
+                                <option selected>Observer PAINT AU CHOCOLAT?</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Special title treatment</h5>
+                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="card-header">
+                    Les chiffres clés
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Special title treatment</h5>
+                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Team-->
+    <section class="content-section bg-primary text-white text-center" id="team">
+        Ryan FORESTIER - Lina ISMAIL - Simon KLOPFENSTEIN - Emie LAFOURCADE
+    </section>
+
+    <!-- Footer-->
+    <footer class="footer text-center">
+        <div class="container px-4 px-lg-5">
+            Projet réalisé dans le cadre de l'unité d'enseignement Data Visualization de la formation Master 2 - Data
+            Science UCBL
+            <p class="text-muted small mb-0">Copyright &copy; Oui, Oui Baguette! 2022</p>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top"><i class="fas fa-angle-up"></i></a>
+
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core theme JS-->
+    <script src="js/scripts.js"></script>
+
+    <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3-array.v2.min.js"></script>
+
+    <!-- Visualisation -->
+    <script src="js/viz.js"></script>
+
+    <!-- Load JQuey (for the double range slider that do not exist in d3.js)-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+    <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+</body>
+
 </html>
-
-
-
-
-<script>
-    //------------------------------- VIZ 1 SIMON -----------------------------------------
-    function BakeryViz1(dataset) {
-        
-        const margin = ({top: 35, right: 70, bottom: 35, left: 70})
-        const w = 1150
-        const h = 400
-    
-        var svg = d3.select("#number_clients").append("svg").attr("height", h).attr("width", w)
-    
-        // Title
-        svg.append('text')
-           .attr('x',w/2 -30)
-           .attr('y', 20)
-           .attr('text-anchor', 'middle')
-           .style('font-family', 'Helvetica')
-           .style('font-size', 20)
-           .text('Nombre de client en fonction du temps');
-      
-          // X label
-          svg.append('text')
-            .attr('x', w/2 - 30)
-            .attr('y', h - margin.bottom +30)
-            .attr('text-anchor', 'middle')
-            .style('font-family', 'Helvetica')
-            .style('font-size', 12)
-            .text('Temporalité');
-            
-            // Y label
-            svg.append('text')
-            .attr('text-anchor', 'middle')
-            .attr('transform', 'translate(20,' + h/2 + ')rotate(-90)')
-            .style('font-family', 'Helvetica')
-            .style('font-size', 12)
-            .text("Nombre");
-    
-    
-        //console.log(my_map.map(d => d[1].map(j => j)).map(k => k[0].date) )
-        //let test = [my_map.map(d => d[0]), my_map.map(d => d[1].map(j => j)).map(k => k[0].date)]
-        //let test3 = d3.intersection(my_map.map(d => d[1].map(j => j)).map(k => k[0].date))
-        //var myObject = [{ticket:my_map.map(d => d[0]), date:my_map.map(d => d[1].map(j => j)).map(k => k[0].date)}]
-        //const myObject2 = d3.index(my_map, d => d[1].date)
-        //console.log(my_map.map(d => d[1].map(j => j)).map(k => k[0].date))
-    
-    
-    
-        // X axis range init
-        var x = d3.scaleTime().range([margin.left, w - margin.left - margin.right])
-        var xAxis = svg.append("g").attr("transform", `translate(0,${h - margin.bottom})`)
-                        //.domain([d3.min(buckets1.map(d => d.x0)),  d3.max(buckets1.map(d => d.x1))])
-    
-        // Y axis range init
-        var y = d3.scaleLinear().range([h-margin.bottom, 0+margin.top])
-        var yAxis = svg.append("g").attr("transform", `translate(${margin.left},0)`)
-    
-    
-    
-        function update(nbBins, startDate, endDate) {
-            
-            console.log("ici")
-    
-            var essai = d3.scaleTime().domain([startDate, endDate])
-    
-            const binX = d3.bin().domain(essai.domain()).thresholds(essai.ticks(nbBins))
-            const bucketsX = binX(dataset.filter(s => s.date >= startDate && s.date <= endDate).map( d => d.date))
-      
-             
-            x.domain([d3.min(bucketsX.map(d => d.x0)), d3.max(bucketsX.map(d => d.x1))])
-            xAxis.transition()
-                 .duration(1000)
-                 .call(d3.axisBottom(x))
-    
-            // const bin = d3.bin().domain(x.domain()).thresholds(x.ticks(20));
-            // const buckets_time = bin(dataset.map((d) => d.date));
-    
-            var my_map = d3.groups(dataset, d => d.ticket_number)
-            var bin_for_tickets = d3.bin().domain(x.domain()).thresholds(x.ticks(nbBins));
-            var buckets_nb_tickets = bin_for_tickets(my_map.map(d => d[1].map(j => j)).map(k => k[0].date))
-    
-            console.log(buckets_nb_tickets)
-    
-            // Y axis Update
-            y.domain([0, d3.max(buckets_nb_tickets.map(d => d.length))])
-            yAxis.transition()
-                 .duration(1000)
-                 .call(d3.axisLeft(y));
-    
-    
-    
-            // Join the rect with the bins data
-            var current_rects = svg.selectAll("rect")
-                .data(buckets_nb_tickets)
-    
-            current_rects.enter()
-                .append("rect") 
-                .merge(current_rects)
-                .transition()
-                .duration(1000)
-                .attr("transform", d => "translate(" + x(d.x0) + "," + y(d.length) + ")" )
-                .attr("width", d => x(d.x1) - x(d.x0) )
-                .attr("height", d => h - y(d.length) - margin.bottom)
-                .style("fill",  "red")
-                .style("opacity", 0.6)
-    
-            // Removing rects not in use
-            current_rects.exit()
-                .remove()
-        }
-    
-    
-        //FIRST INIT
-        let initStartDate = d3.min(dataset.map(d => d.date))
-        let initEndDate = d3.max(dataset.map(d => d.date))
-        update(10, initStartDate, initEndDate)
-    
-        
-        //DYNAMIC
-        // d3.select("#slider-range").on("click", function() {
-        //     //Dates of the slider
-        //     let arr = document.getElementById("amount").value.split(" - ")
-        //     let parseTime = d3.timeParse("%a %b %d %Y");   
-        //     let startDate = parseTime(arr[0])
-        //     let endDate = parseTime(arr[1])
-        //     //console.log(startDate)
-        //     //console.log(endDate)
-        //     update(30, startDate, endDate )
-        // })
-    
-    
-        //DYNAMIC (better with JQuery slider)
-        const minDate = d3.min(dataset.map(d => d.date))
-        const maxDate = d3.max(dataset.map(d => d.date))
-        $("#slider-range").slider({
-                    range: true,
-                    min: new Date(minDate).getTime() / 1000,
-                    max: new Date(maxDate).getTime() / 1000,
-                    step: 86400,
-                    values: [new Date(minDate).getTime() / 1000, new Date(maxDate).getTime() / 1000],
-                    slide: function (event, ui) {
-                        $("#amount").val((new Date(ui.values[0] * 1000).toDateString()) + " - " + (new Date(ui.values[1] * 1000)).toDateString());
-                    },
-                    change: function (event, ui) {
-                        let arr = document.getElementById("amount").value.split(" - ")
-                        let parseTime = d3.timeParse("%a %b %d %Y");   
-                        let startDate = parseTime(arr[0])
-                        let endDate = parseTime(arr[1])
-                        update(30, startDate, endDate )
-                    }
-                })
-                
-        $("#amount").val((new Date($("#slider-range").slider("values", 0) * 1000).toDateString()) +
-            " - " + (new Date($("#slider-range").slider("values", 1) * 1000)).toDateString())            
-        
-    }
-    
-    
-    
-    //-----------------VIZ 2 LINA ---------------------
-    function getFrequentItemCorr (dataset, hour_value) {
-        console.log(dataset)
-          const sortedData = dataset.slice().sort((a, b) => d3.descending(a.article, b.article))
-          const datasetByHours = d3.group(sortedData, d => d.hours)
-    
-          const datasetByHour = datasetByHours.get(hour_value)
-          let articles = [];
-          let item_count = [];
-            
-          // Get list of item
-    
-          console.log(datasetByHours)
-          d3.groups(datasetByHour, d => d.article).map(
-            article => !articles.includes(article[0]) ? (articles.push(article[0])) :  console.log()
-          )
-          console.log("la")
-          // Init
-          for (let i = 0; i < articles.length; i++) {
-            item_count[i] = new Array(articles.length).fill(0);
-          }
-      
-          //get frequent item
-          const article_by_client = d3.groups(datasetByHour, d => d.ticket_number)
-          for (let i = 0; i < article_by_client.length; i++) {
-            let tmp = []
-            for (let j = 0; j < article_by_client[i][1].length; j++){
-              tmp.push(article_by_client[i][1][j].article)
-            }
-            
-            for (let item_a = 0; item_a < tmp.length; item_a++) {
-              for (let item_b = 0; item_b < tmp.length; item_b++) {
-                item_count[articles.indexOf(tmp[item_a])][articles.indexOf(tmp[item_b])] += 1
-              }
-            }
-          }
-    
-          // transform in percentage
-          for (let i = 0; i < articles.length; i++) {
-            let divisor = item_count[i][i]
-            for (let j = 0; j < articles.length; j++){
-              item_count[i][j] = item_count[i][j] / divisor
-            }
-          }
-        
-          return [articles, item_count]
-    }
-    
-    
-    
-    function corr(dataset) {
-      
-      // Static Part
-      const margin = ({top: 10, right: 250, bottom: 30, left: 40})
-      const w = 3000
-      const h = 400
-      const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
-      var myColor = d3.scaleLinear().domain([0.01, 1]).range(["#f4cccc", "#cc0000"])
-      
-    
-    
-      //Dynamic Part
-      function update() {
-    
-        // Cleaning of the SVG
-        svg.selectAll("rect").remove()
-        svg.selectAll("g").remove()
-    
-
-        // create a tooltip
-        var Tooltip = d3.select("#corr_viz")
-            .append("div")
-            .style("opacity", 0)
-            .attr("class", "tooltip")
-            .style("background-color", "white")
-            .style("border", "solid")
-            .style("border-width", "2px")
-            .style("border-radius", "5px")
-            .style("padding", "5px")
-    
-        //Computation with the value of the slider
-        hour_value = Number(document.getElementById("sliderCorr").value)
-        data = getFrequentItemCorr(dataset, hour_value)
-        x = data[0]
-        y = data[1]
-    
-        console.log("aie ", x)
-        for (let i = 0; i < y.length; i++) {
-            for (let j = 0; j < y[i].length; j++) {
-                svg.append("rect")
-                .attr('x', 100 + i * 90)
-                .attr('y', 67 + 30 * j)
-                .attr('width', 90)
-                .attr('height', 30)
-                .attr('fill', function() {return myColor(y[i][j])})
-                .on('mouseover', function (d, i) {
-                    Tooltip.style("opacity", 1)
-                    d3.select(this).transition()
-                        .duration('50')
-                        .attr('opacity', '.80')
-                    
-                })
-                .on("mousemove", function (d, f) {
-                    Tooltip
-                      .html("Lorsque "+ x[i] +" est acheté, on achète avec "+ x[j] + " " + y[i][j] * 100  +"% du temps")
-                      .style("left", (d3.mouse(this)[0]) + "px")
-                      .style("top", (d3.mouse(this)[1]) + "px")
-                })
-                .on('mouseout', function (d, i) {
-                    Tooltip
-                        .style("opacity", 0)
-                    d3
-                        .select(this).transition()
-                        .duration('50')
-                        .attr('opacity', '1')
-                })
-            }
-        }
-    
-    
-        // Axe X
-        svg.append("g").selectAll("text").data(x).enter()
-            .append("text")
-            .attr("x", (d, i) =>  100 + i * 90)
-            .attr("y", d => 40)   
-            .text(d => d)
-            .attr("font-size", "7.5px")
-    
-        // Axe Y
-        svg.append("g").selectAll("text").data(x).enter()
-            .append("text")
-            .attr("x", d =>  10)
-            .attr("y", (d, i) => 75 + i * 30)   
-            .text(d => d)
-            .attr("font-size","8px")
-    
-    
-        // Legend 
-        svg.append("g").selectAll("text").data(d3.range(0, 1, 0.1)).enter()
-            .append("rect")
-            .attr('x', (d, i) =>  100 + 90 * i)
-            .attr('y', 380)
-            .attr('width', 90)
-            .attr('height', 10)
-            .attr('fill', function(d) {return myColor(d)})
-    
-        // Legend info
-        svg.append("g").selectAll("text").data(d3.range(0, 110, 10)).enter()
-            .append("text")
-            .attr('x', (d, i) =>  100 + 90 * i)
-            .attr('y', 400)
-            .text(d => d)
-            .attr("font-size","10px")
-    
-        // Title
-        svg.append("text")
-            .attr("x", 5)
-            .attr("y", margin.top+5)
-            //.text("Produits les plus vendus avec un/une "+ articles[item]+ " à " + hour_value + " heure")
-        }    
-    
-    
-        // first init
-        update()
-    
-        // DYNAMIC
-        d3.select("#sliderCorr").on("click", function() {
-            update()
-        }) 
-    }
-    
-    
-    
-    function conversor1(d){
-        const parseTime = d3.timeParse("%Y-%m-%d");
-        d.date = parseTime(d.date)
-        d.unit_price = +d.unit_price
-        d.ticket_number = +d.ticket_number
-        d.quantity = +d.quantity
-        return d;
-    }
-    
-    
-    function conversor2(d){
-        d.ticket_number += d.ticket_number
-        d.Quantity = +d.Quantity
-        d.datetime = d3.timeParse("%Y-%M-%d:%H:%M")(d.date + ":" + d.time)
-        d.weekday = d.datetime.getDay()
-        d.hours = d.datetime.getHours()
-        d.month = d.datetime.getMonth()
-        return d
-    }
-    
-    
-    
-    async function LoadBakeryAndDrawV1() {
-        d3.csv(
-            "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
-            conversor1,
-            function(data) {
-                BakeryViz1(data)
-            })
-    }
-    
-    
-    async function LoadBakeryAndDrawV2() {
-        d3.csv(
-            "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
-            conversor2,
-            function(data) {
-                corr(data)
-            })
-    }
-    
-    
-    
-    LoadBakeryAndDrawV1()
-    LoadBakeryAndDrawV2()
-</script>

@@ -1,0 +1,87 @@
+<!-- Code from d3-graph-gallery.com -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://d3js.org/d3-array.v2.min.js"></script>
+
+
+<!-- Load JQuey (for the double range slider that do not exist in d3.js)-->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+
+
+<script>
+
+function frequent_items(dataset) {
+    console.log("test")
+    
+    //OPTI
+    let opti = d3.groups(dataset, d => d.ticket_number)
+    console.log("opti",opti)
+
+    let filtrage = opti.filter(d => d[1].map(k => k.article).includes("BAGUETTE") && d[1].map(k => k.hours).includes(8))
+    console.log("filtrage",filtrage)
+ 
+    let nb_tickets = filtrage.length
+    console.log("nb_tickets ", nb_tickets)
+
+    let liste_achats = filtrage.map(d => d[1].map(k => k.article))
+    console.log("liste d'achats",liste_achats)
+
+    var merged = liste_achats.reduce(function(prev, next) {return prev.concat(next)})
+    console.log("merged",merged)
+
+    let stat = d3.rollup(merged, v=> (v.length/nb_tickets)*100 , d => d)
+    let stat2 = d3.rollup(merged, v=> ((v.length - nb_tickets)/nb_tickets)*100 , d => d)
+
+    console.log("stat", stat)
+    console.log("stat", stat2)
+
+    //--------------------------------------------
+    // Calcul des stats pour tous les articles en un coup (Viz Lina)
+    // articles = ["BAGUETTE", "CROISSANT", "PAIN AU CHOCOLAT", etc..]
+
+    // let essai = articles.map(function(m) {
+    //     let filtrage = opti.filter(d => d[1].map(k => k.article).includes(m) && d[1].map(k => k.hours).includes(8))
+    //     let nb_tickets = filtrage.length
+    //     let liste_achats = filtrage.map(d => d[1].map(k => k.article)).reduce(function(prev, next) {return prev.concat(next)})
+    //     let stat = d3.rollup(liste_achats, v=> v.length/nb_tickets , d => d)
+    //     let nom_item = m
+    //     return [m, stat]
+    // })
+    
+}
+
+
+
+function conversor2(d){
+    d.ticket_number += d.ticket_number
+    d.Quantity = +d.Quantity
+    d.datetime = d3.timeParse("%Y-%M-%d:%H:%M")(d.date + ":" + d.time)
+    d.weekday = d.datetime.getDay()
+    d.hours = d.datetime.getHours()
+    d.month = d.datetime.getMonth()
+    return d
+}
+
+
+
+
+async function LoadBakeryAndDrawV2() {
+    d3.csv(
+        "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
+        conversor2,
+        function(data) {
+            frequent_items(data)
+        })
+}
+
+
+LoadBakeryAndDrawV2()
+
+
+
+</script>

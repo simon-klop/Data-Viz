@@ -177,9 +177,9 @@ function BakeryViz2(dataset) {
     const select = document.getElementById("aricleName");
     var contenu = `<option selected>Tous les articles</option>`;
     const article = d3.group(dataset, d => d.article);
-        for (let key of article.keys()) {
-            contenu += `<option value="${key}">${key}</option>`
-        }    
+    for (let key of article.keys()) {
+        contenu += `<option value="${key}">${key}</option>`
+    }
     select.innerHTML = contenu;
 
     //Dynamic Part
@@ -224,7 +224,7 @@ function BakeryViz2(dataset) {
                     })
                     .on("mousemove", function (d, f) {
                         Tooltip
-                            .html("Lorsque " + x[i] + " est acheté, on achète avec " + x[j] + " " + y[i][j] * 100 + "% du temps")
+                            .html("Lorsque " + x[i] + " est acheté, on achète avec " + x[j] + " " + y[i][j] * 100 + "% du temps à " + hour_value + " heure")
                             .style("left", (d3.mouse(this)[0]) + "px")
                             .style("top", (d3.mouse(this)[1]) + 100 + "px")
                     })
@@ -273,9 +273,6 @@ function BakeryViz2(dataset) {
             .text(d => d)
             .attr("font-size", "10px")
 
-
-        
-
         // Title
         svg.append("text")
             .attr("x", 5)
@@ -290,78 +287,146 @@ function BakeryViz2(dataset) {
     d3.select("#sliderCorr").on("click", function () {
         update()
     })
+
+    d3.select("#aricleName").on("change", function () {
+        const checked = document.getElementById("aricleName");
+        if ("Tous les articles" == checked.value && !stateVis2) {
+            console.log("pas de changement d'etat")
+        } else {
+            const body = document.getElementById("corr_viz");
+            d3.csv(
+                "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
+                conversor2,
+                function (data) {
+                    if (!stateVis2) {
+                        body.innerHTML = ``
+                        console.log("zoom");
+                        stateVis2 = true
+                        BakeryViz2Bis(data, checked.value)
+                    }
+                }
+            )
+        }
+    })
 }
 
 function BakeryViz2Bis(dataset, product) {
-    const margin = ({top: 10, right: 250, bottom: 30, left: 40})
+    const margin = ({ top: 10, right: 250, bottom: 30, left: 40 })
 
     const top = 10
     const w = 3000
     const h = 400
 
-    var myColor = d3.scaleLinear().domain([0.01, 1]).range(["#f4cccc", "#cc0000"])
-    const articles = []
-    d3.groups(dataset, d => d.article).map(
-    article => !articles.includes(article[0]) ? (articles.push(article[0])) :  console.log()
-    )
-    const item = articles.indexOf(product)
-    const item_tab = getFrequentItemCorr()[item].sort((a, b) => (a.count > b.count) ? -1 : 1)
-    const y = item_tab
-    
     const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
-    
-    for (let i = 0; i < top; i++)
-    {
-        svg.append("rect")
-        .attr('x', 200)
-        .attr('y', 65 + i * 30)
-        .attr('width', item_tab[i].count* 880)
-        .attr('height', 10)
-        .attr('fill', function() {return myColor(y[i].count)})
-        .on('mouseover', function (d, i) {
-            d3.select(this).transition()
-                .duration('50')
-                .attr('opacity', '.80')
-            
-        })
-        .on('mouseout', function (d, i) {
-            d3.select(this).transition()
-                .duration('50')
-                .attr('opacity', '1')
-        })
-        }
+    var myColor = d3.scaleLinear().domain([0.01, 1]).range(["#f4cccc", "#cc0000"])
 
-    // Axe Y
-    svg.append("g").selectAll("text").data(y.slice(0, top)).enter()
-        .append("text")
-        .attr("x", 0)
-        .attr("y", (d, j) => 75 + j * 30)   
-        .text(d => d.article)
-        .attr("font-size","15px")
+    //Dynamic Part
+    function update(product) {
 
-    //Legend 
-    svg.append("g").selectAll("text").data(d3.range(0, 1, 0.1)).enter()
-        .append("rect")
-        .attr('x', (d, i) =>  200 + 90 * i)
-        .attr('y', 380)
-        .attr('width', 90)
-        .attr('height', 10)
-        .attr('fill', function(d) {return myColor(d)})
+        // Cleaning of the SVG
+        svg.selectAll("rect").remove()
+        svg.selectAll("g").remove()
+        svg.selectAll("text").remove()
 
+        //Computation with the value of the slider
+        hour_value = Number(document.getElementById("sliderCorr").value)
+        data = getFrequentItemCorr(dataset, hour_value)
+        x = data[0]
+        y = data[1]
+        item = x.indexOf(product)
+
+        for (let i = 0; i < top; i++)
+        {
+            svg.append("rect")
+                .attr('x', 100)
+                .attr('y', 67 + 30 * i)
+                .attr('width', 900)
+                .attr('height', 30)
+                .attr('fill', function () { return myColor(y[item][i]) })
+                .on('mouseover', function (d, i) {
+                    d3.select(this).transition()
+                        .duration('50')
+                        .attr('opacity', '.80')
+                
+                })
+                .on('mouseout', function (d, i) {
+                    d3.select(this).transition()
+                        .duration('50')
+                        .attr('opacity', '1')
+                })
+          }
+
+        // Axe Y
+        svg.append("g").selectAll("text").data(x).enter()
+            .append("text")
+            .attr("x", d => 10)
+            .attr("y", (d, i) => 75 + i * 30)
+            .text(d => d)
+            .attr("font-size", "8px")
+
+        // Legend 
+        svg.append("g").selectAll("text").data(d3.range(0, 1, 0.1)).enter()
+            .append("rect")
+            .attr('x', (d, i) => 100 + 90 * i)
+            .attr('y', 380)
+            .attr('width', 90)
+            .attr('height', 10)
+            .attr('fill', function (d) { return myColor(d) })
+
+        // Legend info
         svg.append("g").selectAll("text").data(d3.range(0, 110, 10)).enter()
-        .append("text")
-        .attr('x', (d, i) =>  200 + 90 * i)
-        .attr('y', 400)
-        .text(d => d)
-        .attr("font-size","10px")
-    
-    
-    // Titre
-    svg.append("text")
-        .attr("x", 5)
-        .attr("y", margin.top+5)
-        .text("Produits les plus vendus avec un/une "+ articles[item]+ " à " + hours.toFixed(1) + " heure")
-        
+            .append("text")
+            .attr('x', (d, i) => 100 + 90 * i)
+            .attr('y', 400)
+            .text(d => d)
+            .attr("font-size", "10px")
+
+        // Titre
+        svg.append("text")
+            .attr("x", 5)
+            .attr("y", margin.top + 5)
+            .text("Produits les plus vendus avec un/une " + product + " à " + hour_value + " heure")
+    }
+
+    // first init
+    update(product)
+
+    // DYNAMIC
+    d3.select("#sliderCorr").on("click", function () {
+        const checked = document.getElementById("aricleName");
+        update(checked.value)
+    })
+
+    d3.select("#aricleName").on("change", function () {
+        const checked = document.getElementById("aricleName");
+        if ("Tous les articles" == checked.value && !stateVis2) {
+            console.log("pas de changement d'etat")
+        } else {
+            const body = document.getElementById("corr_viz");
+            d3.csv(
+                "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
+                conversor2,
+                function (data) {
+                    if ("Tous les articles" == checked.value && stateVis2) {
+                        body.innerHTML = ``
+                        console.log("dezoom");
+                        stateVis2 = false
+                        BakeryViz2(data)
+                    } else if (!stateVis2) {
+                        body.innerHTML = ``
+                        console.log("zoom");
+                        stateVis2 = true
+                        BakeryViz2Bis(data, checked.value)
+                    } else {
+                        console.log("zoom_update");
+                        stateVis2 = true
+                        update(checked.value)
+                    }
+                }
+            )
+        }
+    })
+
 }
 
 //-----------------VIZ 3 LINA ---------------------
@@ -513,10 +578,10 @@ function BakeryViz3(dataset) {
 
 }
 
-function BakeryViz4(dataset){
+function BakeryViz4(dataset) {
     const select = document.getElementById("vis4select");
     var contenu = ``;
-    for(let i = 0; i< Object.keys(dataset.children).length; i++){
+    for (let i = 0; i < Object.keys(dataset.children).length; i++) {
         contenu = contenu + `
         
         <div class="input-group mb-3">
@@ -529,7 +594,7 @@ function BakeryViz4(dataset){
            
         </div>`;
     }
-    select.innerHTML = contenu;  
+    select.innerHTML = contenu;
     const margin = ({ top: 35, right: 70, bottom: 35, left: 70 })
     const w = 400
     const h = 400
@@ -543,6 +608,7 @@ function BakeryViz4(dataset){
 LoadBakeryAndDrawV1()
 LoadBakeryAndDrawV2V3()
 LoadBakeryAndDrawV4()
+var stateVis2 = false;
 
 function conversor1(d) {
     const parseTime = d3.timeParse("%Y-%m-%d");
@@ -666,22 +732,6 @@ function init() {
     </div>`
 }
 
-
-function LoadBakeryAndDrawV2Bis() {
-    const checked = document.getElementById("aricleName");
-    d3.csv(
-        "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
-        conversor2,
-        function (data) {
-            if ("Tous les articles" == checked.value){
-                
-                //LoadBakeryAndDrawV2V3(data)
-            } else {
-                BakeryViz2Bis(data, checked.value)
-            }
-        })
-}
-
 function displayMode(mode) {
     if (mode == 0) {
         init()
@@ -694,9 +744,9 @@ function displayMode(mode) {
         const vis3 = document.getElementById("vis3");
         const vis4 = document.getElementById("vis4");
         const display = `NOT HERE YET`;
-        vis1.innerHTML = display
+        vis1.innerHTML = `<img src="https://simon-klop.github.io/Data-Viz/assets/img/vis1-proto.jpg" alt="proto1" width="1000" height="1000">`
         vis2.innerHTML = display
         vis3.innerHTML = display
-        vis4.innerHTML = `<div class="card text-center w-100">`+display+`</div>`
+        vis4.innerHTML = `<div class="card text-center w-100">` + display + `</div>`
     }
 };

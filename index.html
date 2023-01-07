@@ -79,50 +79,52 @@
         </div></br></br>
 
         <div class="col d-flex justify-content-center">
-            <div class="card text-center w-75" id="vis1">
+            <div class="card text-center w-75">
                 <div class="card-header">
                     Combien de vendeur-euse-s sont nécessaires à des heures précises ?
                 </div>
-                <div class="card-body">
-
-
-                    <div id="number_clients"></div>
+                <div  id="vis1" >
+                    <div class="card-body">
+                        <div id="number_clients"></div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <p>
+                            <label for="amount">Intervalle choisi:</label>
+                            <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;"
+                                size="100" />
+                        </p>
+    
+                        <div id="slider-range"></div>
+                    </div>
                 </div>
-                <div class="card-footer text-muted">
-                    <p>
-                        <label for="amount">Intervalle choisi:</label>
-                        <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;"
-                            size="100" />
-                    </p>
-
-                    <div id="slider-range"></div>
-                </div>
+                
             </div>
         </div></br>
 
 
         <div class="col d-flex justify-content-center">
-            <div class="card text-center w-75" id="vis2">
+            <div class="card text-center w-75">
                 <div class="card-header">
                     Comment placer les articles pour que ceux qui sont souvent acheter ensembles soient côte à côte ?
                 </div>
-                <div class="card-body">
 
-                    <div id="corr_viz"></div>
-                </div>
-                <div class="card-footer text-muted">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <label for="customRange3" class="form-label"></label>
-                            <div class="slider">
-                                Heure de l'observation sélectionné : <p id="rangeValue">8</p>
-                                <input type="range" min="8" max="20" value="8" id="sliderCorr"
-                                    oninput="rangeValue.innerText = this.value">
+                <div id="vis2">
+                    <div class="card-body" >
+                        <div id="corr_viz"></div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label for="customRange3" class="form-label"></label>
+                                <div class="slider">
+                                    <label>Heure de l'observation sélectionné : </label><p id="rangeValue">8</p>
+                                    <input type="range" min="8" max="20" value="8" id="sliderCorr"
+                                        oninput="rangeValue.innerText = this.value">
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <select class="form-select" id="aricleName" aria-label="Default select example">
-                            </select>
+                            <div class="col-sm-6">
+                            </br><label>Quel article voulez-vous observer? </label><select class="form-select" id="aricleName" onchange="LoadBakeryAndDrawV2Bis()" aria-label="Default select example"></select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -130,61 +132,33 @@
         </div></br>
 
         <div class="col d-flex justify-content-center">
-            <div class="card text-center w-75" id="vis3">
+            <div class="card text-center w-75" >
                 <div class="card-header">
                     Quelles offres faut-il créer et à quelle heure?
                 </div>
-                <div class="card-body">
+                <div class="card-body" id="vis3">
                     <div id="linechart"></div>
                 </div>
             </div>
         </div></br>
 
-
+        <div class="card-header">
+            Blablabla
+        </div>
         <div class="row" id="vis4">
-
             <div class="col-sm-3">
                 <div class="card">
                     <div class="card-header">
-                        Quel article souhaitez-vous observer?
+                        Quel/combien d'article souhaitez-vous observer? 
                     </div>
-                    <div class="card-body">
-
-                        <div class="input-group mb-3">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" type="checkbox" value=""
-                                    aria-label="Checkbox for following text input">
-                            </div>
-                            <select class="form-select" disabled aria-label="Default select example">
-                                <option selected>Observer CROISSANT?</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                            </select>
-                        </div>
-                        <div class="input-group mb-3">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" type="checkbox" value=""
-                                    aria-label="Checkbox for following text input">
-                            </div>
-                            <select class="form-select" disabled aria-label="Default select example">
-                                <option selected>Observer PAINT AU CHOCOLAT?</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                            </select>
-                        </div>
-
-                    </div>
+                    <div class="card-body" id="vis4select"></div>
                 </div>
             </div>
 
             <div class="col-sm-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Special title treatment</h5>
-                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                        <div id="pack"></div>
                     </div>
                 </div>
             </div>

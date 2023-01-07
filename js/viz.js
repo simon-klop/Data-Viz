@@ -175,7 +175,12 @@ function BakeryViz2(dataset) {
     var myColor = d3.scaleLinear().domain([0.01, 1]).range(["#f4cccc", "#cc0000"])
 
     const select = document.getElementById("aricleName");
-    var contenu = `<option selected>Sélectionnez un article à observer</option>`;
+    var contenu = `<option selected>Tous les articles</option>`;
+    const article = d3.group(dataset, d => d.article);
+        for (let key of article.keys()) {
+            contenu += `<option value="${key}">${key}</option>`
+        }    
+    select.innerHTML = contenu;
 
     //Dynamic Part
     function update() {
@@ -250,15 +255,6 @@ function BakeryViz2(dataset) {
             .attr("y", (d, i) => 75 + i * 30)
             .text(d => d)
             .attr("font-size", "8px")
-        
-        const article = d3.group(dataset, d => d.article);
-        for (let key of article.keys()) {
-            contenu += `<option value="${key}">${key}</option>`
-        }
-        
-
-        
-        select.innerHTML = contenu;
 
         // Legend 
         svg.append("g").selectAll("text").data(d3.range(0, 1, 0.1)).enter()
@@ -294,6 +290,78 @@ function BakeryViz2(dataset) {
     d3.select("#sliderCorr").on("click", function () {
         update()
     })
+}
+
+function BakeryViz2Bis(dataset, product) {
+    const margin = ({top: 10, right: 250, bottom: 30, left: 40})
+
+    const top = 10
+    const w = 3000
+    const h = 400
+
+    var myColor = d3.scaleLinear().domain([0.01, 1]).range(["#f4cccc", "#cc0000"])
+    const articles = []
+    d3.groups(dataset, d => d.article).map(
+    article => !articles.includes(article[0]) ? (articles.push(article[0])) :  console.log()
+    )
+    const item = articles.indexOf(product)
+    const item_tab = getFrequentItemCorr()[item].sort((a, b) => (a.count > b.count) ? -1 : 1)
+    const y = item_tab
+    
+    const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
+    
+    for (let i = 0; i < top; i++)
+    {
+        svg.append("rect")
+        .attr('x', 200)
+        .attr('y', 65 + i * 30)
+        .attr('width', item_tab[i].count* 880)
+        .attr('height', 10)
+        .attr('fill', function() {return myColor(y[i].count)})
+        .on('mouseover', function (d, i) {
+            d3.select(this).transition()
+                .duration('50')
+                .attr('opacity', '.80')
+            
+        })
+        .on('mouseout', function (d, i) {
+            d3.select(this).transition()
+                .duration('50')
+                .attr('opacity', '1')
+        })
+        }
+
+    // Axe Y
+    svg.append("g").selectAll("text").data(y.slice(0, top)).enter()
+        .append("text")
+        .attr("x", 0)
+        .attr("y", (d, j) => 75 + j * 30)   
+        .text(d => d.article)
+        .attr("font-size","15px")
+
+    //Legend 
+    svg.append("g").selectAll("text").data(d3.range(0, 1, 0.1)).enter()
+        .append("rect")
+        .attr('x', (d, i) =>  200 + 90 * i)
+        .attr('y', 380)
+        .attr('width', 90)
+        .attr('height', 10)
+        .attr('fill', function(d) {return myColor(d)})
+
+        svg.append("g").selectAll("text").data(d3.range(0, 110, 10)).enter()
+        .append("text")
+        .attr('x', (d, i) =>  200 + 90 * i)
+        .attr('y', 400)
+        .text(d => d)
+        .attr("font-size","10px")
+    
+    
+    // Titre
+    svg.append("text")
+        .attr("x", 5)
+        .attr("y", margin.top+5)
+        .text("Produits les plus vendus avec un/une "+ articles[item]+ " à " + hours.toFixed(1) + " heure")
+        
 }
 
 //-----------------VIZ 3 LINA ---------------------
@@ -445,11 +513,36 @@ function BakeryViz3(dataset) {
 
 }
 
+function BakeryViz4(dataset){
+    const select = document.getElementById("vis4select");
+    var contenu = ``;
+    for(let i = 0; i< Object.keys(dataset.children).length; i++){
+        contenu = contenu + `
+        
+        <div class="input-group mb-3">
+            <div class="input-group-text">
+                    <label>${dataset.children[i].name} : </label> </br>
+                    <input type="number" min="0" value=0 max="100">
+            </div>
+            
+            
+           
+        </div>`;
+    }
+    select.innerHTML = contenu;  
+    const margin = ({ top: 35, right: 70, bottom: 35, left: 70 })
+    const w = 400
+    const h = 400
+
+    var svg = d3.select("#pack").append("svg").attr("height", h).attr("width", w)
+}
+
 // ______________________________ LOAD DATA ______________________________
 
 
 LoadBakeryAndDrawV1()
 LoadBakeryAndDrawV2V3()
+LoadBakeryAndDrawV4()
 
 function conversor1(d) {
     const parseTime = d3.timeParse("%Y-%m-%d");
@@ -493,11 +586,108 @@ async function LoadBakeryAndDrawV2V3() {
 }
 
 
+async function LoadBakeryAndDrawV4() {
+    d3.json(
+        "https://simon-klop.github.io/Data-Viz/receipts.json",
+        function (data) {
+            BakeryViz4(data)
+        })
+}
+
+
+function init() {
+    var body = document.getElementById("vis4");
+
+    body.innerHTML = `<div class="col-sm-3"id="bodyvis4">
+        <div class="card">
+            <div class="card-header">
+                Quel/combien d'article souhaitez-vous observer? 
+            </div>
+            <div class="card-body" id="vis4select"></div>
+        </div>
+    </div>
+
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                <div id="pack"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-3">
+        <div class="card-header">
+            Les chiffres clés
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Special title treatment</h5>
+                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+    </div>`
+
+    body = document.getElementById("vis3");
+    body.innerHTML = `<div id="linechart"></div>`
+
+    body = document.getElementById("vis2");
+    body.innerHTML = ` <div class="card-body" >
+    <div id="corr_viz"></div>
+    </div>
+    <div class="card-footer text-muted">
+        <div class="row">
+            <div class="col-sm-6">
+                <label for="customRange3" class="form-label"></label>
+                <div class="slider">
+                    <label>Heure de l'observation sélectionné : </label><p id="rangeValue">8</p>
+                    <input type="range" min="8" max="20" value="8" id="sliderCorr"
+                        oninput="rangeValue.innerText = this.value">
+                </div>
+            </div>
+            <div class="col-sm-6">
+            </br><label>Quel article voulez-vous observer? </label><select class="form-select" id="aricleName" onchange="LoadBakeryAndDrawV2Bis()" aria-label="Default select example"></select>
+            </div>
+        </div>
+    </div>`
+
+    body = document.getElementById("vis1");
+    body.innerHTML = `<div class="card-body">
+    <div id="number_clients"></div>
+    </div>
+    <div class="card-footer text-muted">
+        <p>
+            <label for="amount">Intervalle choisi:</label>
+            <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;"
+                size="100" />
+        </p>
+
+        <div id="slider-range"></div>
+    </div>`
+}
+
+
+function LoadBakeryAndDrawV2Bis() {
+    const checked = document.getElementById("aricleName");
+    d3.csv(
+        "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
+        conversor2,
+        function (data) {
+            if ("Tous les articles" == checked.value){
+                
+                //LoadBakeryAndDrawV2V3(data)
+            } else {
+                BakeryViz2Bis(data, checked.value)
+            }
+        })
+}
+
 function displayMode(mode) {
     if (mode == 0) {
+        init()
         LoadBakeryAndDrawV1()
-        LoadBakeryAndDrawV2()
-        LoadBakeryAndDrawV3()
+        LoadBakeryAndDrawV2V3()
+        LoadBakeryAndDrawV4()
     } else {
         const vis1 = document.getElementById("vis1");
         const vis2 = document.getElementById("vis2");
@@ -507,6 +697,6 @@ function displayMode(mode) {
         vis1.innerHTML = display
         vis2.innerHTML = display
         vis3.innerHTML = display
-        vis4.innerHTML = display
+        vis4.innerHTML = `<div class="card text-center w-100">`+display+`</div>`
     }
 };

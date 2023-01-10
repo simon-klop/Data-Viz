@@ -774,6 +774,7 @@ function init() {
 
         <div id="slider-range"></div>
     </div>`
+    stateVis2 = false;
 }
 
 function displayMode(mode) {

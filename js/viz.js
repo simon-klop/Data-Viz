@@ -328,12 +328,27 @@ function BakeryViz2Bis(dataset, product) {
         svg.selectAll("g").remove()
         svg.selectAll("text").remove()
 
+           // create a tooltip
+        var Tooltip = d3.select("#corr_viz")
+           .append("div")
+           .style("opacity", 0)
+           .attr("class", "tooltip")
+           .style("background-color", "white")
+           .style("border", "solid")
+           .style("border-width", "2px")
+           .style("border-radius", "5px")
+           .style("padding", "5px")
+
+
         //Computation with the value of the slider
         hour_value = Number(document.getElementById("sliderCorr").value)
         data = getFrequentItemCorr(dataset, hour_value)
         x = data[0]
         y = data[1]
         item = x.indexOf(product)
+        console.log("data")
+        console.log(data)
+
 
         for (let i = 0; i < top; i++) {
             svg.append("rect")
@@ -343,13 +358,23 @@ function BakeryViz2Bis(dataset, product) {
                 .attr('height', 30)
                 .attr('fill', function () { return myColor(y[item][i]) })
                 .on('mouseover', function (d, i) {
+                    Tooltip.style("opacity", 1)
                     d3.select(this).transition()
                         .duration('50')
                         .attr('opacity', '.80')
-
+        
+                })
+                .on("mousemove", function (d, f) {
+                    Tooltip
+                        .html("Lorsqu'un/une " + product + " est acheté/e, on achète un/une " + data[0][i] + " avec " + y[item][i] * 100 + "% du temps à " + hour_value + " heure")
+                        .style("left", (d3.mouse(this)[0]) + "px")
+                        .style("top", (d3.mouse(this)[1]) + 100 + "px")
                 })
                 .on('mouseout', function (d, i) {
-                    d3.select(this).transition()
+                    Tooltip
+                        .style("opacity", 0)
+                    d3
+                        .select(this).transition()
                         .duration('50')
                         .attr('opacity', '1')
                 })

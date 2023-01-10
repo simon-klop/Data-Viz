@@ -335,8 +335,7 @@ function BakeryViz2Bis(dataset, product) {
         y = data[1]
         item = x.indexOf(product)
 
-        for (let i = 0; i < top; i++)
-        {
+        for (let i = 0; i < top; i++) {
             svg.append("rect")
                 .attr('x', 100)
                 .attr('y', 67 + 30 * i)
@@ -347,14 +346,14 @@ function BakeryViz2Bis(dataset, product) {
                     d3.select(this).transition()
                         .duration('50')
                         .attr('opacity', '.80')
-                
+
                 })
                 .on('mouseout', function (d, i) {
                     d3.select(this).transition()
                         .duration('50')
                         .attr('opacity', '1')
                 })
-          }
+        }
 
         // Axe Y
         svg.append("g").selectAll("text").data(x).enter()
@@ -580,13 +579,16 @@ function BakeryViz3(dataset) {
 
 function BakeryViz4(dataset) {
     const select = document.getElementById("vis4select");
+
+    const c = ["red", "green", "blue", "purple", "orange", "black", "cyan", "brown"]
+
     var contenu = ``;
     for (let i = 0; i < Object.keys(dataset.children).length; i++) {
         contenu = contenu + `
         
-        <div class="input-group mb-3">
+        <div class="input-group mb-3 justify-content-end">
             <div class="input-group-text">
-                    <label>${dataset.children[i].name} : </label> </br>
+                    <label style="color:${c[i]} ">${dataset.children[i].name} : </label> </br>
                     <input type="number" min="0" value=0 max="100">
             </div>
             
@@ -596,10 +598,52 @@ function BakeryViz4(dataset) {
     }
     select.innerHTML = contenu;
     const margin = ({ top: 35, right: 70, bottom: 35, left: 70 })
-    const w = 400
-    const h = 400
+    const w = 750
+    const h = 750
 
     var svg = d3.select("#pack").append("svg").attr("height", h).attr("width", w)
+
+    var stratify = d3.stratify()
+        .parentId(function (d) { return d.id.substring(0, d.id.lastIndexOf(".")); });
+
+    // Give the data to this cluster layout
+    var root = d3.hierarchy(dataset, function (d) { return d.children; })
+        .sum(function (d) { return d.size; }) // Here the size of each leave is given in the 'size' field in input data
+        .sort(function (a, b) { return b.value - a.value; }); // Here the list of nodes is sorted by size
+
+    // Then d3.treemap computes the position of each element of the hierarchy
+    d3.treemap()
+        .size([w, h])
+        .padding(4)
+        (root);
+
+    // use this information to add rectangles:
+    svg
+        .selectAll("rect")
+        .data(root.leaves())
+        .enter()
+        .append("rect")
+        .attr('x', function (d) { return d.x0; })
+        .attr('y', function (d) { return d.y0; })
+        .attr('width', function (d) { return d.x1 - d.x0; })
+        .attr('height', function (d) { return d.y1 - d.y0; })
+        .style("stroke", "black")
+        .style("fill", function (d) { console.log(d) })
+        .append("title") // Simple tooltip
+        .text(function (d) { return d.data.name + "\n" + d.value; });
+
+    // Add the text labels
+    svg
+        .selectAll("text")
+        .data(root.leaves())
+        .enter()
+        .append("text")
+        .attr("x", function (d) { return d.x0 + 5 })    // +10 to adjust position (more right)
+        .attr("y", function (d) { return d.y0 + 20 })    // +20 to adjust position (lower)
+        .text(function (d) { return d.data.name })
+        .attr("font-size", "15px")
+        .attr("fill", "white");
+
 }
 
 // ______________________________ LOAD DATA ______________________________

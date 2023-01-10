@@ -161,8 +161,57 @@ function getFrequentItemCorr(dataset, hour_value) {
             item_count[i][j] = item_count[i][j] / divisor
         }
     }
+    
+    console.log(articles, item)
+    return item_count
+}
 
-    return [articles, item_count]
+function getFrequentItemCorr(dataset, hour_value) {
+    let opti = d3.groups(dataset, d => d.ticket_number)
+    // console.log("opti",opti)
+
+    // let filtrage = opti.filter(d => d[1].map(k => k.article).includes("BAGUETTE") && d[1].map(k => k.hours).includes(8))
+    // console.log("filtrage",filtrage)
+ 
+    // let nb_tickets = filtrage.length
+    // console.log("nb_tickets ", nb_tickets)
+
+    // let liste_achats = filtrage.map(d => d[1].map(k => k.article))
+    // console.log("liste d'achats",liste_achats)
+
+    // var merged = liste_achats.reduce(function(prev, next) {return prev.concat(next)})
+    // console.log("merged",merged)
+
+    // let stat = d3.rollup(merged, v=> (v.length/nb_tickets)*100 , d => d)
+    // let stat2 = d3.rollup(merged, v=> ((v.length - nb_tickets)/nb_tickets)*100 , d => d)
+
+    // console.log("stat", stat)
+    // console.log("stat", stat2)
+
+    // --------------------------------------------
+    // Calcul des stats pour tous les articles en un coup (Viz Lina)
+    articles = getArticles(dataset).sort()
+
+    let corr_articles = articles.map(function(a) {
+        let filtrage = opti.filter(d => d[1].map(k => k.article).includes(a) && d[1].map(k => k.hours).includes(hour_value))
+        let nb_tickets = filtrage.length
+        let liste_achats = filtrage.map(d => d[1].map(k => k.article)).reduce(function(prev, next) {return prev.concat(next)}).sort()
+        let stat = d3.rollup(liste_achats, v=> v.length/nb_tickets , d => d)
+        return [a, stat]
+    })
+
+    console.log(corr_articles)
+    return corr_articles
+
+}
+
+
+function getArticles(dataset) {
+    let articles = [];
+    d3.groups(dataset, d => d.article).map(
+      article => !articles.includes(article[0]) ? (articles.push(article[0])) :  console.log()
+       )
+  return articles
 }
 
 function BakeryViz2(dataset) {
@@ -204,11 +253,15 @@ function BakeryViz2(dataset) {
         //Computation with the value of the slider
         hour_value = Number(document.getElementById("sliderCorr").value)
         data = getFrequentItemCorr(dataset, hour_value)
-        x = data[0]
-        y = data[1]
 
-        for (let i = 0; i < y.length; i++) {
-            for (let j = 0; j < y[i].length; j++) {
+        x = data.map(d => d[0])
+        // y = (data.map(d => Array.from(d[1]).map(([key, value]) => ({[key]: value}))))
+        y = (data.map(d => Array.from(d[1].values())))
+
+        console.log(y)
+
+        for (let i = 0; i < x.length; i++) {
+            for (let j = 0; j < x.length; j++) {
                 svg.append("rect")
                     .attr('x', 100 + i * 90)
                     .attr('y', 67 + 30 * j)

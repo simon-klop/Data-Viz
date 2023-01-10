@@ -255,10 +255,11 @@ function BakeryViz2(dataset) {
         data = getFrequentItemCorr(dataset, hour_value)
 
         x = data.map(d => d[0])
-        // y = (data.map(d => Array.from(d[1]).map(([key, value]) => ({[key]: value}))))
-        y = (data.map(d => Array.from(d[1].values())))
+        y = data.map(d => Array.from(d[1]).reduce((acc, [key, value]) => {
+            acc[key] = value;
+            return acc;
+          }, {}))
 
-        console.log(y)
 
         for (let i = 0; i < x.length; i++) {
             for (let j = 0; j < x.length; j++) {
@@ -267,7 +268,7 @@ function BakeryViz2(dataset) {
                     .attr('y', 67 + 30 * j)
                     .attr('width', 90)
                     .attr('height', 30)
-                    .attr('fill', function () { return myColor(y[i][j]) })
+                    .attr('fill', function () { return myColor(y[i][x[j]]) })
                     .on('mouseover', function (d, i) {
                         Tooltip.style("opacity", 1)
                         d3.select(this).transition()
@@ -277,7 +278,7 @@ function BakeryViz2(dataset) {
                     })
                     .on("mousemove", function (d, f) {
                         Tooltip
-                            .html("Lorsque " + x[i] + " est acheté, on achète avec " + x[j] + " " + y[i][j] * 100 + "% du temps à " + hour_value + " heure")
+                            .html("Lorsque " + x[i] + " est acheté, on achète avec " + x[j] + " " + y[i][x[j]] * 100 + "% du temps à " + hour_value + " heure")
                             .style("left", (d3.mouse(this)[0]) + "px")
                             .style("top", (d3.mouse(this)[1]) + 100 + "px")
                     })
@@ -396,20 +397,29 @@ function BakeryViz2Bis(dataset, product) {
         //Computation with the value of the slider
         hour_value = Number(document.getElementById("sliderCorr").value)
         data = getFrequentItemCorr(dataset, hour_value)
-        x = data[0]
-        y = data[1]
+
+       
+        y_arr = data.map(d => Array.from(d[1]).reduce((acc, [key, value]) => {
+            acc[key] = value;
+            return acc;
+          }, {}))[x.indexOf(product)]
+
+        y = Object.entries(y_arr).sort((a, b) => b[1] - a[1]).reduce((acc, [key, value]) => {
+            acc[key] = value;
+            return acc;
+          }, {})
+        
+        x =  Object.keys(y)
+
         item = x.indexOf(product)
-        console.log("data")
-        console.log(data)
 
-
-        for (let i = 0; i < top; i++) {
+        for (let i = 0; i < x.length; i++) {
             svg.append("rect")
                 .attr('x', 100)
                 .attr('y', 67 + 30 * i)
                 .attr('width', 900)
                 .attr('height', 30)
-                .attr('fill', function () { return myColor(y[item][i]) })
+                .attr('fill', function () { return myColor(y[x[i]]) })
                 .on('mouseover', function (d, i) {
                     Tooltip.style("opacity", 1)
                     d3.select(this).transition()
@@ -419,7 +429,7 @@ function BakeryViz2Bis(dataset, product) {
                 })
                 .on("mousemove", function (d, f) {
                     Tooltip
-                        .html("Lorsqu'un/une " + product + " est acheté/e, on achète un/une " + data[0][i] + " avec " + y[item][i] * 100 + "% du temps à " + hour_value + " heure")
+                        .html("Lorsqu'un/une " + product + " est acheté/e, on achète un/une " + x[i] + " avec " + y[x[i]] * 100 + "% du temps à " + hour_value + " heure")
                         .style("left", (d3.mouse(this)[0]) + "px")
                         .style("top", (d3.mouse(this)[1]) + 100 + "px")
                 })

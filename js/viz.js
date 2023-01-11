@@ -161,8 +161,57 @@ function getFrequentItemCorr(dataset, hour_value) {
             item_count[i][j] = item_count[i][j] / divisor
         }
     }
+    
+    console.log(articles, item)
+    return item_count
+}
 
-    return [articles, item_count]
+function getFrequentItemCorr(dataset, hour_value) {
+    let opti = d3.groups(dataset, d => d.ticket_number)
+    // console.log("opti",opti)
+
+    // let filtrage = opti.filter(d => d[1].map(k => k.article).includes("BAGUETTE") && d[1].map(k => k.hours).includes(8))
+    // console.log("filtrage",filtrage)
+ 
+    // let nb_tickets = filtrage.length
+    // console.log("nb_tickets ", nb_tickets)
+
+    // let liste_achats = filtrage.map(d => d[1].map(k => k.article))
+    // console.log("liste d'achats",liste_achats)
+
+    // var merged = liste_achats.reduce(function(prev, next) {return prev.concat(next)})
+    // console.log("merged",merged)
+
+    // let stat = d3.rollup(merged, v=> (v.length/nb_tickets)*100 , d => d)
+    // let stat2 = d3.rollup(merged, v=> ((v.length - nb_tickets)/nb_tickets)*100 , d => d)
+
+    // console.log("stat", stat)
+    // console.log("stat", stat2)
+
+    // --------------------------------------------
+    // Calcul des stats pour tous les articles en un coup (Viz Lina)
+    articles = getArticles(dataset).sort()
+
+    let corr_articles = articles.map(function(a) {
+        let filtrage = opti.filter(d => d[1].map(k => k.article).includes(a) && d[1].map(k => k.hours).includes(hour_value))
+        let nb_tickets = filtrage.length
+        let liste_achats = filtrage.map(d => d[1].map(k => k.article)).reduce(function(prev, next) {return prev.concat(next)}).sort()
+        let stat = d3.rollup(liste_achats, v=> v.length/nb_tickets , d => d)
+        return [a, stat]
+    })
+
+    console.log(corr_articles)
+    return corr_articles
+
+}
+
+
+function getArticles(dataset) {
+    let articles = [];
+    d3.groups(dataset, d => d.article).map(
+      article => !articles.includes(article[0]) ? (articles.push(article[0])) :  console.log()
+       )
+  return articles
 }
 
 function BakeryViz2(dataset) {
@@ -204,17 +253,22 @@ function BakeryViz2(dataset) {
         //Computation with the value of the slider
         hour_value = Number(document.getElementById("sliderCorr").value)
         data = getFrequentItemCorr(dataset, hour_value)
-        x = data[0]
-        y = data[1]
 
-        for (let i = 0; i < y.length; i++) {
-            for (let j = 0; j < y[i].length; j++) {
+        x = data.map(d => d[0])
+        y = data.map(d => Array.from(d[1]).reduce((acc, [key, value]) => {
+            acc[key] = value;
+            return acc;
+          }, {}))
+
+
+        for (let i = 0; i < x.length; i++) {
+            for (let j = 0; j < x.length; j++) {
                 svg.append("rect")
                     .attr('x', 100 + i * 90)
                     .attr('y', 67 + 30 * j)
                     .attr('width', 90)
                     .attr('height', 30)
-                    .attr('fill', function () { return myColor(y[i][j]) })
+                    .attr('fill', function () { return myColor(y[i][x[j]]) })
                     .on('mouseover', function (d, i) {
                         Tooltip.style("opacity", 1)
                         d3.select(this).transition()
@@ -224,7 +278,7 @@ function BakeryViz2(dataset) {
                     })
                     .on("mousemove", function (d, f) {
                         Tooltip
-                            .html("Lorsque " + x[i] + " est acheté, on achète avec " + x[j] + " " + y[i][j] * 100 + "% du temps à " + hour_value + " heure")
+                            .html("Lorsque " + x[i] + " est acheté, on achète avec " + x[j] + " " + y[i][x[j]] * 100 + "% du temps à " + hour_value + " heure")
                             .style("left", (d3.mouse(this)[0]) + "px")
                             .style("top", (d3.mouse(this)[1]) + 100 + "px")
                     })
@@ -328,28 +382,62 @@ function BakeryViz2Bis(dataset, product) {
         svg.selectAll("g").remove()
         svg.selectAll("text").remove()
 
+           // create a tooltip
+        var Tooltip = d3.select("#corr_viz")
+           .append("div")
+           .style("opacity", 0)
+           .attr("class", "tooltip")
+           .style("background-color", "white")
+           .style("border", "solid")
+           .style("border-width", "2px")
+           .style("border-radius", "5px")
+           .style("padding", "5px")
+
+
         //Computation with the value of the slider
         hour_value = Number(document.getElementById("sliderCorr").value)
         data = getFrequentItemCorr(dataset, hour_value)
-        x = data[0]
-        y = data[1]
+
+       
+        y_arr = data.map(d => Array.from(d[1]).reduce((acc, [key, value]) => {
+            acc[key] = value;
+            return acc;
+          }, {}))[x.indexOf(product)]
+
+        y = Object.entries(y_arr).sort((a, b) => b[1] - a[1]).reduce((acc, [key, value]) => {
+            acc[key] = value;
+            return acc;
+          }, {})
+        
+        x =  Object.keys(y)
+
         item = x.indexOf(product)
 
-        for (let i = 0; i < top; i++) {
+        for (let i = 0; i < x.length; i++) {
             svg.append("rect")
                 .attr('x', 100)
                 .attr('y', 67 + 30 * i)
                 .attr('width', 900)
                 .attr('height', 30)
-                .attr('fill', function () { return myColor(y[item][i]) })
+                .attr('fill', function () { return myColor(y[x[i]]) })
                 .on('mouseover', function (d, i) {
+                    Tooltip.style("opacity", 1)
                     d3.select(this).transition()
                         .duration('50')
                         .attr('opacity', '.80')
-
+        
+                })
+                .on("mousemove", function (d, f) {
+                    Tooltip
+                        .html("Lorsqu'un/une " + product + " est acheté/e, on achète un/une " + x[i] + " avec " + y[x[i]] * 100 + "% du temps à " + hour_value + " heure")
+                        .style("left", (d3.mouse(this)[0]) + "px")
+                        .style("top", (d3.mouse(this)[1]) + 100 + "px")
                 })
                 .on('mouseout', function (d, i) {
-                    d3.select(this).transition()
+                    Tooltip
+                        .style("opacity", 0)
+                    d3
+                        .select(this).transition()
                         .duration('50')
                         .attr('opacity', '1')
                 })

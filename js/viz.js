@@ -169,7 +169,7 @@ function BakeryViz2(dataset) {
 
     // Static Part
     const margin = ({ top: 10, right: 250, bottom: 30, left: 40 })
-    const w = 3000
+    const w = 1000
     const h = 400
     const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
     var myColor = d3.scaleLinear().domain([0.01, 1]).range(["#f4cccc", "#cc0000"])
@@ -577,10 +577,36 @@ function BakeryViz3(dataset) {
 
 }
 
+function invertJson(jsonData) {
+        var result = { name : 'ingredients'};
+        var children = [];
+    
+        jsonData.children.forEach(function(patisserie) {
+            patisserie.children[0].children.forEach(function(ingredient) {
+                var existingChild = children.find(function(c) { return c.name === ingredient.name; });
+                if (existingChild) {
+                    existingChild.children.push({
+                        name: patisserie.name, size: ingredient.size * document.getElementById(patisserie.name.split(' ')[0]).value
+                    });
+                } else {
+                    children.push({name: ingredient.name, children: [{name: patisserie.name, size: ingredient.size * document.getElementById(patisserie.name.split(' ')[0]).value}]});
+                }
+            });
+        });
+        result.children = children;
+        return result;
+  }
+
+
+
 function BakeryViz4(dataset) {
     const select = document.getElementById("vis4select");
+    const c = ["#FF8C00", "red", "green", "blue", "purple", "orange", "black", "grey", "brown", "pink"]
 
-    const c = ["red", "green", "blue", "purple", "orange", "black", "cyan", "brown"]
+    let article = []
+    let ingredient = []
+
+    var checked = document.getElementById("flexSwitchCheckChecked");
 
     var contenu = ``;
     for (let i = 0; i < Object.keys(dataset.children).length; i++) {
@@ -589,60 +615,212 @@ function BakeryViz4(dataset) {
         <div class="input-group mb-3 justify-content-end">
             <div class="input-group-text">
                     <label style="color:${c[i]} ">${dataset.children[i].name} : </label> </br>
-                    <input type="number" min="0" value=0 max="100">
+                    <input id=${dataset.children[i].name} type="number" min="0" value=1 max="1000">
             </div>
             
             
            
         </div>`;
+        article.push(dataset.children[i].name);
     }
+
     select.innerHTML = contenu;
     const margin = ({ top: 35, right: 70, bottom: 35, left: 70 })
-    const w = 750
+    const w = 1000
     const h = 750
-
     var svg = d3.select("#pack").append("svg").attr("height", h).attr("width", w)
 
-    var stratify = d3.stratify()
-        .parentId(function (d) { return d.id.substring(0, d.id.lastIndexOf(".")); });
 
-    // Give the data to this cluster layout
-    var root = d3.hierarchy(dataset, function (d) { return d.children; })
-        .sum(function (d) { return d.size; }) // Here the size of each leave is given in the 'size' field in input data
-        .sort(function (a, b) { return b.value - a.value; }); // Here the list of nodes is sorted by size
+    //Dynamic Part
+    function update(checked) {
 
-    // Then d3.treemap computes the position of each element of the hierarchy
-    d3.treemap()
-        .size([w, h])
-        .padding(4)
-        (root);
+        // Cleaning of the SVG
+        svg.selectAll("rect").remove()
+        svg.selectAll("g").remove()
+        svg.selectAll("text").remove()
 
-    // use this information to add rectangles:
-    svg
-        .selectAll("rect")
-        .data(root.leaves())
-        .enter()
-        .append("rect")
-        .attr('x', function (d) { return d.x0; })
-        .attr('y', function (d) { return d.y0; })
-        .attr('width', function (d) { return d.x1 - d.x0; })
-        .attr('height', function (d) { return d.y1 - d.y0; })
-        .style("stroke", "black")
-        .style("fill", function (d) { console.log(d) })
-        .append("title") // Simple tooltip
-        .text(function (d) { return d.data.name + "\n" + d.value; });
+        if (!checked) {
+            var stratify = d3.stratify()
+                .parentId(function (d) { return d.id.substring(0, d.id.lastIndexOf(".")); });
 
-    // Add the text labels
-    svg
-        .selectAll("text")
-        .data(root.leaves())
-        .enter()
-        .append("text")
-        .attr("x", function (d) { return d.x0 + 5 })    // +10 to adjust position (more right)
-        .attr("y", function (d) { return d.y0 + 20 })    // +20 to adjust position (lower)
-        .text(function (d) { return d.data.name })
-        .attr("font-size", "15px")
-        .attr("fill", "white");
+
+            let facteur = document.getElementById(article[0].split(' ')[0]).value
+
+            // Give the data to this cluster layout
+            var root = d3.hierarchy(dataset, function (d) { return d.children; })
+                .sum(function (d) {
+                    if (d.size === undefined) {
+                        let index = article.indexOf(d.name)
+
+                        if (index > -1 && index + 1 < article.length) {
+                            facteur = document.getElementById(article[index + 1].split(' ')[0]).value
+                        } else {
+                            if (index + 1 == article.length) {
+                                facteur = document.getElementById(article[0].split(' ')[0]).value
+                            }
+                        }
+                    } else {
+                        return d.size * facteur;
+                    }
+                }
+                ) // Here the size of each leave is given in the 'size' field in input data
+                .sort(function (a, b) { return b.value - a.value; }); // Here the list of nodes is sorted by size
+
+            // Then d3.treemap computes the position of each element of the hierarchy
+            d3.treemap()
+                .size([w, h])
+                .paddingTop(20)
+                .paddingRight(7)
+                .paddingInner(3)
+                (root);
+
+            // use this information to add rectangles:
+            svg
+                .selectAll("rect")
+                .data(root.leaves())
+                .enter()
+                .append("rect")
+                .attr('x', function (d) { return d.x0; })
+                .attr('y', function (d) { return d.y0; })
+                .attr('width', function (d) { return d.x1 - d.x0; })
+                .attr('height', function (d) { return d.y1 - d.y0; })
+                .style("stroke", "black")
+                .style("fill", function (d) { return c[article.indexOf(d.parent.parent.data.name)] })
+                .append("title") // Simple tooltip
+                .text(function (d) { return d.value })
+
+            // Add the text labels
+            svg
+                .selectAll("text")
+                .data(root.leaves())
+                .enter()
+                .append("text")
+                .attr("x", function (d) { return d.x0 + 5 })    // +10 to adjust position (more right)
+                .attr("y", function (d) { return d.y0 + 20 })    // +20 to adjust position (lower)
+                .text(function (d) { return d.data.name })
+                .attr("font-size", "15px")
+                .attr("fill", "white");
+
+            // Add the title of article
+            svg
+                .selectAll("titles")
+                .data(root.descendants().filter(function(d){return d.depth==1}))
+                .enter()
+                .append("text")
+                .attr("x", function(d){ return d.x0})
+                .attr("y", function(d){ return d.y0+20})
+                .text(function(d){ return d.data.name })
+                .attr("font-size", "15px")
+                .attr("fill",  function(d){ return c[article.indexOf(d.data.name)]})
+
+            // Add title for the 3 groups
+            svg
+                .append("text")
+                .attr("x", 0)
+                .attr("y", 14)    // +20 to adjust position (lower)
+                .text("TO DO AJOUTER TITRE 1")
+                .attr("font-size", "19px")
+                .attr("fill",  "grey" )
+
+        } else {
+            let ingredient = []
+            const invertdataset = invertJson(dataset);
+            
+            for (let i = 0; i < Object.keys(invertdataset.children).length; i++) {
+                ingredient.push(invertdataset.children[i].name);
+            }
+            
+            console.log(invertdataset.children)
+
+            let facteur = document.getElementById(article[0].split(' ')[0]).value
+
+            // Give the data to this cluster layout
+            var root = d3.hierarchy(invertdataset, function (d) { return d.children; })
+                .sum(function (d) {
+                    return d.size;
+                }
+                ) // Here the size of each leave is given in the 'size' field in input data
+                .sort(function (a, b) { return b.value - a.value; }); // Here the list of nodes is sorted by size
+
+            // Then d3.treemap computes the position of each element of the hierarchy
+            d3.treemap()
+                .size([w, h])
+                .paddingTop(20)
+                .paddingRight(7)
+                .paddingInner(3)
+                (root);
+
+            // use this information to add rectangles:
+            svg
+                .selectAll("rect")
+                .data(root.leaves())
+                .enter()
+                .append("rect")
+                .attr('x', function (d) { return d.x0; })
+                .attr('y', function (d) { return d.y0; })
+                .attr('width', function (d) { return d.x1 - d.x0; })
+                .attr('height', function (d) { return d.y1 - d.y0; })
+                .style("stroke", "black")
+                .style("fill", function (d) { return c[ingredient.indexOf(d.parent.data.name)] })
+                .append("title") // Simple tooltip
+                .text(function (d) { return d.value })
+
+            // Add the text labels
+            svg
+                .selectAll("text")
+                .data(root.leaves())
+                .enter()
+                .append("text")
+                .attr("x", function (d) { return d.x0 + 5 })
+                .attr("y", function (d) { return d.y0 + 20 }) 
+                .text(function (d) { return d.data.name })
+                .attr("font-size", "15px")
+                .attr("fill", "white");
+
+            // Add the title of article
+            svg
+                .selectAll("titles")
+                .data(root.descendants().filter(function(d){return d.depth==1}))
+                .enter()
+                .append("text")
+                .attr("x", function(d){ return d.x0})
+                .attr("y", function(d){ return d.y0 + 10})
+                .text(function(d){ return d.data.name })
+                .attr("font-size", "15px")
+                .attr("fill",  function(d){ return c[ingredient.indexOf(d.data.name)]})
+
+
+            // Add title for the 3 groups
+            svg
+                .append("text")
+                .attr("x", 0)
+                .attr("y", 14)    // +20 to adjust position (lower)
+                .text("TO DO AJOUTER TITRE 2")
+                .attr("font-size", "19px")
+                .attr("fill",  "grey" )
+
+        }
+
+
+    }
+
+    // first init
+    update(checked.checked)
+
+    // DYNAMIC
+    for (i = 0; i < article.length; i++) {
+        d3.select("#" + article[i].split(' ')[0]).on("change", function () {
+            checked = document.getElementById("flexSwitchCheckChecked");
+            update(checked.checked)
+        })
+    }
+
+    d3.select("#flexSwitchCheckChecked").on("change", function () {
+        checked = document.getElementById("flexSwitchCheckChecked");
+        update(checked.checked)
+    })
+
+
 
 }
 
@@ -708,35 +886,33 @@ async function LoadBakeryAndDrawV4() {
 function init() {
     var body = document.getElementById("vis4");
 
-    body.innerHTML = `<div class="col-sm-3"id="bodyvis4">
-        <div class="card">
-            <div class="card-header">
-                Quel/combien d'article souhaitez-vous observer? 
-            </div>
-            <div class="card-body" id="vis4select"></div>
-        </div>
-    </div>
-
-    <div class="col-sm-6">
-        <div class="card">
-            <div class="card-body">
-                <div id="pack"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-sm-3">
+    body.innerHTML = `<div class="col-sm-3">
+    <div class="card">
         <div class="card-header">
-            Les chiffres clés
+            Sélectionnez un mode d'affichage : 
         </div>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Special title treatment</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
+        <div class="card-body">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked">
+                <label class="form-check-label" for="flexSwitchCheckChecked">Focus sur les ingredients</label>
+              </div>
         </div>
-    </div>`
+    </div></br></br>
+    <div class="card">
+        <div class="card-header">
+            Quel/combien d'article souhaitez-vous observer? 
+        </div>
+        <div class="card-body" id="vis4select"></div>
+    </div>
+</div>
+
+<div class="col-sm-9">
+    <div class="card">
+        <div class="card-body">
+            <div id="pack"></div>
+        </div>
+    </div>
+</div>`
 
     body = document.getElementById("vis3");
     body.innerHTML = `<div id="linechart"></div>`

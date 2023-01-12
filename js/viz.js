@@ -155,7 +155,8 @@ function BakeryViz2(dataset) {
     const w = 1000
     const h = 400
     const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
-    var myColor = d3.scaleLinear().domain([0.01, 1]).range(["#f4cccc", "#cc0000"])
+    const max_corr = 0.6
+    var myColor = d3.scaleLinear().domain([0.01, max_corr]).range(["#f4cccc", "#cc0000"])
 
     const select = document.getElementById("aricleName");
     var contenu = `<option selected>Tous les articles</option>`;
@@ -245,18 +246,18 @@ function BakeryViz2(dataset) {
             .attr("font-size", "8px")
 
         // Legend 
-        svg.append("g").selectAll("text").data(d3.range(0, 1, 0.1)).enter()
+        svg.append("g").selectAll("text").data(d3.range(0, max_corr, 0.1)).enter()
             .append("rect")
-            .attr('x', (d, i) => 100 + 90 * i)
+            .attr('x', (d, i) => 100 + 148 * i)
             .attr('y', 380)
-            .attr('width', 90)
+            .attr('width', 400)
             .attr('height', 10)
             .attr('fill', function (d) { return myColor(d) })
 
         // Legend info
-        svg.append("g").selectAll("text").data(d3.range(0, 110, 10)).enter()
+        svg.append("g").selectAll("text").data(d3.range(0, max_corr * 100 + 10, 10)).enter()
             .append("text")
-            .attr('x', (d, i) => 100 + 90 * i)
+            .attr('x', (d, i) => 100 + 148 * i)
             .attr('y', 400)
             .text(d => d)
             .attr("font-size", "10px")
@@ -301,11 +302,12 @@ function BakeryViz2(dataset) {
 function BakeryViz2Bis(dataset) {
     const margin = ({ top: 10, right: 250, bottom: 30, left: 40 })
 
-    const w = 3000
+    const w = 1000
     const h = 400
 
     const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
-    var myColor = d3.scaleLinear().domain([0.01, 1]).range(["#f4cccc", "#cc0000"])
+    const max_corr = 0.6
+    var myColor = d3.scaleLinear().domain([0.01, max_corr]).range(["#f4cccc", "#cc0000"])
     var articles = getArticles(dataset)
 
 
@@ -393,18 +395,18 @@ function BakeryViz2Bis(dataset) {
             .attr("font-size", "8px")
 
         // Legend 
-        svg.append("g").selectAll("text").data(d3.range(0, 1, 0.1)).enter()
+        svg.append("g").selectAll("text").data(d3.range(0, max_corr, 0.1)).enter()
             .append("rect")
-            .attr('x', (d, i) => 100 + 90 * i)
+            .attr('x', (d, i) => 100 + 148 * i)
             .attr('y', 380)
-            .attr('width', 90)
+            .attr('width', 400)
             .attr('height', 10)
             .attr('fill', function (d) { return myColor(d) })
 
         // Legend info
-        svg.append("g").selectAll("text").data(d3.range(0, 110, 10)).enter()
+        svg.append("g").selectAll("text").data(d3.range(0, max_corr * 100 + 10, 10)).enter()
             .append("text")
-            .attr('x', (d, i) => 100 + 90 * i)
+            .attr('x', (d, i) => 100 + 148 * i)
             .attr('y', 400)
             .text(d => d)
             .attr("font-size", "10px")

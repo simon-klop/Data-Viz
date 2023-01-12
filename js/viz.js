@@ -130,11 +130,11 @@ function getFrequentItemCorr(dataset, hour_value) {
         let filtrage = opti.filter(d => d[1].map(k => k.article).includes(a) && d[1].map(k => k.hours).includes(hour_value))
         let nb_tickets = filtrage.length
         let liste_achats = filtrage.map(d => d[1].map(k => k.article)).reduce(function(prev, next) {return prev.concat(next)}).sort()
-        let stat = d3.rollup(liste_achats, v=> v.length/nb_tickets , d => d)
+        let stat = d3.rollup(liste_achats, v=> v.length/nb_tickets % 1 , d => d)
         return [a, stat]
     })
 
-    console.log(corr_articles)
+    console.log('corr_articles', corr_articles)
     return corr_articles
 
 }
@@ -310,7 +310,7 @@ function BakeryViz2Bis(dataset) {
 
 
     //Dynamic Part
-    function update() {
+    function update(changed_hour) {
 
         // Cleaning of the SVG
         svg.selectAll("rect").remove()
@@ -333,14 +333,16 @@ function BakeryViz2Bis(dataset) {
         hour_value = Number(document.getElementById("sliderCorr").value)
         product = document.getElementById("aricleName").value
 
-        console.log('product', product)
-        data = getFrequentItemCorr(dataset, hour_value)
+        if (changed_hour) 
+            data = getFrequentItemCorr(dataset, hour_value)
 
-       
         y_arr = data.map(d => Array.from(d[1]).reduce((acc, [key, value]) => {
             acc[key] = value;
             return acc;
           }, {}))[articles.indexOf(product)]
+
+        
+        // y_arr[product] =  y_arr[product] - 1
 
         y = Object.entries(y_arr).sort((a, b) => b[1] - a[1]).reduce((acc, [key, value]) => {
             acc[key] = value;
@@ -415,12 +417,12 @@ function BakeryViz2Bis(dataset) {
     }
 
     // first init
-    update()
+    update(true)
 
     // DYNAMIC
     d3.select("#sliderCorr").on("click", function () {
         // const checked = document.getElementById("aricleName");
-        update()
+        update(true)
     })
 
     d3.select("#aricleName").on("change", function () {
@@ -446,7 +448,7 @@ function BakeryViz2Bis(dataset) {
                     } else {
                         console.log("zoom_update");
                         stateVis2 = true
-                        update()
+                        update(false)
                     }
                 }
             )
@@ -757,7 +759,6 @@ function BakeryViz4(dataset) {
                 ingredient.push(invertdataset.children[i].name);
             }
             
-            console.log(invertdataset.children)
 
             let facteur = document.getElementById(article[0].split(' ')[0]).value
 

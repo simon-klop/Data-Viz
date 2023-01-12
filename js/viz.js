@@ -122,75 +122,9 @@ function BakeryViz1(dataset) {
 
 //-----------------VIZ 2 LINA ---------------------
 function getFrequentItemCorr(dataset, hour_value) {
-    const sortedData = dataset.slice().sort((a, b) => d3.descending(a.article, b.article))
-    const datasetByHours = d3.group(sortedData, d => d.hours)
-
-    const datasetByHour = datasetByHours.get(hour_value)
-    let articles = [];
-    let item_count = [];
-
-    // Get list of item
-    d3.groups(datasetByHour, d => d.article).map(
-        article => !articles.includes(article[0]) ? (articles.push(article[0])) : console.log()
-    )
-
-    // Init
-    for (let i = 0; i < articles.length; i++) {
-        item_count[i] = new Array(articles.length).fill(0);
-    }
-
-    //get frequent item
-    const article_by_client = d3.groups(datasetByHour, d => d.ticket_number)
-    for (let i = 0; i < article_by_client.length; i++) {
-        let tmp = []
-        for (let j = 0; j < article_by_client[i][1].length; j++) {
-            tmp.push(article_by_client[i][1][j].article)
-        }
-
-        for (let item_a = 0; item_a < tmp.length; item_a++) {
-            for (let item_b = 0; item_b < tmp.length; item_b++) {
-                item_count[articles.indexOf(tmp[item_a])][articles.indexOf(tmp[item_b])] += 1
-            }
-        }
-    }
-
-    // transform in percentage
-    for (let i = 0; i < articles.length; i++) {
-        let divisor = item_count[i][i]
-        for (let j = 0; j < articles.length; j++) {
-            item_count[i][j] = item_count[i][j] / divisor
-        }
-    }
-    
-    console.log(articles, item)
-    return item_count
-}
-
-function getFrequentItemCorr(dataset, hour_value) {
     let opti = d3.groups(dataset, d => d.ticket_number)
-    // console.log("opti",opti)
-
-    // let filtrage = opti.filter(d => d[1].map(k => k.article).includes("BAGUETTE") && d[1].map(k => k.hours).includes(8))
-    // console.log("filtrage",filtrage)
- 
-    // let nb_tickets = filtrage.length
-    // console.log("nb_tickets ", nb_tickets)
-
-    // let liste_achats = filtrage.map(d => d[1].map(k => k.article))
-    // console.log("liste d'achats",liste_achats)
-
-    // var merged = liste_achats.reduce(function(prev, next) {return prev.concat(next)})
-    // console.log("merged",merged)
-
-    // let stat = d3.rollup(merged, v=> (v.length/nb_tickets)*100 , d => d)
-    // let stat2 = d3.rollup(merged, v=> ((v.length - nb_tickets)/nb_tickets)*100 , d => d)
-
-    // console.log("stat", stat)
-    // console.log("stat", stat2)
-
-    // --------------------------------------------
-    // Calcul des stats pour tous les articles en un coup (Viz Lina)
-    articles = getArticles(dataset).sort()
+  
+    articles = getArticles(dataset)
 
     let corr_articles = articles.map(function(a) {
         let filtrage = opti.filter(d => d[1].map(k => k.article).includes(a) && d[1].map(k => k.hours).includes(hour_value))
@@ -211,7 +145,7 @@ function getArticles(dataset) {
     d3.groups(dataset, d => d.article).map(
       article => !articles.includes(article[0]) ? (articles.push(article[0])) :  console.log()
        )
-  return articles
+  return articles.sort()
 }
 
 function BakeryViz2(dataset) {
@@ -364,18 +298,19 @@ function BakeryViz2(dataset) {
     })
 }
 
-function BakeryViz2Bis(dataset, product) {
+function BakeryViz2Bis(dataset) {
     const margin = ({ top: 10, right: 250, bottom: 30, left: 40 })
 
-    const top = 10
     const w = 3000
     const h = 400
 
     const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
     var myColor = d3.scaleLinear().domain([0.01, 1]).range(["#f4cccc", "#cc0000"])
+    var articles = getArticles(dataset)
+
 
     //Dynamic Part
-    function update(product) {
+    function update() {
 
         // Cleaning of the SVG
         svg.selectAll("rect").remove()
@@ -396,19 +331,23 @@ function BakeryViz2Bis(dataset, product) {
 
         //Computation with the value of the slider
         hour_value = Number(document.getElementById("sliderCorr").value)
+        product = document.getElementById("aricleName").value
+
+        console.log('product', product)
         data = getFrequentItemCorr(dataset, hour_value)
 
        
         y_arr = data.map(d => Array.from(d[1]).reduce((acc, [key, value]) => {
             acc[key] = value;
             return acc;
-          }, {}))[x.indexOf(product)]
+          }, {}))[articles.indexOf(product)]
 
         y = Object.entries(y_arr).sort((a, b) => b[1] - a[1]).reduce((acc, [key, value]) => {
             acc[key] = value;
             return acc;
           }, {})
-        
+
+
         x =  Object.keys(y)
 
         item = x.indexOf(product)
@@ -476,12 +415,12 @@ function BakeryViz2Bis(dataset, product) {
     }
 
     // first init
-    update(product)
+    update()
 
     // DYNAMIC
     d3.select("#sliderCorr").on("click", function () {
-        const checked = document.getElementById("aricleName");
-        update(checked.value)
+        // const checked = document.getElementById("aricleName");
+        update()
     })
 
     d3.select("#aricleName").on("change", function () {
@@ -503,11 +442,11 @@ function BakeryViz2Bis(dataset, product) {
                         body.innerHTML = ``
                         console.log("zoom");
                         stateVis2 = true
-                        BakeryViz2Bis(data, checked.value)
+                        BakeryViz2Bis(data)
                     } else {
                         console.log("zoom_update");
                         stateVis2 = true
-                        update(checked.value)
+                        update()
                     }
                 }
             )

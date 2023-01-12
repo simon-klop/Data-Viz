@@ -123,14 +123,14 @@ function BakeryViz1(dataset) {
 //-----------------VIZ 2 LINA ---------------------
 function getFrequentItemCorr(dataset, hour_value) {
     let opti = d3.groups(dataset, d => d.ticket_number)
-  
+
     articles = getArticles(dataset)
 
-    let corr_articles = articles.map(function(a) {
+    let corr_articles = articles.map(function (a) {
         let filtrage = opti.filter(d => d[1].map(k => k.article).includes(a) && d[1].map(k => k.hours).includes(hour_value))
         let nb_tickets = filtrage.length
-        let liste_achats = filtrage.map(d => d[1].map(k => k.article)).reduce(function(prev, next) {return prev.concat(next)}).sort()
-        let stat = d3.rollup(liste_achats, v=> v.length/nb_tickets % 1 , d => d)
+        let liste_achats = filtrage.map(d => d[1].map(k => k.article)).reduce(function (prev, next) { return prev.concat(next) }).sort()
+        let stat = d3.rollup(liste_achats, v => v.length / nb_tickets % 1, d => d)
         return [a, stat]
     })
 
@@ -143,9 +143,9 @@ function getFrequentItemCorr(dataset, hour_value) {
 function getArticles(dataset) {
     let articles = [];
     d3.groups(dataset, d => d.article).map(
-      article => !articles.includes(article[0]) ? (articles.push(article[0])) :  console.log()
-       )
-  return articles.sort()
+        article => !articles.includes(article[0]) ? (articles.push(article[0])) : console.log()
+    )
+    return articles.sort()
 }
 
 function BakeryViz2(dataset) {
@@ -193,7 +193,7 @@ function BakeryViz2(dataset) {
         y = data.map(d => Array.from(d[1]).reduce((acc, [key, value]) => {
             acc[key] = value;
             return acc;
-          }, {}))
+        }, {}))
 
 
         for (let i = 0; i < x.length; i++) {
@@ -214,7 +214,7 @@ function BakeryViz2(dataset) {
                     .on("mousemove", function (d, f) {
                         Tooltip
                             .html("Lorsque " + x[i] + " est acheté, on achète avec " + x[j] + " " + y[i][x[j]] * 100 + "% du temps à " + hour_value + " heure")
-                            .style("left", (d3.mouse(this)[0]) + "px")
+                            .style("left", (d3.mouse(this)[0]) +100+ "px")
                             .style("top", (d3.mouse(this)[1]) + 100 + "px")
                     })
                     .on('mouseout', function (d, i) {
@@ -310,6 +310,17 @@ function BakeryViz2Bis(dataset) {
     var myColor = d3.scaleLinear().domain([0.01, max_corr]).range(["#f4cccc", "#cc0000"])
     var articles = getArticles(dataset)
 
+    // create a tooltip
+    var Tooltip = d3.select("#corr_viz")
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px")
+
 
     //Dynamic Part
     function update(changed_hour) {
@@ -319,40 +330,28 @@ function BakeryViz2Bis(dataset) {
         svg.selectAll("g").remove()
         svg.selectAll("text").remove()
 
-           // create a tooltip
-        var Tooltip = d3.select("#corr_viz")
-           .append("div")
-           .style("opacity", 0)
-           .attr("class", "tooltip")
-           .style("background-color", "white")
-           .style("border", "solid")
-           .style("border-width", "2px")
-           .style("border-radius", "5px")
-           .style("padding", "5px")
-
-
         //Computation with the value of the slider
         hour_value = Number(document.getElementById("sliderCorr").value)
         product = document.getElementById("aricleName").value
 
-        if (changed_hour) 
+        if (changed_hour)
             data = getFrequentItemCorr(dataset, hour_value)
 
         y_arr = data.map(d => Array.from(d[1]).reduce((acc, [key, value]) => {
             acc[key] = value;
             return acc;
-          }, {}))[articles.indexOf(product)]
+        }, {}))[articles.indexOf(product)]
 
-        
+
         // y_arr[product] =  y_arr[product] - 1
 
         y = Object.entries(y_arr).sort((a, b) => b[1] - a[1]).reduce((acc, [key, value]) => {
             acc[key] = value;
             return acc;
-          }, {})
+        }, {})
 
 
-        x =  Object.keys(y)
+        x = Object.keys(y)
 
         item = x.indexOf(product)
 
@@ -368,12 +367,12 @@ function BakeryViz2Bis(dataset) {
                     d3.select(this).transition()
                         .duration('50')
                         .attr('opacity', '.80')
-        
+
                 })
                 .on("mousemove", function (d, f) {
                     Tooltip
                         .html("Lorsqu'un/une " + product + " est acheté/e, on achète un/une " + x[i] + " avec " + y[x[i]] * 100 + "% du temps à " + hour_value + " heure")
-                        .style("left", (d3.mouse(this)[0]) + "px")
+                        .style("left", (d3.mouse(this)[0]) +100+  "px")
                         .style("top", (d3.mouse(this)[1]) + 100 + "px")
                 })
                 .on('mouseout', function (d, i) {
@@ -441,15 +440,21 @@ function BakeryViz2Bis(dataset) {
                         body.innerHTML = ``
                         console.log("dezoom");
                         stateVis2 = false
+                        Tooltip
+                            .style("opacity", 0)
                         BakeryViz2(data)
                     } else if (!stateVis2) {
                         body.innerHTML = ``
                         console.log("zoom");
                         stateVis2 = true
+                        Tooltip
+                            .style("opacity", 0)
                         BakeryViz2Bis(data)
                     } else {
                         console.log("zoom_update");
                         stateVis2 = true
+                        Tooltip
+                            .style("opacity", 0)
                         update(false)
                     }
                 }
@@ -466,7 +471,7 @@ function BakeryViz3(dataset) {
     const margin = ({ top: 10, right: 210, bottom: 30, left: 60 })
 
     const w = 1000
-    const h = 400
+    const h = 600
 
     const svg = d3.select("#linechart").append("svg").attr("height", h).attr("width", w)
 
@@ -501,7 +506,7 @@ function BakeryViz3(dataset) {
     points = points.slice().sort((a, b) => d3.ascending(a.Hours, b.Hours))
 
 
-    const x = d3.scaleTime().domain(d3.extent(points, d => d.Hours)).range([margin.left, w - margin.left - margin.right])
+    const x = d3.scaleLinear().domain(d3.extent(points, d => d.Hours)).range([margin.left, w - margin.left - margin.right])
     const y = d3.scaleLinear().domain(d3.extent(points, d => d.Counts)).range([h - margin.bottom, margin.top])
     const c = d3.scaleOrdinal().domain(
         new Set(points.map(d => d.Article))).range(["red", "green", "blue", "yellow", "pink", "purple", "orange", "black", "cyan", "brown"])
@@ -609,24 +614,24 @@ function BakeryViz3(dataset) {
 }
 
 function invertJson(jsonData) {
-        var result = { name : 'ingredients'};
-        var children = [];
-    
-        jsonData.children.forEach(function(patisserie) {
-            patisserie.children[0].children.forEach(function(ingredient) {
-                var existingChild = children.find(function(c) { return c.name === ingredient.name; });
-                if (existingChild) {
-                    existingChild.children.push({
-                        name: patisserie.name, size: ingredient.size * document.getElementById(patisserie.name.split(' ')[0]).value
-                    });
-                } else {
-                    children.push({name: ingredient.name, children: [{name: patisserie.name, size: ingredient.size * document.getElementById(patisserie.name.split(' ')[0]).value}]});
-                }
-            });
+    var result = { name: 'ingredients' };
+    var children = [];
+
+    jsonData.children.forEach(function (patisserie) {
+        patisserie.children[0].children.forEach(function (ingredient) {
+            var existingChild = children.find(function (c) { return c.name === ingredient.name; });
+            if (existingChild) {
+                existingChild.children.push({
+                    name: patisserie.name, size: ingredient.size * document.getElementById(patisserie.name.split(' ')[0]).value
+                });
+            } else {
+                children.push({ name: ingredient.name, children: [{ name: patisserie.name, size: ingredient.size * document.getElementById(patisserie.name.split(' ')[0]).value }] });
+            }
         });
-        result.children = children;
-        return result;
-  }
+    });
+    result.children = children;
+    return result;
+}
 
 
 
@@ -735,14 +740,14 @@ function BakeryViz4(dataset) {
             // Add the title of article
             svg
                 .selectAll("titles")
-                .data(root.descendants().filter(function(d){return d.depth==1}))
+                .data(root.descendants().filter(function (d) { return d.depth == 1 }))
                 .enter()
                 .append("text")
-                .attr("x", function(d){ return d.x0})
-                .attr("y", function(d){ return d.y0+20})
-                .text(function(d){ return d.data.name })
+                .attr("x", function (d) { return d.x0 })
+                .attr("y", function (d) { return d.y0 + 20 })
+                .text(function (d) { return d.data.name })
                 .attr("font-size", "15px")
-                .attr("fill",  function(d){ return c[article.indexOf(d.data.name)]})
+                .attr("fill", function (d) { return c[article.indexOf(d.data.name)] })
 
             // Add title for the 3 groups
             svg
@@ -751,16 +756,16 @@ function BakeryViz4(dataset) {
                 .attr("y", 14)    // +20 to adjust position (lower)
                 .text("TO DO AJOUTER TITRE 1")
                 .attr("font-size", "19px")
-                .attr("fill",  "grey" )
+                .attr("fill", "grey")
 
         } else {
             let ingredient = []
             const invertdataset = invertJson(dataset);
-            
+
             for (let i = 0; i < Object.keys(invertdataset.children).length; i++) {
                 ingredient.push(invertdataset.children[i].name);
             }
-            
+
 
             let facteur = document.getElementById(article[0].split(' ')[0]).value
 
@@ -802,7 +807,7 @@ function BakeryViz4(dataset) {
                 .enter()
                 .append("text")
                 .attr("x", function (d) { return d.x0 + 5 })
-                .attr("y", function (d) { return d.y0 + 20 }) 
+                .attr("y", function (d) { return d.y0 + 20 })
                 .text(function (d) { return d.data.name })
                 .attr("font-size", "15px")
                 .attr("fill", "white");
@@ -810,14 +815,14 @@ function BakeryViz4(dataset) {
             // Add the title of article
             svg
                 .selectAll("titles")
-                .data(root.descendants().filter(function(d){return d.depth==1}))
+                .data(root.descendants().filter(function (d) { return d.depth == 1 }))
                 .enter()
                 .append("text")
-                .attr("x", function(d){ return d.x0})
-                .attr("y", function(d){ return d.y0 + 10})
-                .text(function(d){ return d.data.name })
+                .attr("x", function (d) { return d.x0 })
+                .attr("y", function (d) { return d.y0 + 10 })
+                .text(function (d) { return d.data.name })
                 .attr("font-size", "15px")
-                .attr("fill",  function(d){ return c[ingredient.indexOf(d.data.name)]})
+                .attr("fill", function (d) { return c[ingredient.indexOf(d.data.name)] })
 
 
             // Add title for the 3 groups
@@ -827,7 +832,7 @@ function BakeryViz4(dataset) {
                 .attr("y", 14)    // +20 to adjust position (lower)
                 .text("TO DO AJOUTER TITRE 2")
                 .attr("font-size", "19px")
-                .attr("fill",  "grey" )
+                .attr("fill", "grey")
 
         }
 

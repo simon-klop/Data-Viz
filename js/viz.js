@@ -286,12 +286,12 @@ function BakeryViz2(dataset) {
             d3.csv(
                 "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
                 conversor2,
-                function (data) {
+                function (d) {
                     if (!stateVis2) {
                         body.innerHTML = ``
                         console.log("zoom");
                         stateVis2 = true
-                        BakeryViz2Bis(data, checked.value)
+                        BakeryViz2Bis(d, checked.value)
                     }
                 }
             )
@@ -470,20 +470,21 @@ function BakeryViz3(dataset) {
 
     const margin = ({ top: 10, right: 210, bottom: 30, left: 60 })
 
-    const w = 1000
+    const w = 1100
     const h = 600
 
     const svg = d3.select("#linechart").append("svg").attr("height", h).attr("width", w)
 
     const MapQuantityByHours = d3.rollup(dataset, v => d3.sum(v, d => d.Quantity), d => d.hours, d => d.article)
     const index_hours = d3.groups(dataset, d => d.hours)
+    const number_of_day = d3.groups(dataset, d => d.date).length
     const index_article = d3.groups(dataset, d => d.article)
     const group_points = index_hours.map(h =>
         index_article.map(a =>
             JSON.parse(
                 '{"Hours":' + h[0] + ', "Article":"' + a[0] + '", "Counts":' +
                 ((MapQuantityByHours.get(h[0]).get(a[0]) != undefined) ?
-                    MapQuantityByHours.get(h[0]).get(a[0]) : 0)
+                    MapQuantityByHours.get(h[0]).get(a[0]) : 0) / number_of_day
                 + '}')
         )
     )
@@ -542,7 +543,6 @@ function BakeryViz3(dataset) {
         .append("circle")
         .attr("cx", d => x(d.Hours))
         .attr("cy", d => y(d.Counts))
-        .attr("r", d => 3)
         .style("fill", d => c(d.Article))
         .on('mouseover', function (d, i) {
             Tooltip.style("opacity", 1)
@@ -553,7 +553,7 @@ function BakeryViz3(dataset) {
         })
         .on("mousemove", function (d, f) {
             Tooltip
-                .html("Hours : " + d.Hours + " \n Counts : " + d.Counts + " \n Article : " + d.Article)
+                .html("En moyenne, on vend à " + d.Hours +" heures, " + d.Counts + " " + d.Article)
                 .style("left", (d3.mouse(this)[0]) + "px")
                 .style("top", (d3.mouse(this)[1]) + 100 + "px")
         })
@@ -565,41 +565,50 @@ function BakeryViz3(dataset) {
                 .duration('50')
                 .attr('opacity', '1')
         })
+        .attr("r", d => 4)
+        .transition()
+            .duration(2000)
+            .attr("r", d => 4)
 
     // lines
     const group_point = d3.groups(points, d => d.Article)
 
+    const lines = group_point.map((group) => {
+        return group[1].map((d) => {
+            return {
+                Hours: d.Hours,
+                Counts: d.Counts,
+                Article: d.Article
+            }
+        })
+    })
+    
     const line = d3.line()
         .x(d => x(d.Hours))
         .y(d => y(d.Counts))
-
+    
     svg.selectAll(".line")
-        .data(group_point)
+        .data(lines)
         .enter()
         .append("path")
-        .datum((d) => d[1])
+        .attr("stroke", (d) => c(d[0].Article))
         .attr("fill", "none")
-        .attr("stroke", "steelblue")
         .attr("stroke-width", 1.5)
-        .attr("stroke", (d) => c(d[1].Article))
-        .attr("d", d3.line()
-            .x(d => x(+d.Hours))
-            .y(d => y(+d.Counts))
-        )
+        .attr("d", (d) => line(d))  
 
     // LEGENDE :
 
     // Titre
     svg.append("text")
-        .attr("x", w - margin.right - 25)
+        .attr("x", w - margin.right - 50)
         .attr("y", margin.top + 5)
         .text("Nombre de produits acheté/h")
 
     // rect couleur
     svg.selectAll("rect").data(c.domain()).enter()
         .append("rect")
-        .attr("x", d => w - margin.right - 15)
-        .attr("y", (d, i) => i * 20 + + margin.top + 20)
+        .attr("x", d => w - margin.right - 40)
+        .attr("y", (d, i) => i * 20 + margin.top + 20)
         .attr("width", d => 10)
         .attr("height", d => 10)
         .style("fill", d => c(d))
@@ -607,7 +616,7 @@ function BakeryViz3(dataset) {
     // Nom d'article
     svg.append("g").selectAll("text").data(c.domain()).enter()
         .append("text")
-        .attr("x", d => w - margin.right)
+        .attr("x", d => w - margin.right - 30)
         .attr("y", (d, i) => i * 20 + 10 + margin.top + 20)
         .text(d => d)
 
@@ -904,7 +913,7 @@ async function LoadBakeryAndDrawV2V3() {
         conversor2,
         function (data) {
             BakeryViz2(data),
-                BakeryViz3(data)
+            BakeryViz3(data)
         })
 }
 

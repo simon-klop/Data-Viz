@@ -1,13 +1,12 @@
 //------------------------------- VIZ 1 -----------------------------------------
 function BakeryViz1(dataset) {
-    
+    // VIS LEFT :
     const margin = ({ top: 35, right: 70, bottom: 35, left: 70 })
     const w = 1000
     const h = 400
     
     var svg = d3.select("#number_clients").append("svg").attr("height", h).attr("width", w)
-    var svg_by_hours = d3.select("#number_clients_hours").append("svg").attr("height", h).attr("width", 500)
-
+    
     // X label
     svg.append('text')
         .attr('x', w / 2 - 30)
@@ -25,24 +24,6 @@ function BakeryViz1(dataset) {
         .style('font-size', 12)
         .text("Nombre");
 
-
-    // X label
-    svg_by_hours.append('text')
-        .attr('x', 500 / 2 - 30)
-        .attr('y', h - margin.bottom + 30)
-        .attr('text-anchor', 'middle')
-        .style('font-family', 'Helvetica')
-        .style('font-size', 12)
-        .text('Heure');
-
-    // Y label
-    svg_by_hours.append('text')
-        .attr('text-anchor', 'middle')
-        .attr('transform', 'translate(20,' + h / 2 + ')rotate(-90)')
-        .style('font-family', 'Helvetica')
-        .style('font-size', 12)
-        .text("Nombre");
-
     // X axis range init
     var x = d3.scaleTime().range([margin.left, w - margin.left - margin.right])
     var xAxis = svg.append("g").attr("transform", `translate(0,${h - margin.bottom})`)
@@ -51,10 +32,11 @@ function BakeryViz1(dataset) {
     var y = d3.scaleLinear().range([h - margin.bottom, 0 + margin.top])
     var yAxis = svg.append("g").attr("transform", `translate(${margin.left},0)`)
 
-
+    // VIS RIGHT :
+    var svg_by_hours = d3.select("#number_clients_hours").append("svg").attr("height", h).attr("width", 500)
 
     function update(nbBins, startDate, endDate) {
-
+        // VIS LEFT :
         var essai = d3.scaleTime().domain([startDate, endDate])
 
         const binX = d3.bin().domain(essai.domain()).thresholds(essai.ticks(nbBins))
@@ -97,6 +79,31 @@ function BakeryViz1(dataset) {
         // Removing rects not in use
         current_rects.exit()
             .remove()
+
+         // VIS RIGHT :
+
+        const number_of_day = d3.groups(dataset, d => d.date).length
+        const groupData = d3.rollup(dataset, v => d3.sum(v, d => d.ticket_number)/ number_of_day , d => d.hours)
+
+        const x1 = d3.scaleBand().rangeRound([0, 500]);
+        const y1 = d3.scaleLinear().rangeRound([h, 0]);
+
+        x1.domain(Array.from(groupData.keys()));
+        y1.domain([0, d3.max(Array.from(groupData.values()))]);
+
+        const data = Array.from(groupData.entries());
+
+        // bar
+        svg_by_hours.selectAll(".bar")
+        .data(data)
+        .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", d => x1(d[0]))
+            .attr("y", d => y1(d[1]))
+            .attr("width", 20)
+            .attr("height", d => h - y1(d[1]))
+            .style("fill", "red")
+            .style("opacity", 0.6);
     }
 
 
@@ -295,7 +302,7 @@ function BakeryViz2(dataset) {
             const body = document.getElementById("corr_viz");
             d3.csv(
                 "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
-                conversor2,
+                conversor1,
                 function (d) {
                     if (!stateVis2) {
                         body.innerHTML = ``
@@ -444,7 +451,7 @@ function BakeryViz2Bis(dataset) {
             const body = document.getElementById("corr_viz");
             d3.csv(
                 "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
-                conversor2,
+                conversor1,
                 function (data) {
                     if ("Tous les articles" == checked.value && stateVis2) {
                         body.innerHTML = ``
@@ -884,7 +891,7 @@ LoadBakeryAndDrawV1V2V3()
 LoadBakeryAndDrawV4()
 var stateVis2 = false;
 
-function conversor2(d) {
+function conversor1(d) {
     d.ticket_number += d.ticket_number
     d.Quantity = +d.Quantity
     d.unit_price = +d.unit_price
@@ -900,7 +907,7 @@ function conversor2(d) {
 async function LoadBakeryAndDrawV1V2V3() {
     d3.csv(
         "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
-        conversor2,
+        conversor1,
         function (data) {
             BakeryViz1(data),
             BakeryViz2(data),
@@ -1012,8 +1019,7 @@ function init() {
 function displayMode(mode) {
     if (mode == 0) {
         init()
-        LoadBakeryAndDrawV1()
-        LoadBakeryAndDrawV2V3()
+        LoadBakeryAndDrawV1V2V3()
         LoadBakeryAndDrawV4()
     } else {
         const vis1 = document.getElementById("vis1");

@@ -78,26 +78,51 @@
             <label class="btn btn-outline-primary" for="btnradio2">Prototype</label>
         </div></br></br>
 
-        <div class="col d-flex justify-content-center">
-            <div class="card text-center w-75">
-                <div class="card-header">
-                    Combien de vendeur-euse-s sont nécessaires ?
-                </div>
-                <div  id="vis1" >
-                    <div class="card-body">
-                        <div id="number_clients"></div>
+        <div class="card-header">
+            Combien de vendeur-euse-s sont nécessaires ?
+        </div>
+        <div id="vis1">
+            <div class="row justify-content-center"  >
+                <div class="col-sm-8">
+                    <div class="card">
+                        <div class="card-header">
+                            Nombre de client en fonction du temps
+                        </div>
+                        <div  >
+                            <div class="card-body">
+                                <div id="number_clients"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-footer text-muted">
-                        <p>
-                            <label for="amount">Intervalle choisi:</label>
-                            <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;"
-                                size="100" />
-                        </p>
+                </div>
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-header">
+                            Nombre de client en fonction du temps en moyenne par heure
+                        </div>
+                        <div class="card-body">
+                            <div id="number_clients_hours"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                <p>
+                    <label for="amount">Intervalle choisi:</label>
+                    <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;"
+                        size="100" />
+                </p>
     
-                        <div id="slider-range"></div>
-                    </div>
+                <div id="slider-range"></div>
+            </div>
+        </div></br>
+
+        <div class="col d-flex justify-content-center">
+            <div class="card text-center w-75" >
+                <div class="card-header">
+                    RYAN VIS HERE
                 </div>
-                
+
             </div>
         </div></br>
 
@@ -149,7 +174,7 @@
         <div class="card-header">
             Comment optimiser sa gestion des stocks ?
         </div>
-        <div class="row" id="vis4">
+        <div class="row justify-content-center"  id="vis4">
             <div class="col-sm-3">
                 <div class="card">
                     <div class="card-header">
@@ -170,7 +195,7 @@
                 </div>
             </div>
 
-            <div class="col-sm-9">
+            <div class="col-sm-8">
                 <div class="card">
                     <div class="card-body">
                         <div id="pack"></div>

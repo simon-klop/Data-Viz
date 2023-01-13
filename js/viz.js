@@ -1,19 +1,12 @@
-//------------------------------- VIZ 1 SIMON -----------------------------------------
+//------------------------------- VIZ 1 -----------------------------------------
 function BakeryViz1(dataset) {
+    
     const margin = ({ top: 35, right: 70, bottom: 35, left: 70 })
-    const w = 1150
+    const w = 1000
     const h = 400
-
+    
     var svg = d3.select("#number_clients").append("svg").attr("height", h).attr("width", w)
-
-    // Title
-    svg.append('text')
-        .attr('x', w / 2 - 30)
-        .attr('y', 20)
-        .attr('text-anchor', 'middle')
-        .style('font-family', 'Helvetica')
-        .style('font-size', 20)
-        .text('Nombre de client en fonction du temps');
+    var svg_by_hours = d3.select("#number_clients_hours").append("svg").attr("height", h).attr("width", 500)
 
     // X label
     svg.append('text')
@@ -26,6 +19,24 @@ function BakeryViz1(dataset) {
 
     // Y label
     svg.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(20,' + h / 2 + ')rotate(-90)')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 12)
+        .text("Nombre");
+
+
+    // X label
+    svg_by_hours.append('text')
+        .attr('x', 500 / 2 - 30)
+        .attr('y', h - margin.bottom + 30)
+        .attr('text-anchor', 'middle')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 12)
+        .text('Heure');
+
+    // Y label
+    svg_by_hours.append('text')
         .attr('text-anchor', 'middle')
         .attr('transform', 'translate(20,' + h / 2 + ')rotate(-90)')
         .style('font-family', 'Helvetica')
@@ -120,7 +131,7 @@ function BakeryViz1(dataset) {
 
 }
 
-//-----------------VIZ 2 LINA ---------------------
+//-----------------VIZ 2 ---------------------
 function getFrequentItemCorr(dataset, hour_value) {
     let opti = d3.groups(dataset, d => d.ticket_number)
 
@@ -138,7 +149,6 @@ function getFrequentItemCorr(dataset, hour_value) {
     return corr_articles
 
 }
-
 
 function getArticles(dataset) {
     let articles = [];
@@ -464,7 +474,7 @@ function BakeryViz2Bis(dataset) {
 
 }
 
-//-----------------VIZ 3 LINA ---------------------
+//-----------------VIZ 3---------------------
 
 function BakeryViz3(dataset) {
 
@@ -536,7 +546,7 @@ function BakeryViz3(dataset) {
         .attr('transform', 'translate(8,' + h / 2 + ')rotate(-90)')
         .style('font-family', 'Helvetica')
         .style('font-size', 12)
-        .text("Nombre de produit acheté");
+        .text("Nombre de produit acheté en moyenne");
 
     // cercle de couleur : Point
     svg.selectAll("circle").data(points).enter()
@@ -622,6 +632,8 @@ function BakeryViz3(dataset) {
 
 }
 
+//-----------------VIZ 4---------------------
+
 function invertJson(jsonData) {
     var result = { name: 'ingredients' };
     var children = [];
@@ -641,8 +653,6 @@ function invertJson(jsonData) {
     result.children = children;
     return result;
 }
-
-
 
 function BakeryViz4(dataset) {
     const select = document.getElementById("vis4select");
@@ -671,7 +681,7 @@ function BakeryViz4(dataset) {
 
     select.innerHTML = contenu;
     const margin = ({ top: 35, right: 70, bottom: 35, left: 70 })
-    const w = 1000
+    const w = 750
     const h = 750
     var svg = d3.select("#pack").append("svg").attr("height", h).attr("width", w)
 
@@ -743,7 +753,7 @@ function BakeryViz4(dataset) {
                 .attr("x", function (d) { return d.x0 + 5 })    // +10 to adjust position (more right)
                 .attr("y", function (d) { return d.y0 + 20 })    // +20 to adjust position (lower)
                 .text(function (d) { return d.data.name })
-                .attr("font-size", "15px")
+                .attr("font-size", "10px")
                 .attr("fill", "white");
 
             // Add the title of article
@@ -755,7 +765,7 @@ function BakeryViz4(dataset) {
                 .attr("x", function (d) { return d.x0 })
                 .attr("y", function (d) { return d.y0 + 20 })
                 .text(function (d) { return d.data.name })
-                .attr("font-size", "15px")
+                .attr("font-size", "12px")
                 .attr("fill", function (d) { return c[article.indexOf(d.data.name)] })
 
             // Add title for the 3 groups
@@ -818,7 +828,7 @@ function BakeryViz4(dataset) {
                 .attr("x", function (d) { return d.x0 + 5 })
                 .attr("y", function (d) { return d.y0 + 20 })
                 .text(function (d) { return d.data.name })
-                .attr("font-size", "15px")
+                .attr("font-size", "10px")
                 .attr("fill", "white");
 
             // Add the title of article
@@ -830,7 +840,7 @@ function BakeryViz4(dataset) {
                 .attr("x", function (d) { return d.x0 })
                 .attr("y", function (d) { return d.y0 + 10 })
                 .text(function (d) { return d.data.name })
-                .attr("font-size", "15px")
+                .attr("font-size", "12px")
                 .attr("fill", function (d) { return c[ingredient.indexOf(d.data.name)] })
 
 
@@ -868,50 +878,31 @@ function BakeryViz4(dataset) {
 
 }
 
-// ______________________________ LOAD DATA ______________________________
+// ______________________________ LOAD DATA AND OTHER FUNCTION ______________________________
 
-
-LoadBakeryAndDrawV1()
-LoadBakeryAndDrawV2V3()
+LoadBakeryAndDrawV1V2V3()
 LoadBakeryAndDrawV4()
 var stateVis2 = false;
-
-function conversor1(d) {
-    const parseTime = d3.timeParse("%Y-%m-%d");
-    d.date = parseTime(d.date)
-    d.unit_price = +d.unit_price
-    d.ticket_number = +d.ticket_number
-    d.quantity = +d.quantity
-    return d;
-}
-
 
 function conversor2(d) {
     d.ticket_number += d.ticket_number
     d.Quantity = +d.Quantity
+    d.unit_price = +d.unit_price
     d.datetime = d3.timeParse("%Y-%M-%d:%H:%M")(d.date + ":" + d.time)
     d.weekday = d.datetime.getDay()
     d.hours = d.datetime.getHours()
     d.month = d.datetime.getMonth()
+    const parseTime = d3.timeParse("%Y-%m-%d");
+    d.date = parseTime(d.date)
     return d
 }
 
-
-async function LoadBakeryAndDrawV1() {
-    d3.csv(
-        "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
-        conversor1,
-        function (data) {
-            BakeryViz1(data)
-        })
-}
-
-
-async function LoadBakeryAndDrawV2V3() {
+async function LoadBakeryAndDrawV1V2V3() {
     d3.csv(
         "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
         conversor2,
         function (data) {
+            BakeryViz1(data),
             BakeryViz2(data),
             BakeryViz3(data)
         })
@@ -962,10 +953,7 @@ function init() {
     body.innerHTML = `<div id="linechart"></div>`
 
     body = document.getElementById("vis2");
-    body.innerHTML = ` <div class="card-body" >
-    <div id="corr_viz"></div>
-    </div>
-    <div class="card-footer text-muted">
+    body.innerHTML = ` <div class="card-footer text-muted">
         <div class="row">
             <div class="col-sm-6">
                 <label for="customRange3" class="form-label"></label>
@@ -976,24 +964,48 @@ function init() {
                 </div>
             </div>
             <div class="col-sm-6">
-            </br><label>Quel article voulez-vous observer? </label><select class="form-select" id="aricleName" onchange="LoadBakeryAndDrawV2Bis()" aria-label="Default select example"></select>
+            </br><label>Quel article voulez-vous observer? </label><select class="form-select" id="aricleName" aria-label="Default select example"></select>
             </div>
         </div>
+    </div>
+    <div class="card-body" >
+        <div id="corr_viz"></div>
     </div>`
 
     body = document.getElementById("vis1");
-    body.innerHTML = `<div class="card-body">
-    <div id="number_clients"></div>
+    body.innerHTML = `<div class="row justify-content-center"  >
+    <div class="col-sm-8">
+        <div class="card">
+            <div class="card-header">
+                Nombre de client en fonction du temps
+            </div>
+            <div  >
+                <div class="card-body">
+                    <div id="number_clients"></div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card-footer text-muted">
-        <p>
-            <label for="amount">Intervalle choisi:</label>
-            <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;"
-                size="100" />
-        </p>
+    <div class="col-sm-4">
+        <div class="card">
+            <div class="card-header">
+                Nombre de client en fonction du temps en moyenne par heure
+            </div>
+            <div class="card-body">
+                <div id="number_clients_hours"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card-footer text-muted">
+    <p>
+        <label for="amount">Intervalle choisi:</label>
+        <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;"
+            size="100" />
+    </p>
 
-        <div id="slider-range"></div>
-    </div>`
+    <div id="slider-range"></div>
+</div>`
     stateVis2 = false;
 }
 

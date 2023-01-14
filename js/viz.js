@@ -9,7 +9,7 @@ function BakeryViz1(dataset) {
 
     const svg = d3.select("#number_clients").append("svg").attr("height", h).attr("width", w)
     
-    // X label
+    // X label
     svg.append('text')
         .attr('x', w / 2 - 30)
         .attr('y', h - margin.bottom + 30)
@@ -18,7 +18,7 @@ function BakeryViz1(dataset) {
         .style('font-size', 12)
         .text('Temporalité');
 
-    // Y label
+    // Y label
     svg.append('text')
         .attr('text-anchor', 'middle')
         .attr('transform', 'translate(20,' + h / 2 + ')rotate(-90)')
@@ -107,7 +107,7 @@ function BakeryViz1(dataset) {
         svg_by_hours.selectAll("text").remove()
         svg_by_hours.selectAll("g").remove()
 
-        // X label
+        // X label
         svg_by_hours.append('text')
             .attr('x', w_r / 2)
             .attr('y', h_r )
@@ -945,17 +945,15 @@ function BakeryViz4(dataset) {
 
 // ______________________________ LOAD DATA AND OTHER FUNCTION ______________________________
 
-
-LoadBakeryAndDraw()
+LoadBakeryAndDrawV1V2V3()
 LoadBakeryAndDrawV4()
 var stateVis2 = false;
 
-function conversor(d) {
-    d.ticket_number = +d.ticket_number
-    d.quantity = +d.quantity
+function conversor1(d) {
+    d.ticket_number += d.ticket_number
+    d.Quantity = +d.Quantity
     d.unit_price = +d.unit_price
     d.datetime = d3.timeParse("%Y-%M-%d:%H:%M")(d.date + ":" + d.time)
-    d.date = d3.timeParse("%Y-%m-%d") (d.date)
     d.weekday = d.datetime.getDay()
     d.hours = d.datetime.getHours()
     d.month = d.datetime.getMonth()
@@ -964,14 +962,13 @@ function conversor(d) {
     return d
 }
 
-
-async function LoadBakeryAndDraw() {
+async function LoadBakeryAndDrawV1V2V3() {
     d3.csv(
         "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
-        conversor,
+        conversor1,
         function (data) {
-            BakeryViz1(data)
-            BakeryViz2(data)
+            BakeryViz1(data),
+            BakeryViz2(data),
             BakeryViz3(data)
         })
 }

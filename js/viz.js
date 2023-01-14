@@ -596,8 +596,8 @@ function BakeryViz3(dataset) {
             index_article.map(a =>
                 JSON.parse(
                     '{"Hours":' + h[0] + ', "Article":"' + a[0] + '", "Counts":' +
-                    Math.ceil(((MapQuantityByHours.get(h[0]).get(a[0]) != undefined) ?
-                        MapQuantityByHours.get(h[0]).get(a[0]) : 0) / number_of_day)
+                    ((MapQuantityByHours.get(h[0]).get(a[0]) != undefined) ?
+                        MapQuantityByHours.get(h[0]).get(a[0]) : 0) / number_of_day
                     + '}')
             )
         )
@@ -1069,7 +1069,7 @@ function init() {
                     <div class="card-body">
                         <div id="linechart-options"></div>
                     </div>
-                </div>
+                </div></br>
                 <div class="card">
                     <div class="card-header">Total par jour</div>
                     <div class="card-body">
@@ -1085,24 +1085,42 @@ function init() {
             </div>`
 
     body = document.getElementById("vis2");
-    body.innerHTML = ` <div class="card-footer text-muted">
-        <div class="row">
-            <div class="col-sm-6">
-                <label for="customRange3" class="form-label"></label>
-                <div class="slider">
-                    <label>Heure de l'observation sélectionné : </label><p id="rangeValue">8</p>
-                    <input type="range" min="8" max="20" value="8" id="sliderCorr"
-                        oninput="rangeValue.innerText = this.value">
-                </div>
-            </div>
-            <div class="col-sm-6">
-            </br><label>Quel article voulez-vous observer? </label><select class="form-select" id="aricleName" aria-label="Default select example"></select>
-            </div>
-        </div>
-    </div>
-    <div class="card-body" >
-        <div id="corr_viz"></div>
-    </div>`
+    body.innerHTML = `<div class="col-sm-9">
+                        <div class="card" >
+                                <div class="card-footer text-muted">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label for="customRange3" class="form-label"></label>
+                                            <div class="slider">
+                                                <label>Heure de l'observation sélectionné : </label>
+                                                <p id="rangeValue">8</p>
+                                                <input type="range" min="8" max="20" value="8" id="sliderCorr"
+                                                    oninput="rangeValue.innerText = this.value">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            </br><label>Quel article voulez-vous observer? </label><select class="form-select"
+                                                id="aricleName" aria-label="Default select example"></select>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="card-body">
+                                    <div id="corr_viz"></div>
+                                </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="card-header">
+                            TO DO ICI LES BESTS
+                        </div>
+                        <div class="card-body">
+                            <div id="corr_viz-best"></div>
+                        </div>
+                    </div>`
 
     body = document.getElementById("vis1");
     body.innerHTML = `<div class="row justify-content-center"  >

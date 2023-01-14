@@ -1,11 +1,13 @@
 //------------------------------- VIZ 1 -----------------------------------------
 function BakeryViz1(dataset) {
+
     // VIS LEFT :
+
     const margin = ({ top: 35, right: 70, bottom: 35, left: 70 })
     const w = 1000
     const h = 400
-    
-    var svg = d3.select("#number_clients").append("svg").attr("height", h).attr("width", w)
+
+    const svg = d3.select("#number_clients").append("svg").attr("height", h).attr("width", w)
     
     // X label
     svg.append('text')
@@ -33,14 +35,32 @@ function BakeryViz1(dataset) {
     var yAxis = svg.append("g").attr("transform", `translate(${margin.left},0)`)
 
     // VIS RIGHT :
-    var svg_by_hours = d3.select("#number_clients_hours").append("svg").attr("height", h).attr("width", 500)
+
+    const margin_r = ({ top: 10, right: 10, bottom: 35, left: 22 })
+    const w_r = 400
+    const h_r = 400
+
+    const svg_by_hours = d3.select("#number_clients_hours").append("svg").attr("height", h_r).attr("width", w_r)
+
+    
+    // create a tooltip
+    var Tooltip = d3.select("#number_clients_hours")
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px")
 
     function update(nbBins, startDate, endDate) {
         // VIS LEFT :
         var essai = d3.scaleTime().domain([startDate, endDate])
 
         const binX = d3.bin().domain(essai.domain()).thresholds(essai.ticks(nbBins))
-        const bucketsX = binX(dataset.filter(s => s.date >= startDate && s.date <= endDate).map(d => d.date))
+        const datasettime = dataset.filter(s => s.date >= startDate && s.date <= endDate)
+        const bucketsX = binX(datasettime.map(d => d.date))
 
 
         x.domain([d3.min(bucketsX.map(d => d.x0)), d3.max(bucketsX.map(d => d.x1))])
@@ -82,28 +102,66 @@ function BakeryViz1(dataset) {
 
          // VIS RIGHT :
 
-        const number_of_day = d3.groups(dataset, d => d.date).length
-        const groupData = d3.rollup(dataset, v => d3.sum(v, d => d.ticket_number)/ number_of_day , d => d.hours)
+        // Cleaning of the SVG
+        svg_by_hours.selectAll("rect").remove()
+        svg_by_hours.selectAll("text").remove()
+        svg_by_hours.selectAll("g").remove()
 
-        const x1 = d3.scaleBand().rangeRound([0, 500]);
-        const y1 = d3.scaleLinear().rangeRound([h, 0]);
+        // X label
+        svg_by_hours.append('text')
+            .attr('x', w_r / 2)
+            .attr('y', h_r )
+            .attr('text-anchor', 'middle')
+            .style('font-family', 'Helvetica')
+            .style('font-size', 12)
+            .text('Heure');
 
-        x1.domain(Array.from(groupData.keys()));
-        y1.domain([0, d3.max(Array.from(groupData.values()))]);
+        number_of_day = d3.groups(datasettime, d => d.date).length
+        groupData = d3.groups(datasettime, d => d.hours, d => d.ticket_number)
 
-        const data = Array.from(groupData.entries());
+        // Y axis range init
+        var y1 = d3.scaleLinear().domain(d3.extent(groupData, d => d[1].length / number_of_day)).range([h_r - margin_r.bottom, 0 + margin_r.top])
+        var y1Axis = svg_by_hours.append("g").attr("transform", `translate(${margin_r.left},0)`).call(d3.axisLeft(y1))
 
-        // bar
-        svg_by_hours.selectAll(".bar")
-        .data(data)
-        .enter().append("rect")
-            .attr("class", "bar")
-            .attr("x", d => x1(d[0]))
-            .attr("y", d => y1(d[1]))
-            .attr("width", 20)
-            .attr("height", d => h - y1(d[1]))
+        // X axis
+        var x1 = d3.scaleBand()
+        .range([ margin_r.left, w_r ])
+        .domain(groupData.map(function(d) { return d[0]; }))
+        .padding(0.2);
+        var x1Axis = svg_by_hours.append("g").attr("transform", `translate(0,${h_r - margin_r.bottom})`).call(d3.axisBottom(x1))
+
+
+        svg_by_hours.selectAll("mybar")
+        .data(groupData)
+        .enter()
+        .append("rect")
+            .attr("x", function(d) { return x1(d[0]) })
+            .attr("y", function(d) { return y1(d[1].length / number_of_day) - margin_r.bottom; })
+            .attr("width", x1.bandwidth())
+            .attr("height", function(d) { return h - y1(d[1].length / number_of_day); })
             .style("fill", "red")
-            .style("opacity", 0.6);
+            .on('mouseover', function (d, i) {
+                Tooltip.style("opacity", 1)
+                d3.select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '.80')
+
+            })
+            .on("mousemove", function (d, f) {
+                Tooltip
+                    .html("En moyenne, il y a " + d[1].length / number_of_day+  " clients à " + d[0] + " heures")
+                    .style("left", (d3.mouse(this)[0]) +100+ "px")
+                    .style("top", (d3.mouse(this)[1]) + 100 + "px")
+            })
+            .on('mouseout', function (d, i) {
+                Tooltip
+                    .style("opacity", 0)
+                d3
+                    .select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '1')
+            })
+            
     }
 
 
@@ -487,7 +545,7 @@ function BakeryViz3(dataset) {
 
     const margin = ({ top: 10, right: 210, bottom: 30, left: 60 })
 
-    const w = 1100
+    const w = 1000
     const h = 600
 
     const svg = d3.select("#linechart").append("svg").attr("height", h).attr("width", w)
@@ -582,7 +640,7 @@ function BakeryViz3(dataset) {
                 .duration('50')
                 .attr('opacity', '1')
         })
-        .attr("r", d => 4)
+        .attr("r", d => 0)
         .transition()
             .duration(2000)
             .attr("r", d => 4)
@@ -834,7 +892,7 @@ function BakeryViz4(dataset) {
                 .append("text")
                 .attr("x", function (d) { return d.x0 + 5 })
                 .attr("y", function (d) { return d.y0 + 20 })
-                .text(function (d) { return d.data.name })
+                .text(function (d) { return d.data.name.toLowerCase() })
                 .attr("font-size", "10px")
                 .attr("fill", "white");
 
@@ -846,7 +904,7 @@ function BakeryViz4(dataset) {
                 .append("text")
                 .attr("x", function (d) { return d.x0 })
                 .attr("y", function (d) { return d.y0 + 10 })
-                .text(function (d) { return d.data.name })
+                .text(function (d) { return d.data.name.toUpperCase() })
                 .attr("font-size", "12px")
                 .attr("fill", function (d) { return c[ingredient.indexOf(d.data.name)] })
 
@@ -948,7 +1006,7 @@ function init() {
     </div>
 </div>
 
-<div class="col-sm-9">
+<div class="col-sm-7">
     <div class="card">
         <div class="card-body">
             <div id="pack"></div>
@@ -996,7 +1054,7 @@ function init() {
     <div class="col-sm-4">
         <div class="card">
             <div class="card-header">
-                Nombre de client en fonction du temps en moyenne par heure
+            Nombre de client en moyenne par heure
             </div>
             <div class="card-body">
                 <div id="number_clients_hours"></div>

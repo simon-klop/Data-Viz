@@ -44,11 +44,12 @@ function BakeryViz1(dataset) {
 
     function update(nbBins, startDate, endDate) {
 
-        var essai = d3.scaleTime().domain([startDate, endDate])
+        let scale = d3.scaleTime().domain([startDate, endDate])
+        let binX = d3.bin().domain(scale.domain()).thresholds(scale.ticks(nbBins))
+        let datasetFilterd = dataset.filter(s => s.datetime >= startDate && s.datetime <= endDate)
+        let bucketsX = binX(datasetFilterd.map(d => d.datetime))
 
-        const binX = d3.bin().domain(essai.domain()).thresholds(essai.ticks(nbBins))
-        const bucketsX = binX(dataset.filter(s => s.date >= startDate && s.date <= endDate).map(d => d.date))
-
+        //console.log(bucketsX)
 
         x.domain([d3.min(bucketsX.map(d => d.x0)), d3.max(bucketsX.map(d => d.x1))])
         xAxis.transition()
@@ -59,6 +60,7 @@ function BakeryViz1(dataset) {
         var bin_for_tickets = d3.bin().domain(x.domain()).thresholds(x.ticks(nbBins));
         var buckets_nb_tickets = bin_for_tickets(my_map.map(d => d[1].map(j => j)).map(k => k[0].date))
 
+        console.log(buckets_nb_tickets)
 
         // Y axis Update
         y.domain([0, d3.max(buckets_nb_tickets.map(d => d.length))])
@@ -92,7 +94,7 @@ function BakeryViz1(dataset) {
     //FIRST INIT
     let initStartDate = d3.min(dataset.map(d => d.date))
     let initEndDate = d3.max(dataset.map(d => d.date))
-    update(10, initStartDate, initEndDate)
+    update(2, initStartDate, initEndDate)
 
     //DYNAMIC (better with JQuery slider)
     const minDate = d3.min(dataset.map(d => d.date))
@@ -106,12 +108,12 @@ function BakeryViz1(dataset) {
         slide: function (event, ui) {
             $("#amount").val((new Date(ui.values[0] * 1000).toDateString()) + " - " + (new Date(ui.values[1] * 1000)).toDateString());
         },
-        change: function (event, ui) {
+        change: function () {
             let arr = document.getElementById("amount").value.split(" - ")
             let parseTime = d3.timeParse("%a %b %d %Y");
             let startDate = parseTime(arr[0])
             let endDate = parseTime(arr[1])
-            update(30, startDate, endDate)
+            update(2, startDate, endDate)
         }
     })
 
@@ -674,25 +676,16 @@ function BakeryViz4(dataset) {
 // ______________________________ LOAD DATA ______________________________
 
 
-LoadBakeryAndDrawV1()
-LoadBakeryAndDrawV2V3()
-LoadBakeryAndDrawV4()
+
+LoadBakeryAndDraw()
+//LoadBakeryAndDrawV4()
 var stateVis2 = false;
 
-function conversor1(d) {
-    const parseTime = d3.timeParse("%Y-%m-%d");
-    d.date = parseTime(d.date)
-    d.unit_price = +d.unit_price
+function conversor(d) {
     d.ticket_number = +d.ticket_number
     d.quantity = +d.quantity
-    return d;
-}
-
-
-function conversor2(d) {
-    d.ticket_number += d.ticket_number
-    d.Quantity = +d.Quantity
     d.datetime = d3.timeParse("%Y-%M-%d:%H:%M")(d.date + ":" + d.time)
+    d.date = d3.timeParse("%Y-%m-%d") (d.date)
     d.weekday = d.datetime.getDay()
     d.hours = d.datetime.getHours()
     d.month = d.datetime.getMonth()
@@ -700,23 +693,14 @@ function conversor2(d) {
 }
 
 
-async function LoadBakeryAndDrawV1() {
+async function LoadBakeryAndDraw() {
     d3.csv(
         "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
-        conversor1,
+        conversor,
         function (data) {
             BakeryViz1(data)
-        })
-}
-
-
-async function LoadBakeryAndDrawV2V3() {
-    d3.csv(
-        "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
-        conversor2,
-        function (data) {
-            BakeryViz2(data),
-                BakeryViz3(data)
+            BakeryViz2(data)
+            BakeryViz3(data)
         })
 }
 

@@ -550,20 +550,15 @@ function BakeryViz3(dataset) {
 
     const svg = d3.select("#linechart").append("svg").attr("height", h).attr("width", w)
 
-    const MapQuantityByHours = d3.rollup(dataset, v => d3.sum(v, d => d.Quantity), d => d.hours, d => d.article)
-    const index_hours = d3.groups(dataset, d => d.hours)
-    const number_of_day = d3.groups(dataset, d => d.date).length
-    const index_article = d3.groups(dataset, d => d.article)
-    const group_points = index_hours.map(h =>
-        index_article.map(a =>
-            JSON.parse(
-                '{"Hours":' + h[0] + ', "Article":"' + a[0] + '", "Counts":' +
-                ((MapQuantityByHours.get(h[0]).get(a[0]) != undefined) ?
-                    MapQuantityByHours.get(h[0]).get(a[0]) : 0) / number_of_day
-                + '}')
-        )
-    )
-
+    const select = document.getElementById("linechart-options");
+    var contenu = ``;
+    const article = d3.group(dataset, d => d.article);
+    for (let key of article.keys()) {
+        contenu += `<input class="form-check-input" type="checkbox" id="vis3-${key.split(' ')[0]}" checked>
+                    <label class="form-check-label" for="vis3-${key.split(' ')[0]}">${key}</label></br>`
+    }
+    select.innerHTML = contenu;
+    
     // create a tooltip
     var Tooltip = d3.select("#linechart")
         .append("div")
@@ -575,126 +570,165 @@ function BakeryViz3(dataset) {
         .style("border-radius", "5px")
         .style("padding", "5px")
 
-    var points = []
-    for (let i = 0; i < group_points.length; i++) {
-        points = points.concat(group_points[i])
-    }
-    points = points.slice().sort((a, b) => d3.ascending(a.Hours, b.Hours))
 
-
-    const x = d3.scaleLinear().domain(d3.extent(points, d => d.Hours)).range([margin.left, w - margin.left - margin.right])
-    const y = d3.scaleLinear().domain(d3.extent(points, d => d.Counts)).range([h - margin.bottom, margin.top])
-    const c = d3.scaleOrdinal().domain(
-        new Set(points.map(d => d.Article))).range(["red", "green", "blue", "yellow", "pink", "purple", "orange", "black", "cyan", "brown"])
-
-    // abscisse et ordonnée
-    svg.append("g")
-        .attr("transform", `translate(0,${h - margin.bottom})`)
-        .call(d3.axisBottom(x))
-
-    svg.append("g")
-        .attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(y))
-
-    // X label
-    svg.append('text')
-        .attr('x', (w - margin.right) / 2 - 25)
-        .attr('y', h - margin.bottom + 30)
-        .attr('text-anchor', 'middle')
-        .style('font-family', 'Helvetica')
-        .style('font-size', 12)
-        .text('Heure');
-
-    // Y label
-    svg.append('text')
-        .attr('text-anchor', 'middle')
-        .attr('transform', 'translate(8,' + h / 2 + ')rotate(-90)')
-        .style('font-family', 'Helvetica')
-        .style('font-size', 12)
-        .text("Nombre de produit acheté en moyenne");
-
-    // cercle de couleur : Point
-    svg.selectAll("circle").data(points).enter()
-        .append("circle")
-        .attr("cx", d => x(d.Hours))
-        .attr("cy", d => y(d.Counts))
-        .style("fill", d => c(d.Article))
-        .on('mouseover', function (d, i) {
-            Tooltip.style("opacity", 1)
-            d3.select(this).transition()
-                .duration('50')
-                .attr('opacity', '.80')
-
-        })
-        .on("mousemove", function (d, f) {
-            Tooltip
-                .html("En moyenne, on vend à " + d.Hours +" heures, " + d.Counts + " " + d.Article)
-                .style("left", (d3.mouse(this)[0]) + "px")
-                .style("top", (d3.mouse(this)[1]) + 100 + "px")
-        })
-        .on('mouseout', function (d, i) {
-            Tooltip
-                .style("opacity", 0)
-            d3
-                .select(this).transition()
-                .duration('50')
-                .attr('opacity', '1')
-        })
-        .attr("r", d => 0)
-        .transition()
-            .duration(2000)
-            .attr("r", d => 4)
-
-    // lines
-    const group_point = d3.groups(points, d => d.Article)
-
-    const lines = group_point.map((group) => {
-        return group[1].map((d) => {
-            return {
-                Hours: d.Hours,
-                Counts: d.Counts,
-                Article: d.Article
+    function update() {
+        
+        svg.selectAll("rect").remove()
+        svg.selectAll("g").remove()
+        svg.selectAll("text").remove()
+        svg.selectAll("path").remove()
+        svg.selectAll("circle").remove()
+        
+        var dataset_filtre = dataset
+        for (let key of article.keys()) {
+            
+            if (!document.getElementById("vis3-"+key.split(' ')[0]).checked) {
+                dataset_filtre = dataset_filtre.filter(function(d){ return d.article != key })
             }
+        }
+
+        const MapQuantityByHours = d3.rollup(dataset_filtre, v => d3.sum(v, d => d.Quantity), d => d.hours, d => d.article)
+        const index_hours = d3.groups(dataset_filtre, d => d.hours)
+        const number_of_day = d3.groups(dataset_filtre, d => d.date).length
+        const index_article = d3.groups(dataset_filtre, d => d.article)
+        const group_points = index_hours.map(h =>
+            index_article.map(a =>
+                JSON.parse(
+                    '{"Hours":' + h[0] + ', "Article":"' + a[0] + '", "Counts":' +
+                    ((MapQuantityByHours.get(h[0]).get(a[0]) != undefined) ?
+                        MapQuantityByHours.get(h[0]).get(a[0]) : 0) / number_of_day
+                    + '}')
+            )
+        )
+        
+
+        var points = []
+        for (let i = 0; i < group_points.length; i++) {
+            points = points.concat(group_points[i])
+        }
+        points = points.slice().sort((a, b) => d3.ascending(a.Hours, b.Hours))
+
+
+        const x = d3.scaleLinear().domain(d3.extent(points, d => d.Hours)).range([margin.left, w - margin.left - margin.right])
+        const y = d3.scaleLinear().domain(d3.extent(points, d => d.Counts)).range([h - margin.bottom, margin.top])
+        const c = d3.scaleOrdinal().domain(
+            new Set(points.map(d => d.Article))).range(["red", "green", "blue", "yellow", "pink", "purple", "orange", "black", "cyan", "brown"])
+
+        // abscisse et ordonnée
+        svg.append("g")
+            .attr("transform", `translate(0,${h - margin.bottom})`)
+            .call(d3.axisBottom(x))
+
+        svg.append("g")
+            .attr("transform", `translate(${margin.left},0)`)
+            .call(d3.axisLeft(y))
+
+        // X label
+        svg.append('text')
+            .attr('x', (w - margin.right) / 2 - 25)
+            .attr('y', h - margin.bottom + 30)
+            .attr('text-anchor', 'middle')
+            .style('font-family', 'Helvetica')
+            .style('font-size', 12)
+            .text('Heure');
+
+        // Y label
+        svg.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('transform', 'translate(8,' + h / 2 + ')rotate(-90)')
+            .style('font-family', 'Helvetica')
+            .style('font-size', 12)
+            .text("Nombre de produit acheté en moyenne");
+
+        // cercle de couleur : Point
+        svg.selectAll("circle").data(points).enter()
+            .append("circle")
+            .attr("cx", d => x(d.Hours))
+            .attr("cy", d => y(d.Counts))
+            .style("fill", d => c(d.Article))
+            .on('mouseover', function (d, i) {
+                Tooltip.style("opacity", 1)
+                d3.select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '.80')
+
+            })
+            .on("mousemove", function (d, f) {
+                Tooltip
+                    .html("En moyenne, on vend à " + d.Hours +" heures, " + d.Counts + " " + d.Article)
+                    .style("left", (d3.mouse(this)[0]) + "px")
+                    .style("top", (d3.mouse(this)[1]) + 100 + "px")
+            })
+            .on('mouseout', function (d, i) {
+                Tooltip
+                    .style("opacity", 0)
+                d3
+                    .select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '1')
+            })
+            .attr("r", d => 0)
+            .transition()
+                .duration(500)
+                .attr("r", d => 3)
+
+        // lines
+        const group_point = d3.groups(points, d => d.Article)
+
+        const lines = group_point.map((group) => {
+            return group[1].map((d) => {
+                return {
+                    Hours: d.Hours,
+                    Counts: d.Counts,
+                    Article: d.Article
+                }
+            })
         })
+        
+        const line = d3.line()
+            .x(d => x(d.Hours))
+            .y(d => y(d.Counts))
+        
+        svg.selectAll(".line")
+            .data(lines)
+            .enter()
+            .append("path")
+            .attr("stroke", (d) => c(d[0].Article))
+            .attr("fill", "none")
+            .attr("stroke-width", 1.5)
+            .attr("d", (d) => line(d))  
+
+        // LEGENDE :
+
+        // Titre
+        svg.append("text")
+            .attr("x", w - margin.right - 50)
+            .attr("y", margin.top + 5)
+            .text("Nombre de produits acheté/h")
+
+        // rect couleur
+        svg.selectAll("rect").data(c.domain()).enter()
+            .append("rect")
+            .attr("x", d => w - margin.right - 40)
+            .attr("y", (d, i) => i * 20 + margin.top + 20)
+            .attr("width", d => 10)
+            .attr("height", d => 10)
+            .style("fill", d => c(d))
+
+        // Nom d'article
+        svg.append("g").selectAll("text").data(c.domain()).enter()
+            .append("text")
+            .attr("x", d => w - margin.right - 30)
+            .attr("y", (d, i) => i * 20 + 10 + margin.top + 20)
+            .text(d => d)
+        }
+    
+    update()
+
+    // DYNAMIC
+    d3.select("#linechart-options").on("click", function () {
+        update()
     })
-    
-    const line = d3.line()
-        .x(d => x(d.Hours))
-        .y(d => y(d.Counts))
-    
-    svg.selectAll(".line")
-        .data(lines)
-        .enter()
-        .append("path")
-        .attr("stroke", (d) => c(d[0].Article))
-        .attr("fill", "none")
-        .attr("stroke-width", 1.5)
-        .attr("d", (d) => line(d))  
-
-    // LEGENDE :
-
-    // Titre
-    svg.append("text")
-        .attr("x", w - margin.right - 50)
-        .attr("y", margin.top + 5)
-        .text("Nombre de produits acheté/h")
-
-    // rect couleur
-    svg.selectAll("rect").data(c.domain()).enter()
-        .append("rect")
-        .attr("x", d => w - margin.right - 40)
-        .attr("y", (d, i) => i * 20 + margin.top + 20)
-        .attr("width", d => 10)
-        .attr("height", d => 10)
-        .style("fill", d => c(d))
-
-    // Nom d'article
-    svg.append("g").selectAll("text").data(c.domain()).enter()
-        .append("text")
-        .attr("x", d => w - margin.right - 30)
-        .attr("y", (d, i) => i * 20 + 10 + margin.top + 20)
-        .text(d => d)
-
 }
 
 //-----------------VIZ 4---------------------
@@ -1015,7 +1049,20 @@ function init() {
 </div>`
 
     body = document.getElementById("vis3");
-    body.innerHTML = `<div id="linechart"></div>`
+    body.innerHTML = `<div class="col-sm-3"> 
+        <div class="card">
+            <div class="card-header">Sélectionnez les articles que vous souhaitez observer :</div>
+            <div class="card-body">
+                <div id="linechart-options"></div>
+            </div>
+        </div>
+    </div>
+        
+    <div class="col-sm-8">
+        <div class="card-body">
+            <div id="linechart"></div>
+        </div>
+    </div>`
 
     body = document.getElementById("vis2");
     body.innerHTML = ` <div class="card-footer text-muted">

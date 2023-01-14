@@ -58,7 +58,7 @@ function BakeryViz1(dataset) {
         var essai = d3.scaleTime().domain([startDate, endDate])
 
         const binX = d3.bin().domain(essai.domain()).thresholds(essai.ticks(nbBins))
-        const datasettime = dataset.filter(s => s.date >= startDate && s.date <= endDate)
+        var datasettime = dataset.filter(s => s.date >= startDate && s.date <= endDate)
         const bucketsX = binX(datasettime.map(d => d.date))
 
 
@@ -77,8 +77,6 @@ function BakeryViz1(dataset) {
         yAxis.transition()
             .duration(1000)
             .call(d3.axisLeft(y));
-
-
 
         // Join the rect with the bins data
         var current_rects = svg.selectAll("rect")
@@ -116,6 +114,7 @@ function BakeryViz1(dataset) {
             .text('Heure');
 
         // TO DO ICI SORT DATASETTIME
+        datasettime = datasettime.slice().sort((a, b) => d3.ascending(a.hours, b.hours))
         number_of_day = d3.groups(datasettime, d => d.date).length
         groupData = d3.groups(datasettime, d => d.hours, d => d.ticket_number)
 

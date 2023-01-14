@@ -1,6 +1,5 @@
 //------------------------------- VIZ 1 -----------------------------------------
 function BakeryViz1(dataset) {
-
     // VIS LEFT :
 
     const margin = ({ top: 35, right: 70, bottom: 35, left: 70 })
@@ -116,18 +115,19 @@ function BakeryViz1(dataset) {
             .style('font-size', 12)
             .text('Heure');
 
+        // TO DO ICI SORT DATASETTIME
         number_of_day = d3.groups(datasettime, d => d.date).length
         groupData = d3.groups(datasettime, d => d.hours, d => d.ticket_number)
 
         // Y axis range init
-        var y1 = d3.scaleLinear().domain(d3.extent(groupData, d => d[1].length / number_of_day)).range([h_r - margin_r.bottom, 0 + margin_r.top])
+        var y1 = d3.scaleLinear().domain(d3.extent(groupData, d => d[1].length / number_of_day)).range([h_r - margin_r.bottom, margin_r.top])
         var y1Axis = svg_by_hours.append("g").attr("transform", `translate(${margin_r.left},0)`).call(d3.axisLeft(y1))
 
         // X axis
         var x1 = d3.scaleBand()
         .range([ margin_r.left, w_r ])
         .domain(groupData.map(function(d) { return d[0]; }))
-        .padding(0.2);
+        .padding(0.1);
         var x1Axis = svg_by_hours.append("g").attr("transform", `translate(0,${h_r - margin_r.bottom})`).call(d3.axisBottom(x1))
 
 
@@ -136,9 +136,9 @@ function BakeryViz1(dataset) {
         .enter()
         .append("rect")
             .attr("x", function(d) { return x1(d[0]) })
-            .attr("y", function(d) { return y1(d[1].length / number_of_day) - margin_r.bottom; })
+            .attr("y", function(d) { return y1(d[1].length / number_of_day) ; })
             .attr("width", x1.bandwidth())
-            .attr("height", function(d) { return h - y1(d[1].length / number_of_day); })
+            .attr("height", function(d) { return h_r - y1(d[1].length / number_of_day) - margin_r.bottom; })
             .style("fill", "red")
             .on('mouseover', function (d, i) {
                 Tooltip.style("opacity", 1)
@@ -150,8 +150,8 @@ function BakeryViz1(dataset) {
             .on("mousemove", function (d, f) {
                 Tooltip
                     .html("En moyenne, il y a " + d[1].length / number_of_day+  " clients à " + d[0] + " heures")
-                    .style("left", (d3.mouse(this)[0]) +100+ "px")
-                    .style("top", (d3.mouse(this)[1]) + 100 + "px")
+                    .style("left", (d3.mouse(this)[0]) - 300+ "px")
+                    .style("top", (d3.mouse(this)[1]) + 10 + "px")
             })
             .on('mouseout', function (d, i) {
                 Tooltip
@@ -1000,7 +1000,7 @@ function init() {
     </div></br></br>
     <div class="card">
         <div class="card-header">
-            Quel/combien d'article souhaitez-vous observer? 
+            Quel/combien d'article souhaitez-vous produire? 
         </div>
         <div class="card-body" id="vis4select"></div>
     </div>

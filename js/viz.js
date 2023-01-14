@@ -1,4 +1,4 @@
-//------------------------------- VIZ 1 -----------------------------------------
+//------------------------------- VIZ 1 OK-----------------------------------------
 function BakeryViz1(dataset) {
     // VIS LEFT :
 
@@ -662,27 +662,26 @@ function BakeryViz3(dataset) {
                 Tooltip.style("opacity", 1)
                 d3.select(this).transition()
                     .duration('50')
-                    .attr('opacity', '.80')
+                    .attr('opacity', '.50')
 
             })
-            .on("mousemove", function (d, f) {
-                Tooltip
-                    .html("En moyenne, on vend à " + d.Hours +" heures, " + d.Counts + " " + d.Article)
-                    .style("left", (d3.mouse(this)[0]) + "px")
-                    .style("top", (d3.mouse(this)[1]) + 100 + "px")
-            })
             .on('mouseout', function (d, i) {
-                Tooltip
-                    .style("opacity", 0)
+                Tooltip.style("opacity", 0)
                 d3
                     .select(this).transition()
                     .duration('50')
                     .attr('opacity', '1')
             })
+            .on("mousemove", function (d, f) {
+                Tooltip
+                    .html("En moyenne, on vend à " + d.Hours +" heures, " + d.Counts + " " + d.Article)
+                    .style("left", (d3.mouse(this)[0]) + 300 + "px")
+
+            })
             .attr("r", d => 0)
             .transition()
                 .duration(500)
-                .attr("r", d => 3)
+                .attr("r", d => 4)
 
         // lines
         const group_point = d3.groups(points, d => d.Article)

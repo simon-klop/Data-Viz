@@ -546,11 +546,12 @@ function BakeryViz3(dataset) {
     const margin = ({ top: 10, right: 210, bottom: 30, left: 60 })
 
     const w = 1000
-    const h = 600
+    const h = 750
 
     const svg = d3.select("#linechart").append("svg").attr("height", h).attr("width", w)
 
     const select = document.getElementById("linechart-options");
+
     var contenu = ``;
     const article = d3.group(dataset, d => d.article);
     for (let key of article.keys()) {
@@ -595,8 +596,8 @@ function BakeryViz3(dataset) {
             index_article.map(a =>
                 JSON.parse(
                     '{"Hours":' + h[0] + ', "Article":"' + a[0] + '", "Counts":' +
-                    ((MapQuantityByHours.get(h[0]).get(a[0]) != undefined) ?
-                        MapQuantityByHours.get(h[0]).get(a[0]) : 0) / number_of_day
+                    Math.ceil(((MapQuantityByHours.get(h[0]).get(a[0]) != undefined) ?
+                        MapQuantityByHours.get(h[0]).get(a[0]) : 0) / number_of_day)
                     + '}')
             )
         )
@@ -608,6 +609,18 @@ function BakeryViz3(dataset) {
         }
         points = points.slice().sort((a, b) => d3.ascending(a.Hours, b.Hours))
 
+        var list = document.getElementById("linechart-total");
+        contenu = ``
+        for (let key of d3.group(dataset_filtre, d => d.article).keys()) {
+            var total = 0
+            for (let i=0; i<group_points.length; i++){
+                total += group_points[i].filter(function(d){ return d.Article == key })[0].Counts
+            }
+            contenu += `<li class="list-group-item d-flex justify-content-between align-items-center">${key}
+                            <span class="badge bg-primary rounded-pill">${Math.ceil(total)}</span>
+                        </li>`
+        }
+        list.innerHTML = contenu;
 
         const x = d3.scaleLinear().domain(d3.extent(points, d => d.Hours)).range([margin.left, w - margin.left - margin.right])
         const y = d3.scaleLinear().domain(d3.extent(points, d => d.Counts)).range([h - margin.bottom, margin.top])
@@ -1049,20 +1062,27 @@ function init() {
 </div>`
 
     body = document.getElementById("vis3");
-    body.innerHTML = `<div class="col-sm-3"> 
-        <div class="card">
-            <div class="card-header">Sélectionnez les articles que vous souhaitez observer :</div>
-            <div class="card-body">
-                <div id="linechart-options"></div>
+    body.innerHTML = `
+            <div class="col-sm-3"> 
+                <div class="card">
+                    <div class="card-header">Sélectionnez les articles que vous souhaitez observer :</div>
+                    <div class="card-body">
+                        <div id="linechart-options"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Total par jour</div>
+                    <div class="card-body">
+                        <ul class="list-group" id="linechart-total"></ul>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
         
-    <div class="col-sm-8">
-        <div class="card-body">
-            <div id="linechart"></div>
-        </div>
-    </div>`
+            <div class="col-sm-8">
+                <div class="card-body">
+                    <div id="linechart"></div>
+                </div>
+            </div>`
 
     body = document.getElementById("vis2");
     body.innerHTML = ` <div class="card-footer text-muted">

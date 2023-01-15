@@ -255,7 +255,7 @@ function getArticles(dataset) {
 function BakeryViz2(dataset) {
 
     // Static Part
-    const margin = ({ top: 10, right: 250, bottom: 30, left: 40 })
+    const margin = ({ top: 10, right: 250, bottom: 30, left: 100 })
     const w = 1000
     const h = 400
     const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
@@ -321,10 +321,10 @@ function BakeryViz2(dataset) {
                         Tooltip.html(function(){
                                 console.log(value_frequent)
                                 if (value_frequent > 0) {
-                                    return "Lorsque " + x[i] +" est acheté, on achète avec " + x[j] + " pour " + y[i][x[j]] * 100 + "% des clients à " + hour_value + " heure"
+                                    return "Lorsque " + x[i] +" est acheté, on achète avec " + x[j] + " pour " + y[i][x[j]] * 100 + "% des clients, à " + hour_value + " heure"
                                 } 
                                 else {
-                                    return "Lorsque " + x[i] +" est acheté, les clients n'achètent pas " + x[j] + " en plus"
+                                    return "Lorsque " + x[i] +" est acheté, les clients n'achètent pas en plus " + x[j] + ", à " + hour_value + " heure" 
                                 }
                             })
                             .style("left", (d3.mouse(this)[0]) +100+ "px")
@@ -345,7 +345,7 @@ function BakeryViz2(dataset) {
         // Axe X
         svg.append("g").selectAll("text").data(x).enter()
             .append("text")
-            .attr("x", (d, i) => 100 + i * 90)
+            .attr("x", (d, i) => margin.left + i * 90)
             .attr("y", d => 40)
             .text(d => d)
             .attr("font-size", "7.5px")
@@ -358,22 +358,39 @@ function BakeryViz2(dataset) {
             .text(d => d)
             .attr("font-size", "8px")
 
+
         // Legend 
+        let space_divisor = (w - margin.left)/((max_corr*10) + 1)
         svg.append("g").selectAll("text").data(d3.range(0, max_corr, 0.1)).enter()
             .append("rect")
-            .attr('x', (d, i) => 100 + 148 * i)
+            .attr('x', (d, i) => (margin.left + space_divisor) + space_divisor * i)
             .attr('y', 380)
-            .attr('width', 400)
+            .attr('width', space_divisor)
             .attr('height', 10)
             .attr('fill', function (d) { return myColor(d) })
+
+        svg.append("g")
+            .append("rect")
+            .attr('x', (d, i) => margin.left)
+            .attr('y', 380)
+            .attr('width', space_divisor)
+            .attr('height', 10)
+            .attr('fill', 'black')
 
         // Legend info
         svg.append("g").selectAll("text").data(d3.range(0, max_corr * 100 + 10, 10)).enter()
             .append("text")
-            .attr('x', (d, i) => 100 + 148 * i)
+            .attr('x', (d, i) => (margin.left + space_divisor) + space_divisor * i)
             .attr('y', 400)
-            .text(d => d)
+            .text(d => d + "%")
             .attr("font-size", "10px")
+
+        svg.append("g")
+            .append("text")
+            .attr('x', (d, i) => margin.left)
+            .attr('y', 400)
+            .attr("font-size", "10px")
+            .text("Pas acheté ensemble")
 
         // Title
         svg.append("text")

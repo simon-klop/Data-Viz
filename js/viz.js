@@ -316,16 +316,25 @@ function BakeryViz2(dataset) {
 
                     })
                     .on("mousemove", function (d, f) {
-                        Tooltip
-                            .html("Lorsque " + x[i] + " est acheté, on achète avec " + x[j] + " pour " + y[i][x[j]] * 100 + "% des clients à " + hour_value + " heure")
+                        let value_frequent = y[i][x[j]] * 100
+  
+                        Tooltip.html(function(){
+                                console.log(value_frequent)
+                                if (value_frequent > 0) {
+                                    return "Lorsque " + x[i] +" est acheté, on achète avec " + x[j] + " pour " + y[i][x[j]] * 100 + "% des clients à " + hour_value + " heure"
+                                } 
+                                else {
+                                    return "Lorsque " + x[i] +" est acheté, les clients n'achètent pas " + x[j] + " en plus"
+                                }
+                            })
                             .style("left", (d3.mouse(this)[0]) +100+ "px")
                             .style("top", (d3.mouse(this)[1]) + 100 + "px")
-                    })
+                        })
+
                     .on('mouseout', function (d, i) {
                         Tooltip
                             .style("opacity", 0)
-                        d3
-                            .select(this).transition()
+                        d3.select(this).transition()
                             .duration('50')
                             .attr('opacity', '1')
                     })

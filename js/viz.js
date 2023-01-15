@@ -302,7 +302,11 @@ function BakeryViz2(dataset) {
             return acc;
         }, {}))
 
-        let maxValues = y.map(Object.values).flat().sort().slice(-5)
+        let maxValues = y.map(Object.values).flat().sort().filter(function(value) {
+            return !isNaN(value);
+        }).slice(-5)[0]
+
+        console.log("maxValues", maxValues)
         const offers = []
 
         for (let i = 0; i < x.length; i++) {
@@ -344,7 +348,7 @@ function BakeryViz2(dataset) {
                             .attr('opacity', '1')
                     })
 
-            if  (maxValues.includes(y[i][x[j]]))
+            if  (y[i][x[j]] >= maxValues)
             {
                 offers.push(x[i] + ' + ' + x[j])
             }

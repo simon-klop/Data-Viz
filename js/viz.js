@@ -229,6 +229,8 @@ function BakeryViz2(dataset) {
     const w = 1000
     const h = 400
     const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
+    const svg2 = d3.select("#best_offers").append("svg").attr("height", 150).attr("width", w)
+
     const max_corr = 0.6
     var myColor = d3.scaleLinear().domain([0.01, max_corr]).range(["#f4cccc", "#cc0000"])
 
@@ -247,6 +249,7 @@ function BakeryViz2(dataset) {
         svg.selectAll("rect").remove()
         svg.selectAll("g").remove()
 
+        svg2.selectAll("text").remove()
 
         // create a tooltip
         var Tooltip = d3.select("#corr_viz")
@@ -269,6 +272,8 @@ function BakeryViz2(dataset) {
             return acc;
         }, {}))
 
+        let maxValues = y.map(Object.values).flat().sort().slice(-5)
+        const offers = []
 
         for (let i = 0; i < x.length; i++) {
             for (let j = 0; j < x.length; j++) {
@@ -299,6 +304,11 @@ function BakeryViz2(dataset) {
                             .duration('50')
                             .attr('opacity', '1')
                     })
+
+            if  (maxValues.includes(y[i][x[j]]))
+            {
+                offers.push(x[i] + ' + ' + x[j])
+            }
             }
         }
 
@@ -337,9 +347,19 @@ function BakeryViz2(dataset) {
             .attr("font-size", "10px")
 
         // Title
-        svg.append("text")
+        svg2.append("text")
             .attr("x", 5)
-            .attr("y", margin.top + 5)
+            .attr("y", margin.bottom - 5)
+            .text("Offres les plus pertinentes :")
+            .attr("font-size", "20px")
+
+        
+        
+        for (let i = 0; i < offers.length; i++) {
+            svg2.append("text")
+                .attr("x", 5)
+                .attr("y", margin.bottom + (i+1) * 20)
+                .text(offers[i])}
     }
 
 
@@ -352,6 +372,7 @@ function BakeryViz2(dataset) {
     })
 
     d3.select("#aricleName").on("change", function () {
+        svg2.remove()
         const checked = document.getElementById("aricleName");
         if ("Tous les articles" == checked.value && !stateVis2) {
             console.log("pas de changement d'etat")

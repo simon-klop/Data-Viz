@@ -1,7 +1,6 @@
 //------------------------------- VIZ 1 OK-----------------------------------------
 function BakeryViz1(dataset) {
-    // VIS LEFT :
-
+    // VIS LEFT - CLIENTS BY TIME:
     const margin = ({ top: 35, right: 70, bottom: 35, left: 70 })
     const w = 1000
     const h = 400
@@ -23,25 +22,56 @@ function BakeryViz1(dataset) {
         .attr('transform', 'translate(20,' + h / 2 + ')rotate(-90)')
         .style('font-family', 'Helvetica')
         .style('font-size', 12)
-        .text("Nombre");
+        .text("Nombre de clients");
 
-    // X axis range init
+    // X axis range init (dynamic)
     var x = d3.scaleTime().range([margin.left, w - margin.left - margin.right])
     var xAxis = svg.append("g").attr("transform", `translate(0,${h - margin.bottom})`)
 
-    // Y axis range init
+    // Y axis range init (dynamic)
     var y = d3.scaleLinear().range([h - margin.bottom, 0 + margin.top])
     var yAxis = svg.append("g").attr("transform", `translate(${margin.left},0)`)
 
-    // VIS RIGHT :
 
-    const margin_r = ({ top: 10, right: 10, bottom: 35, left: 22 })
+    //-----------------------
+    // VIS RIGHT - MEAN TIME:
+    const margin_r = ({ top: 10, right: 10, bottom: 35, left: 50 })
     const w_r = 400
     const h_r = 400
 
     const svg_by_hours = d3.select("#number_clients_hours").append("svg").attr("height", h_r).attr("width", w_r)
 
+    // X label
+    svg_by_hours.append('text')
+            .attr('x', w_r / 2)
+            .attr('y', h_r )
+            .attr('text-anchor', 'middle')
+            .style('font-family', 'Helvetica')
+            .style('font-size', 12)
+            .text('Heure')
+
+    // Y label
+    svg_by_hours.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('transform', 'translate(20,' + h / 2 + ')rotate(-90)')
+            .style('font-family', 'Helvetica')
+            .style('font-size', 12)
+            .text("Nombre de clients");
+
+    // X axis init (static) 
+    var x_r = d3.scaleBand()
+        .range([ margin_r.left, w_r ])
+        .domain([7,8,9,10,11,12,13,14,15,16,17,18,19,20])
+        .padding(0.1);
     
+    svg_by_hours.append("g")
+                .attr("transform", `translate(0,${h_r - margin_r.bottom})`)
+                .call(d3.axisBottom(x_r))
+
+    // Y axis init (dynamic)
+    var y_r = d3.scaleLinear().range([h_r - margin_r.bottom, margin_r.top])
+    var y_r_Axis = svg_by_hours.append("g").attr("transform", `translate(${margin_r.left},0)`)
+
     // create a tooltip
     var Tooltip = d3.select("#number_clients_hours")
         .append("div")
@@ -97,47 +127,36 @@ function BakeryViz1(dataset) {
         current_rects.exit()
             .remove()
 
-         // VIS RIGHT :
 
-        // Cleaning of the SVG
+        
+        
+        
+        // VIS RIGHT :
+
+        // Cleaning of the rects
         svg_by_hours.selectAll("rect").remove()
-        svg_by_hours.selectAll("text").remove()
-        svg_by_hours.selectAll("g").remove()
-
-        // X label
-        svg_by_hours.append('text')
-            .attr('x', w_r / 2)
-            .attr('y', h_r )
-            .attr('text-anchor', 'middle')
-            .style('font-family', 'Helvetica')
-            .style('font-size', 12)
-            .text('Heure');
 
         // TO DO ICI SORT DATASETTIME
         datasettime = datasettime.slice().sort((a, b) => d3.ascending(a.hours, b.hours))
         number_of_day = d3.groups(datasettime, d => d.date).length
         groupData = d3.groups(datasettime, d => d.hours, d => d.ticket_number)
 
-        // Y axis range init
-        var y1 = d3.scaleLinear().domain(d3.extent(groupData, d => d[1].length / number_of_day)).range([h_r - margin_r.bottom, margin_r.top])
-        var y1Axis = svg_by_hours.append("g").attr("transform", `translate(${margin_r.left},0)`).call(d3.axisLeft(y1))
 
-        // X axis
-        var x1 = d3.scaleBand()
-        .range([ margin_r.left, w_r ])
-        .domain(groupData.map(function(d) { return d[0]; }))
-        .padding(0.1);
-        var x1Axis = svg_by_hours.append("g").attr("transform", `translate(0,${h_r - margin_r.bottom})`).call(d3.axisBottom(x1))
+        // Y axis update
+        y_r.domain(d3.extent(groupData, d => d[1].length / number_of_day))
+        y_r_Axis.transition()
+            .duration(1000)
+            .call(d3.axisLeft(y_r))
 
-
+        // Rect drawing
         svg_by_hours.selectAll("mybar")
         .data(groupData)
         .enter()
         .append("rect")
-            .attr("x", function(d) { return x1(d[0]) })
-            .attr("y", function(d) { return y1(d[1].length / number_of_day) ; })
-            .attr("width", x1.bandwidth())
-            .attr("height", function(d) { return h_r - y1(d[1].length / number_of_day) - margin_r.bottom; })
+            .attr("x", function(d) { return x_r(d[0]) })
+            .attr("y", function(d) { return y_r(d[1].length / number_of_day) ; })
+            .attr("width", x_r.bandwidth())
+            .attr("height", function(d) { return h_r - y_r(d[1].length / number_of_day) - margin_r.bottom; })
             .style("fill", "red")
             .on('mouseover', function (d, i) {
                 Tooltip.style("opacity", 1)

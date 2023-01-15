@@ -230,7 +230,7 @@ function getFrequentItemCorr(dataset, hour_value) {
         //we remove the duplicates on the tickets to keep the value of remaining article
         let pair = stat.get(a) - 1
         if (pair == 0) {
-            stat.set(a, NaN)
+            stat.delete(a)
         }
         else {
             stat.set(a, pair)

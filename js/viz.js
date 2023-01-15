@@ -321,10 +321,10 @@ function BakeryViz2(dataset) {
                         Tooltip.html(function(){
                                 console.log(value_frequent)
                                 if (value_frequent > 0) {
-                                    return "Lorsque " + x[i] +" est acheté, on achète avec " + x[j] + " pour " + y[i][x[j]] * 100 + "% des clients, à " + hour_value + " heure"
+                                    return "Lorsque qu'un client achète" + x[i] +" à "  + hour_value + " heure, il achète avec " + x[j] + " dans " + y[i][x[j]] * 100 + "% des cas"
                                 } 
                                 else {
-                                    return "Lorsque " + x[i] +" est acheté, les clients n'achètent pas en plus " + x[j] + ", à " + hour_value + " heure" 
+                                    return "Lorsque " + x[i] +" est acheté à " + hour_value + " heure, les clients n'achètent pas en plus " + x[j]
                                 }
                             })
                             .style("left", (d3.mouse(this)[0]) +100+ "px")
@@ -357,7 +357,6 @@ function BakeryViz2(dataset) {
             .attr("y", (d, i) => 75 + i * 30)
             .text(d => d)
             .attr("font-size", "8px")
-
 
         // Legend 
         let space_divisor = (w - margin.left)/((max_corr*10) + 1)

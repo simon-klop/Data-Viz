@@ -224,7 +224,18 @@ function getFrequentItemCorr(dataset, hour_value) {
         let filtrage = opti.filter(d => d[1].map(k => k.article).includes(a) && d[1].map(k => k.hours).includes(hour_value))
         let nb_tickets = filtrage.length
         let liste_achats = filtrage.map(d => d[1].map(k => k.article)).reduce(function (prev, next) { return prev.concat(next) }).sort()
-        let stat = d3.rollup(liste_achats, v => v.length / nb_tickets % 1, d => d)
+        let stat = d3.rollup(liste_achats, v => v.length / nb_tickets, d => d)
+        
+        //handle the pairs(example: several croissants in the same ticket)
+        //we remove the duplicates on the tickets to keep the value of remaining article
+        let pair = stat.get(a) - 1
+        if (pair == 0) {
+            stat.set(a, NaN)
+        }
+        else {
+            stat.set(a, pair)
+        }
+
         return [a, stat]
     })
 
@@ -306,7 +317,7 @@ function BakeryViz2(dataset) {
                     })
                     .on("mousemove", function (d, f) {
                         Tooltip
-                            .html("Lorsque " + x[i] + " est acheté, on achète avec " + x[j] + " " + y[i][x[j]] * 100 + "% du temps à " + hour_value + " heure")
+                            .html("Lorsque " + x[i] + " est acheté, on achète avec " + x[j] + " pour " + y[i][x[j]] * 100 + "% des clients à " + hour_value + " heure")
                             .style("left", (d3.mouse(this)[0]) +100+ "px")
                             .style("top", (d3.mouse(this)[1]) + 100 + "px")
                     })

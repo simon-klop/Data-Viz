@@ -1,6 +1,7 @@
 //------------------------------- VIZ 1 OK-----------------------------------------
 function BakeryViz1(dataset) {
-    // VIS LEFT - CLIENTS BY TIME:
+
+    /////VIS LEFT - CLIENTS BY TIME:
     const margin = ({ top: 35, right: 70, bottom: 35, left: 70 })
     const w = 1000
     const h = 400
@@ -24,17 +25,17 @@ function BakeryViz1(dataset) {
         .style('font-size', 12)
         .text("Nombre de clients");
 
-    // X axis range init (dynamic)
+    // X axis range init
     var x = d3.scaleTime().range([margin.left, w - margin.left - margin.right])
     var xAxis = svg.append("g").attr("transform", `translate(0,${h - margin.bottom})`)
 
-    // Y axis range init (dynamic)
+    // Y axis range init
     var y = d3.scaleLinear().range([h - margin.bottom, 0 + margin.top])
     var yAxis = svg.append("g").attr("transform", `translate(${margin.left},0)`)
 
 
-    //-----------------------
-    // VIS RIGHT - MEAN TIME:
+    //------------------------
+    /////VIS RIGHT - MEAN TIME:
     const margin_r = ({ top: 10, right: 10, bottom: 35, left: 50 })
     const w_r = 400
     const h_r = 400
@@ -58,7 +59,7 @@ function BakeryViz1(dataset) {
         .style('font-size', 12)
         .text("Nombre de clients");
 
-    // X axis init (static) 
+    // X axis init
     var x_r = d3.scaleBand()
         .range([margin_r.left, w_r])
         .domain([7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
@@ -68,7 +69,7 @@ function BakeryViz1(dataset) {
         .attr("transform", `translate(0,${h_r - margin_r.bottom})`)
         .call(d3.axisBottom(x_r))
 
-    // Y axis init (dynamic)
+    // Y axis init
     var y_r = d3.scaleLinear().range([h_r - margin_r.bottom, margin_r.top])
     var y_r_Axis = svg_by_hours.append("g").attr("transform", `translate(${margin_r.left},0)`)
 
@@ -83,26 +84,46 @@ function BakeryViz1(dataset) {
         .style("border-radius", "5px")
         .style("padding", "5px")
 
-    function update(nbBins, startDate, endDate) {
-        // VIS LEFT :
-        var essai = d3.scaleTime().domain([startDate, endDate])
+    
+    // Update both (Vis right & vis left)
+    function update(startDate, endDate) {
 
-        const binX = d3.bin().domain(essai.domain()).thresholds(essai.ticks(nbBins))
         var datasettime = dataset.filter(s => s.date >= startDate && s.date <= endDate)
-        const bucketsX = binX(datasettime.map(d => d.date))
 
+        let number_of_day = d3.groups(datasettime, d => d.date).length
+        let number_of_months = number_of_day/30
+        let nb_bins
+
+
+        let option1 = document.getElementById("option1");
+        let option2 = document.getElementById("option2");
+
+        if (option1.checked) {
+            console.log("Option 1 is selected");
+            nb_bins = number_of_months
+        } else if (option2.checked) {
+            console.log("Option 2 is selected");
+            nb_bins = number_of_day
+        }
+
+
+        //////// VIS LEFT :
+        // X Axis Update
+        var domaine_precis = d3.scaleTime().domain([startDate, endDate])
+        var binX = d3.bin().domain(domaine_precis.domain()).thresholds(domaine_precis.ticks(nb_bins))
+        var bucketsX = binX(datasettime.map(d => d.date))
 
         x.domain([d3.min(bucketsX.map(d => d.x0)), d3.max(bucketsX.map(d => d.x1))])
         xAxis.transition()
             .duration(1000)
             .call(d3.axisBottom(x))
 
-        var my_map = d3.groups(dataset, d => d.ticket_number)
-        var bin_for_tickets = d3.bin().domain(x.domain()).thresholds(x.ticks(nbBins));
-        var buckets_nb_tickets = bin_for_tickets(my_map.map(d => d[1].map(j => j)).map(k => k[0].date))
-
 
         // Y axis Update
+        var my_map = d3.groups(dataset, d => d.ticket_number)
+        var bin_for_tickets = d3.bin().domain(x.domain()).thresholds(x.ticks(nb_bins));
+        var buckets_nb_tickets = bin_for_tickets(my_map.map(d => d[1].map(j => j)).map(k => k[0].date))
+
         y.domain([0, d3.max(buckets_nb_tickets.map(d => d.length))])
         yAxis.transition()
             .duration(1000)
@@ -131,20 +152,19 @@ function BakeryViz1(dataset) {
 
 
 
-        // VIS RIGHT :
-
+        ////// VIS RIGHT :
         // Cleaning of the rects
         svg_by_hours.selectAll("rect").remove()
 
-        number_of_day = d3.groups(datasettime, d => d.date).length
-        groupData = d3.groups(datasettime, d => d.hours, d => d.ticket_number)
-
 
         // Y axis update
+        groupData = d3.groups(datasettime, d => d.hours, d => d.ticket_number)
         y_r.domain(d3.extent(groupData, d => d[1].length / number_of_day))
+
         y_r_Axis.transition()
             .duration(1000)
             .call(d3.axisLeft(y_r))
+
 
         // Rect drawing
         svg_by_hours.selectAll("mybar")
@@ -184,7 +204,7 @@ function BakeryViz1(dataset) {
     //FIRST INIT
     let initStartDate = d3.min(dataset.map(d => d.date))
     let initEndDate = d3.max(dataset.map(d => d.date))
-    update(30, initStartDate, initEndDate) // 30 Buckets
+    update(initStartDate, initEndDate)
 
     //DYNAMIC (better with JQuery slider)
     const minDate = d3.min(dataset.map(d => d.date))
@@ -206,8 +226,18 @@ function BakeryViz1(dataset) {
             let parseTime = d3.timeParse("%d/%m/%Y");
             let startDate = parseTime(dates[0])
             let endDate = parseTime(dates[1])
-            update(30, startDate, endDate)
+            update(startDate, endDate)
         }
+    })
+
+    //DYNAMIC By day or months
+    d3.select("#bin_selector").on("click", function () {
+        let arr = document.getElementById("amount").value.split(" - ")
+            let dates = arr.map(d => d.split(" ")[1])
+            let parseTime = d3.timeParse("%d/%m/%Y");
+            let startDate = parseTime(dates[0])
+            let endDate = parseTime(dates[1])
+            update(startDate, endDate)
     })
 
 

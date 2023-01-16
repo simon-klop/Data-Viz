@@ -197,7 +197,8 @@ function BakeryViz1(dataset) {
         step: 86400,
         values: [new Date(minDate).getTime() / 1000, new Date(maxDate).getTime() / 1000],
         slide: function (event, ui) {
-            $("#amount").val((new Date(ui.values[0] * 1000).toLocaleDateString("fr-FR", options)) + " - " + (new Date(ui.values[1] * 1000)).toLocaleDateString("fr-FR", options))
+            $("#amount").val((new Date(ui.values[0] * 1000).toLocaleDateString("fr-FR", options)) 
+                + " - " + (new Date(ui.values[1] * 1000)).toLocaleDateString("fr-FR", options))
         },
         change: function (event, ui) {
             let arr = document.getElementById("amount").value.split(" - ")
@@ -215,6 +216,8 @@ function BakeryViz1(dataset) {
 
 }
 
+
+
 //-----------------VIZ 2 ---------------------
 function getFrequentItemCorr(dataset, hour_value) {
     let opti = d3.groups(dataset, d => d.ticket_number)
@@ -224,8 +227,11 @@ function getFrequentItemCorr(dataset, hour_value) {
     let corr_articles = articles.map(function (a) {
         let filtrage = opti.filter(d => d[1].map(k => k.article).includes(a) && d[1].map(k => k.hours).includes(hour_value))
         let nb_tickets = filtrage.length
-        let liste_achats = filtrage.map(d => d[1].map(k => k.article)).reduce(function (prev, next) { return prev.concat(next) }).sort()
-        let stat = d3.rollup(liste_achats, v => v.length / nb_tickets, d => d)
+        let liste_achats = filtrage.map(d => d[1].map(k => k.article))
+        let arr = []
+        liste_achats.forEach(array =>{ arr = arr.concat(array)})
+        arr = arr.sort()
+        let stat = d3.rollup(arr, v => v.length / nb_tickets, d => d)
 
         //handle the pairs(example: several croissants in the same ticket)
         //we remove the duplicates on the tickets to keep the value of remaining article

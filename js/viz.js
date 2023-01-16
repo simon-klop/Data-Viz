@@ -516,7 +516,7 @@ function BakeryViz2(dataset) {
     update(zoom, false)
 
     // DYNAMIC
-    d3.select("#sliderCorr").on("click", function () {
+    d3.select("#sliderCorr").on("change", function () {
         update(zoom, true)
     })
 
@@ -774,7 +774,6 @@ function BakeryViz4(dataset) {
     const c = ["red", "green", "blue", "purple", "orange", "black", "grey", "brown", "pink", "#FF8C00"]
 
     let article = []
-    let ingredient = []
 
     var checked = document.getElementById("flexSwitchCheckChecked");
 
@@ -784,7 +783,7 @@ function BakeryViz4(dataset) {
         
         <div class="input-group mb-3 justify-content-end">
             <div class="input-group-text">
-                    <label style="color:${c[i]} ">${dataset.children[i].name} : </label> </br>
+                    <label>${dataset.children[i].name} : </label> </br>
                     <input id=${dataset.children[i].name} type="number" min="0" value=1 max="1000">
             </div>
             
@@ -861,7 +860,7 @@ function BakeryViz4(dataset) {
                 .style("stroke", "black")
                 .style("fill", function (d) { return c[article.indexOf(d.parent.parent.data.name)] })
                 .append("title") // Simple tooltip
-                .text(function (d) { return d.value })
+                .text(function (d) { return  d.data.name + " : " + d.value + "g"})
 
             // Add the text labels
             svg
@@ -870,9 +869,22 @@ function BakeryViz4(dataset) {
                 .enter()
                 .append("text")
                 .attr("x", function (d) { return d.x0 + 5 })    // +10 to adjust position (more right)
-                .attr("y", function (d) { return d.y0 + 20 })    // +20 to adjust position (lower)
+                .attr("y", function (d) { return d.y0 + 15 })    // +20 to adjust position (lower)
                 .text(function (d) { return d.data.name })
                 .attr("font-size", "10px")
+                .attr("fill", "white");
+
+            // Add the text labels
+            svg
+                .selectAll("text-value")
+                .data(root.leaves())
+                .enter()
+                .append("text")
+                .attr("x", function (d) { return d.x0 + 5 })    // +10 to adjust position (more right)
+                .attr("y", function (d) { return d.y0 + 25 })    // +20 to adjust position (lower)
+                .text(function (d) { return d.value})
+                .attr("font-size", "9px")
+                .style("opacity", 0.8)
                 .attr("fill", "white");
 
             // Add the title of article
@@ -892,10 +904,6 @@ function BakeryViz4(dataset) {
             let ingredient = []
             const invertdataset = invertJson(dataset);
 
-            for (let i = 0; i < Object.keys(invertdataset.children).length; i++) {
-                ingredient.push(invertdataset.children[i].name);
-            }
-
 
             let facteur = document.getElementById(article[0].split(' ')[0]).value
 
@@ -907,11 +915,15 @@ function BakeryViz4(dataset) {
                 ) // Here the size of each leave is given in the 'size' field in input data
                 .sort(function (a, b) { return b.value - a.value; }); // Here the list of nodes is sorted by size
 
+
+            for (let i = 0; i < root.children.length; i++) {
+                ingredient.push(root.children[i].data.name);
+            }
             // Then d3.treemap computes the position of each element of the hierarchy
             d3.treemap()
-                .size([w, h])
+                .size([w-10, h])
                 .paddingTop(20)
-                .paddingRight(7)
+                .paddingRight(10)
                 .paddingInner(3)
                 (root);
 
@@ -928,7 +940,7 @@ function BakeryViz4(dataset) {
                 .style("stroke", "black")
                 .style("fill", function (d) { return c[ingredient.indexOf(d.parent.data.name)] })
                 .append("title") // Simple tooltip
-                .text(function (d) { return d.value })
+                .text(function (d) { return d.data.name.toLowerCase() + " : " + d.value + "g" })
 
             // Add the text labels
             svg
@@ -939,7 +951,20 @@ function BakeryViz4(dataset) {
                 .attr("x", function (d) { return d.x0 + 5 })
                 .attr("y", function (d) { return d.y0 + 20 })
                 .text(function (d) { return d.data.name.toLowerCase() })
-                .attr("font-size", "10px")
+                .attr("font-size", "8px")
+                .attr("fill", "white");
+
+            // Add the text labels
+            svg
+                .selectAll("text-value")
+                .data(root.leaves())
+                .enter()
+                .append("text")
+                .attr("x", function (d) { return d.x0 + 5 })    // +10 to adjust position (more right)
+                .attr("y", function (d) { return d.y0 + 30 })    // +20 to adjust position (lower)
+                .text(function (d) { return d.value})
+                .attr("font-size", "7px")
+                .style("opacity", 0.8)
                 .attr("fill", "white");
 
             // Add the title of article
@@ -950,8 +975,9 @@ function BakeryViz4(dataset) {
                 .append("text")
                 .attr("x", function (d) { return d.x0 })
                 .attr("y", function (d) { return d.y0 + 10 })
-                .text(function (d) { return d.data.name.toUpperCase() })
-                .attr("font-size", "12px")
+                .text(function (d) { return d.data.name.toUpperCase()+ " - " 
+                + root.children[ingredient.indexOf(d.data.name)].value+ "g"})
+                .attr("font-size", "10px")
                 .attr("fill", function (d) { return c[ingredient.indexOf(d.data.name)] })
         }
 

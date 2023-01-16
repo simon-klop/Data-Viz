@@ -257,7 +257,9 @@ function BakeryViz2(dataset) {
     const w = 1000
     const h = 400
     const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
-    const svg2 = d3.select("#best_offers").append("svg").attr("height", 150).attr("width", w)
+
+
+    const list = document.getElementById("best_offers");
 
     const max_corr = 0.6
     var myColor = d3.scaleLinear().domain([0.01, max_corr]).range(["#f4cccc", "#cc0000"])
@@ -277,7 +279,6 @@ function BakeryViz2(dataset) {
         svg.selectAll("rect").remove()
         svg.selectAll("g").remove()
 
-        svg2.selectAll("text").remove()
 
         // create a tooltip
         var Tooltip = d3.select("#corr_viz")
@@ -328,7 +329,7 @@ function BakeryViz2(dataset) {
                         Tooltip.html(function () {
                             console.log(value_frequent)
                             if (value_frequent > 0) {
-                                return "Lorsque qu'un client achète" + x[i] + " à " + hour_value + " heure, il achète avec " + x[j] + " dans " + y[i][x[j]] * 100 + "% des cas"
+                                return "Lorsque qu'un client achète " + x[i] + " à " + hour_value + " heure, il achète avec " + x[j] + " dans " + y[i][x[j]] * 100 + "% des cas"
                             }
                             else {
                                 return "Lorsque " + x[i] + " est acheté à " + hour_value + " heure, les clients n'achètent pas en plus " + x[j]
@@ -402,21 +403,15 @@ function BakeryViz2(dataset) {
             .attr("font-size", "10px")
             .text("Pas acheté ensemble")
 
-        // Title
-        svg2.append("text")
-            .attr("x", 5)
-            .attr("y", margin.bottom - 5)
-            .text("Offres les plus pertinentes :")
-            .attr("font-size", "20px")
 
-
-
+        contenu = ``
         for (let i = 0; i < offers.length; i++) {
-            svg2.append("text")
-                .attr("x", 5)
-                .attr("y", margin.bottom + (i + 1) * 20)
-                .text(offers[i])
+                contenu += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="badge bg-primary rounded-pill">Top ${i+ 1}</span>
+                ${offers[i].toLowerCase()}
+                </li>`
         }
+        list.innerHTML = contenu;
     }
 
 
@@ -429,7 +424,6 @@ function BakeryViz2(dataset) {
     })
 
     d3.select("#aricleName").on("change", function () {
-        svg2.remove()
         const checked = document.getElementById("aricleName");
         if ("Tous les articles" == checked.value && !stateVis2) {
             console.log("pas de changement d'etat")
@@ -456,7 +450,8 @@ function BakeryViz2Bis(dataset) {
 
     const w = 1000
     const h = 400
-
+    const list = document.getElementById("best_offers");
+    list.innerHTML = ``;
     const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
     const max_corr = 0.6
     var myColor = d3.scaleLinear().domain([0.01, max_corr]).range(["#f4cccc", "#cc0000"])
@@ -1163,27 +1158,42 @@ function init() {
 
     body = document.getElementById("vis2");
     body.innerHTML = ` 
-    <div class="card-header">
-        TO DO TITLE
-    </div>
-    <div class="card-footer text-muted">
-        <div class="row">
-            <div class="col-sm-6">
-                <label for="customRange3" class="form-label"></label>
-                <div class="slider">
-                    <label>Heure de l'observation sélectionné : </label><p id="rangeValue">8</p>
-                    <input type="range" min="8" max="20" value="8" id="sliderCorr"
-                        oninput="rangeValue.innerText = this.value">
+    <div class="col-sm-9">
+                <div class="card">
+                    <div class="card-header">
+                        TO DO TITLE
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label for="customRange3" class="form-label"></label>
+                                <div class="slider">
+                                    <label>Heure de l'observation sélectionné : </label><p id="rangeValue">8</p>
+                                    <input type="range" min="8" max="20" value="8" id="sliderCorr"
+                                        oninput="rangeValue.innerText = this.value">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                            </br><label>Quel article voulez-vous observer? </label><select class="form-select" id="aricleName" aria-label="Default select example"></select>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="card-body" >
+                        <div id="corr_viz"></div>
+                    </div>
                 </div>
             </div>
-            <div class="col-sm-6">
-            </br><label>Quel article voulez-vous observer? </label><select class="form-select" id="aricleName" aria-label="Default select example"></select>
-            </div>
-        </div>
-    </div>
-    <div class="card-body" >
-        <div id="corr_viz"></div>
-    </div>`
+
+            <div class="col-sm-3">
+                <div class="card">
+                    <div class="card-header">
+                        Offres les plus pertinentes :
+                    </div>
+                    <div class="card-body"  id="best_offers">
+                    </div>
+                </div>
+            </div>`
 
     body = document.getElementById("vis1");
     body.innerHTML = `<div class="row justify-content-center"  >

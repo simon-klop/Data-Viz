@@ -1224,7 +1224,7 @@ function init() {
     <p>
         <label for="amount">Intervalle choisi:</label>
         <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;"
-            size="100" />
+            size="100" readonly/>
     </p>
 
     <div id="slider-range"></div>

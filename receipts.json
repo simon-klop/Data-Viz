@@ -72,11 +72,11 @@
     {"name": "farine", "price": 0.001},
     {"name": "sel", "price": 0.005},
     {"name": "lait", "price": 0.01},
-    {"name": "beurre", "price": 0.01},
-    {"name": "oeuf", "price": 0.01},
-    {"name": "levure", "price": 0.01},
-    {"name": "crème fraiche", "price": 0.01},
-    {"name": "eau", "price": 0.01},
-    {"name": "chocolat", "price": 0.01}
+    {"name": "beurre", "price": 0.001},
+    {"name": "oeuf", "price": 0.001},
+    {"name": "levure", "price": 0.001},
+    {"name": "crème fraiche", "price": 0.001},
+    {"name": "eau", "price": 0.001},
+    {"name": "chocolat", "price":0.001}
  ]
 }

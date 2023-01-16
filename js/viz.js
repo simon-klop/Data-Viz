@@ -197,7 +197,7 @@ function BakeryViz1(dataset) {
         step: 86400,
         values: [new Date(minDate).getTime() / 1000, new Date(maxDate).getTime() / 1000],
         slide: function (event, ui) {
-            $("#amount").val((new Date(ui.values[0] * 1000).toLocaleDateString("fr-FR", options)) 
+            $("#amount").val((new Date(ui.values[0] * 1000).toLocaleDateString("fr-FR", options))
                 + " - " + (new Date(ui.values[1] * 1000)).toLocaleDateString("fr-FR", options))
         },
         change: function (event, ui) {
@@ -229,7 +229,7 @@ function getFrequentItemCorr(dataset, hour_value) {
         let nb_tickets = filtrage.length
         let liste_achats = filtrage.map(d => d[1].map(k => k.article))
         let arr = []
-        liste_achats.forEach(array =>{ arr = arr.concat(array)})
+        liste_achats.forEach(array => { arr = arr.concat(array) })
         arr = arr.sort()
         let stat = d3.rollup(arr, v => v.length / nb_tickets, d => d)
 
@@ -804,62 +804,21 @@ function BakeryViz4(alldata, dataset) {
     const h_r = 300
 
     alldata_filtre = alldata.filter(function (d) { return article.includes(d.article) })
-    price_by_article = d3.rollup(alldata_filtre, v => d3.mean(v, d => d.unit_price), d => d.article)
-
-    console.log(dataset.mean_price)
-    
-    var prices = new Map();
-    dataset.mean_price.forEach(function(item) {
-        prices.set(item.name, item.price);
-    })
-
-    console.log(prices)
-    price_ingred = []
-
-    dataset.children.forEach(article => {
-        var tmp = []
-
-        article.children[0].children.forEach(ingredient => {
-            console.log(ingredient.size)
-            tmp.push(ingredient.name, ingredient.size * prices.get(ingredient.name));
-        })
-        tmp.push("total_mean_price", price_by_article.get(article.name))
-        price_ingred.push([article.name, tmp])
-    })
-
-
+    price_by_article = d3.rollups(alldata_filtre, v => d3.mean(v, d => d.unit_price), d => d.article)
 
     const svg2 = d3.select("#vis4-benf").append("svg").attr("height", h_r).attr("width", w_r)
 
-    // X axis init (static) 
-    var x_r = d3.scaleBand()
-        .range([margin_r.left, w_r])
-        .domain(article)
-        .padding(0.1);
-
-    svg2.append("g")
-        .attr("transform", `translate(0,${h_r - margin_r.bottom})`)
-        .style('font-size', 8)
-        .call(d3.axisBottom(x_r))
-    
-    // Y axis init (dynamic)
-    var y_r = d3.scaleLinear()
-        .range([h_r - margin_r.bottom, margin_r.top])
-        .domain(d3.extent([0, d3.max(price_by_article, d => d[1])]))
-
-
-    svg2.append("g").attr("transform", `translate(${margin_r.left},0)`)
-    .call(d3.axisLeft(y_r))
-
-    svg2.selectAll("mybar")
-            .data(price_by_article)
-            .enter()
-            .append("rect")
-            .attr("x", function (d) { return x_r(d[0]) })
-            .attr("y", function (d) { return y_r(d[1]); })
-            .attr("width", x_r.bandwidth())
-            .attr("height", function (d) { return h_r - y_r(d[1]) - margin_r.bottom; })
-            .style("fill", "blue")
+    // create a tooltip
+    var Tooltip = d3.select("#vis4-benf")
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px")
+    // Add the bars
 
     //Dynamic Part
     function update(checked) {
@@ -868,6 +827,115 @@ function BakeryViz4(alldata, dataset) {
         svg.selectAll("rect").remove()
         svg.selectAll("g").remove()
         svg.selectAll("text").remove()
+
+        svg2.selectAll("rect").remove()
+        svg2.selectAll("g").remove()
+        svg2.selectAll("text").remove()
+
+
+        var prices = new Map();
+        dataset.mean_price.forEach(function (item) {
+            prices.set(item.name, item.price);
+        })
+
+        var cost_by_article = [];
+
+        dataset.children.forEach(article => {
+
+            var tmp = 0
+
+            article.children[0].children.forEach(ingredient => {
+                tmp = tmp + ingredient.size * prices.get(ingredient.name)
+            })
+
+            cost_by_article.push([article.name, tmp])
+        })
+
+
+        // X axis init (static) 
+        var x_r = d3.scaleBand()
+            .range([margin_r.left, w_r])
+            .domain(article)
+            .padding(0.2);
+
+        svg2.append("g")
+            .attr("transform", `translate(0,${h_r - margin_r.bottom})`)
+            .style('font-size', 8)
+            .call(d3.axisBottom(x_r))
+
+        // Y axis init (dynamic)
+        var y_r = d3.scaleLinear()
+            .range([h_r - margin_r.bottom, margin_r.top])
+            .domain(d3.extent([0, d3.max(price_by_article, d => d[1] * document.getElementById(d[0].split(' ')[0]).value)]))
+
+
+        svg2.append("g").attr("transform", `translate(${margin_r.left},0)`)
+            .call(d3.axisLeft(y_r))
+
+        console.log(cost_by_article)
+        console.log(price_by_article)
+        
+        svg2.selectAll("mybarPrice")
+            .data(cost_by_article)
+            .enter()
+            .append("rect")
+            .attr("x", function (d) { return x_r(d[0]) })
+            .attr("y", function (d) { return y_r(d[1] * document.getElementById(d[0].split(' ')[0]).value); })
+            .attr("width", x_r.bandwidth() / 2 )
+            .attr("height", function (d) { return h_r - y_r(d[1 * document.getElementById(d[0].split(' ')[0]).value]) - margin_r.bottom; })
+            .style("fill", "blue")
+            .on('mouseover', function (d, i) {
+                Tooltip.style("opacity", 1)
+                d3.select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '.50')
+
+            })
+            .on('mouseout', function (d, i) {
+                Tooltip.style("opacity", 0)
+                d3
+                    .select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '1')
+            })
+            .on("mousemove", function (d, f) {
+                Tooltip
+                    .html("Le coût de production moyen d'un(e) " + d[0] + " est de " + d[1] * document.getElementById(d[0].split(' ')[0]).value)
+                    .style("left", (d3.mouse(this)[0]) + "px")
+                    .style("top", (d3.mouse(this)[1]) - 75 + "px")
+
+            })
+
+        svg2.selectAll("mybarMean")
+            .data(price_by_article)
+            .enter()
+            .append("rect")
+            .attr("x", function (d) { return x_r(d[0]) + x_r.bandwidth() / 2 })
+            .attr("y", function (d) { return y_r(d[1] * document.getElementById(d[0].split(' ')[0]).value); })
+            .attr("width", x_r.bandwidth() / 2)
+            .attr("height", function (d) { return h_r - y_r(d[1] * document.getElementById(d[0].split(' ')[0]).value) - margin_r.bottom; })
+            .style("fill", "red")
+            .on('mouseover', function (d, i) {
+                Tooltip.style("opacity", 1)
+                d3.select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '.50')
+
+            })
+            .on('mouseout', function (d, i) {
+                Tooltip.style("opacity", 0)
+                d3
+                    .select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '1')
+            })
+            .on("mousemove", function (d, f) {
+                Tooltip
+                    .html("Le prix moyen d'un(e) " + d[0] + " est de " + d[1] * document.getElementById(d[0].split(' ')[0]).value)
+                    .style("left", (d3.mouse(this)[0]) + "px")
+                    .style("top", (d3.mouse(this)[1]) - 75 + "px")
+
+            })
 
         if (!checked) {
             title.innerHTML = `TITRE1`
@@ -918,7 +986,7 @@ function BakeryViz4(alldata, dataset) {
                 .style("stroke", "black")
                 .style("fill", function (d) { return c[article.indexOf(d.parent.parent.data.name)] })
                 .append("title") // Simple tooltip
-                .text(function (d) { return  d.data.name + " : " + d.value + "g"})
+                .text(function (d) { return d.data.name + " : " + d.value + "g" })
 
             // Add the text labels
             svg
@@ -940,7 +1008,7 @@ function BakeryViz4(alldata, dataset) {
                 .append("text")
                 .attr("x", function (d) { return d.x0 + 5 })    // +10 to adjust position (more right)
                 .attr("y", function (d) { return d.y0 + 25 })    // +20 to adjust position (lower)
-                .text(function (d) { return d.value})
+                .text(function (d) { return d.value })
                 .attr("font-size", "9px")
                 .style("opacity", 0.8)
                 .attr("fill", "white");
@@ -979,7 +1047,7 @@ function BakeryViz4(alldata, dataset) {
             }
             // Then d3.treemap computes the position of each element of the hierarchy
             d3.treemap()
-                .size([w-10, h])
+                .size([w - 10, h])
                 .paddingTop(20)
                 .paddingRight(10)
                 .paddingInner(3)
@@ -1020,7 +1088,7 @@ function BakeryViz4(alldata, dataset) {
                 .append("text")
                 .attr("x", function (d) { return d.x0 + 5 })    // +10 to adjust position (more right)
                 .attr("y", function (d) { return d.y0 + 30 })    // +20 to adjust position (lower)
-                .text(function (d) { return d.value})
+                .text(function (d) { return d.value })
                 .attr("font-size", "7px")
                 .style("opacity", 0.8)
                 .attr("fill", "white");
@@ -1033,8 +1101,10 @@ function BakeryViz4(alldata, dataset) {
                 .append("text")
                 .attr("x", function (d) { return d.x0 })
                 .attr("y", function (d) { return d.y0 + 10 })
-                .text(function (d) { return d.data.name.toUpperCase()+ " - " 
-                + root.children[ingredient.indexOf(d.data.name)].value+ "g"})
+                .text(function (d) {
+                    return d.data.name.toUpperCase() + " - "
+                        + root.children[ingredient.indexOf(d.data.name)].value + "g"
+                })
                 .attr("font-size", "10px")
                 .attr("fill", function (d) { return c[ingredient.indexOf(d.data.name)] })
         }
@@ -1086,9 +1156,9 @@ async function LoadBakeryAndDrawV1V2V3() {
         conversor1,
         function (data) {
             BakeryViz1(data),
-            BakeryViz2(data),
-            BakeryViz3(data), 
-            LoadBakeryAndDrawV4(data)
+                BakeryViz2(data),
+                BakeryViz3(data),
+                LoadBakeryAndDrawV4(data)
         })
 }
 

@@ -38,8 +38,11 @@
     <header class="masthead d-flex align-items-center">
         <div class="container px-4 px-lg-5 text-center">
             <h1 class="mb-1">Oui, Oui Baguette!</h1>
-            <h3 class="mb-5"><em>Ce projet a pour but d'analyser, grâce à des graphiques, les ventes d'une boulangerie
-                    française afin d'optimiser celles-ci ainsi que son personnel.</em></h3>
+            <h3 class="mb-5"><em>
+                    Ce projet a pour but d'analyser, grâce à des graphiques, les ventes d'une boulangerie
+                    française afin d'optimiser celles-ci ainsi que son personnel. Ce site web s'adresse aux personnes qui ont le projet d'ouvrir une boulangerie.
+                    Il permet de vous donner des pistes de réflexion pour bien vous y prendre.
+                </em></h3>
             <a class="btn btn-primary btn-xl" href="#about">En savoir plus</a>
         </div>
     </header>
@@ -51,11 +54,10 @@
                 <div class="col-lg-10">
                     <h2>Nous répondons aux questions suivantes :</h2>
                     <p class="lead mb-5">
-
-                        Comment placer les articles pour que ceux qui sont souvent acheter ensembles soient côte à côte
-                        ?</br>
-                        Quelles offres faut-il créer et à quelle heure ?</br>
-                        Combien de vendeur-euse-s sont nécessaires ?</br>
+                        Combien de vendeur-euse-s sont nécessaires ? Quelles sont les horaires d'ouverture optimum ?</br>
+                        Comment placer les articles pour que ceux qui sont souvent achetés ensemble soient côte à côte ? Quelles offres faut-il créer et à quelle heure ?</br>
+                        Comment optimiser sa gestion des stocks d'articles ?</br>
+                        Comment optimiser sa gestion des stocks d'ingrédients ?</br>
                     </p>
                     <a class="btn btn-dark btn-xl" href="#Visualization">Voir les visualisations</a>
                 </div>
@@ -79,7 +81,7 @@
         </div></br></br>
 
         <div class="card-header">
-            Combien de vendeur-euse-s sont nécessaires ? Quels sont les horaires d'ouverture optimum ?
+            Combien de vendeur-euse-s sont nécessaires ? Quelles sont les horaires d'ouverture optimum ?
         </div>
         <div id="vis1">
             <div class="row justify-content-center">
@@ -118,6 +120,15 @@
                     <div id="slider-range"></div>
                 </div>
 
+                <div class="btn-group btn-group-toggle" data-toggle="buttons" id="bin_selector">
+                    <label class="btn btn-secondary active bg-danger">
+                      <input type="radio" name="options" id="option1" autocomplete="off" checked> Par mois
+                    </label>
+                    <label class="btn btn-secondary bg-danger">
+                      <input type="radio" name="options" id="option2" autocomplete="off"> Par jour
+                    </label>
+                </div>
+
             </div>
         </div>
 
@@ -135,17 +146,17 @@
             <div class="col-sm-9">
                 <div class="card">
                     <div class="card-header">
-                        TO DO TITLE
+                        Habitudes des paires d'achats par période de la journée
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-6">
                                 <label for="customRange3" class="form-label"></label>
                                 <div class="slider">
-                                    <label>Heure de l'observation sélectionné : </label>
-                                    <p id="rangeValue">8</p>
+                                    <label>Heure de l'observation sélectionnée : </label>
+                                    <p id="rangeValue">De 8h à 9h</p>
                                     <input type="range" min="8" max="20" value="8" id="sliderCorr"
-                                        oninput="rangeValue.innerText = this.value">
+                                        oninput="displayValue(this.value)">
                                 </div>
                             </div>
                             <div class="col-sm-6">

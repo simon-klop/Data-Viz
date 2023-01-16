@@ -875,8 +875,6 @@ function BakeryViz4(alldata, dataset) {
             prices.set(item.name, item.price);
         })
 
-        console.log(prices)
-        
         var cost_by_article = [];
 
         dataset.children.forEach(article => {
@@ -884,7 +882,7 @@ function BakeryViz4(alldata, dataset) {
             var tmp = 0
 
             article.children[0].children.forEach(ingredient => {
-                tmp = tmp + ingredient.size * prices.get(ingredient.name)
+                tmp = tmp + ingredient.size * prices.get(ingredient.name) * document.getElementById(article.name.split(' ')[0]).value
             })
 
             cost_by_article.push([article.name, tmp])
@@ -912,16 +910,15 @@ function BakeryViz4(alldata, dataset) {
             .call(d3.axisLeft(y_r))
 
         console.log(cost_by_article)
-        console.log(price_by_article)
         
         svg2.selectAll("mybarPrice")
             .data(cost_by_article)
             .enter()
             .append("rect")
             .attr("x", function (d) { return x_r(d[0]) })
-            .attr("y", function (d) { return y_r(d[1] * document.getElementById(d[0].split(' ')[0]).value); })
+            .attr("y", function (d) { return y_r(d[1]); })
             .attr("width", x_r.bandwidth() / 2 )
-            .attr("height", function (d) { return h_r - y_r(d[1 * document.getElementById(d[0].split(' ')[0]).value]) - margin_r.bottom; })
+            .attr("height", function (d) { return h_r - y_r(d[1]) - margin_r.bottom; })
             .style("fill", "blue")
             .on('mouseover', function (d, i) {
                 Tooltip.style("opacity", 1)

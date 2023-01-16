@@ -30,7 +30,7 @@
         {"name": "beurre", "size": 125},
         {"name": "crème fraiche", "size": 30},
         {"name": "oeuf", "size": 60},
-        {"name": "chocolat", "price": 100}
+        {"name": "chocolat", "size": 100}
        ]
       }
      ]

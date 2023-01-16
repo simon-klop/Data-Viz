@@ -189,6 +189,7 @@ function BakeryViz1(dataset) {
     //DYNAMIC (better with JQuery slider)
     const minDate = d3.min(dataset.map(d => d.date))
     const maxDate = d3.max(dataset.map(d => d.date))
+    const options = { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' };
     $("#slider-range").slider({
         range: true,
         min: new Date(minDate).getTime() / 1000,
@@ -196,21 +197,26 @@ function BakeryViz1(dataset) {
         step: 86400,
         values: [new Date(minDate).getTime() / 1000, new Date(maxDate).getTime() / 1000],
         slide: function (event, ui) {
-            $("#amount").val((new Date(ui.values[0] * 1000).toDateString()) + " - " + (new Date(ui.values[1] * 1000)).toDateString());
+            $("#amount").val((new Date(ui.values[0] * 1000).toLocaleDateString("fr-FR", options)) 
+                + " - " + (new Date(ui.values[1] * 1000)).toLocaleDateString("fr-FR", options))
         },
         change: function (event, ui) {
             let arr = document.getElementById("amount").value.split(" - ")
-            let parseTime = d3.timeParse("%a %b %d %Y");
-            let startDate = parseTime(arr[0])
-            let endDate = parseTime(arr[1])
+            let dates = arr.map(d => d.split(" ")[1])
+            let parseTime = d3.timeParse("%d/%m/%Y");
+            let startDate = parseTime(dates[0])
+            let endDate = parseTime(dates[1])
             update(30, startDate, endDate)
         }
     })
 
-    $("#amount").val((new Date($("#slider-range").slider("values", 0) * 1000).toDateString()) +
-        " - " + (new Date($("#slider-range").slider("values", 1) * 1000)).toDateString())
+
+    $("#amount").val((new Date($("#slider-range").slider("values", 0) * 1000).toLocaleDateString("fr-FR", options)) +
+        " - " + (new Date($("#slider-range").slider("values", 1) * 1000)).toLocaleDateString("fr-FR", options))
 
 }
+
+
 
 //-----------------VIZ 2 ---------------------
 function getFrequentItemCorr(dataset, hour_value) {
@@ -221,11 +227,11 @@ function getFrequentItemCorr(dataset, hour_value) {
     let corr_articles = articles.map(function (a) {
         let filtrage = opti.filter(d => d[1].map(k => k.article).includes(a) && d[1].map(k => k.hours).includes(hour_value))
         let nb_tickets = filtrage.length
-        //console.log("arr",filtrage.map(d => d[1].map(k => k.article)))
-        let liste_achats = filtrage.map(d => d[1].map(k => k.article)).reduce(function (prev, next) { return prev.concat(next) }).sort()
-        //console.log("liste", liste_achats)
-        let stat = d3.rollup(liste_achats, v => v.length / nb_tickets, d => d)
-        //console.log(stat)
+        let liste_achats = filtrage.map(d => d[1].map(k => k.article))
+        let arr = []
+        liste_achats.forEach(array =>{ arr = arr.concat(array)})
+        arr = arr.sort()
+        let stat = d3.rollup(arr, v => v.length / nb_tickets, d => d)
 
         //handle the pairs(example: several croissants in the same ticket)
         //we remove the duplicates on the tickets to keep the value of remaining article

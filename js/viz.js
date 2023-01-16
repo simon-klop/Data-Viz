@@ -137,7 +137,6 @@ function BakeryViz1(dataset) {
         svg_by_hours.selectAll("rect").remove()
 
         // TO DO ICI SORT DATASETTIME
-        datasettime = datasettime.slice().sort((a, b) => d3.ascending(a.hours, b.hours))
         number_of_day = d3.groups(datasettime, d => d.date).length
         groupData = d3.groups(datasettime, d => d.hours, d => d.ticket_number)
 

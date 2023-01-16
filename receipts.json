@@ -10,7 +10,7 @@
       "children": [
         {"name": "farine", "size": 500},
         {"name": "eau", "size": 350},
-        {"name": "levure de boulanger sèche", "size": 3},
+        {"name": "levure", "size": 3},
         {"name": "sel", "size": 7}
       ]
      }
@@ -27,7 +27,7 @@
         {"name": "sel", "size": 5},
         {"name": "eau", "size": 125},
         {"name": "lait", "size": 250},
-        {"name": "beurre doux", "size": 125},
+        {"name": "beurre", "size": 125},
         {"name": "crème fraiche", "size": 30},
         {"name": "oeuf", "size": 60}
        ]
@@ -42,7 +42,7 @@
         "children": [
          {"name": "farine", "size": 500},
          {"name": "eau", "size": 350},
-         {"name": "levure fraiche", "size": 7},
+         {"name": "levure", "size": 7},
          {"name": "sel", "size": 7}
         ]
        }
@@ -57,9 +57,9 @@
         "children": [
           {"name": "farine", "size": 500},
           {"name": "sel", "size": 7},
-          {"name": "levure de boulanger sèche", "size": 3},
+          {"name": "levure", "size": 3},
           {"name": "lait", "size": 250},
-          {"name": "beurre doux", "size": 100},
+          {"name": "beurre", "size": 100},
           {"name": "oeuf", "size": 60}
         ]
   

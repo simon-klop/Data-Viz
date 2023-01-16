@@ -1,65 +1,6 @@
 {
  "name": "Patisseries",
  "children": [
-  {
-   "name": "TRADITIONAL BAGUETTE",
-   "children": [
-    {
-     "name": "ingredients",
-     "children": [
-      {"name": "farine", "size": 1000},
-      {"name": "eau", "size": 700},
-      {"name": "levure fraiche", "size": 16},
-      {"name": "sel", "size": 22}
-     ],
-     "temps de préparation": "1h20"
-    }
-   ]
-  },
-
-  {
-    "name": "PAIN AU CHOCOLAT",
-    "children": [
-     {
-      "name": "ingredients",
-      "children": [
-        {"name": "sucre", "size": 3812},
-        {"name": "farine", "size": 743},
-        {"name": "oeuf", "size": 3938},
-        {"name": "levure fraiche", "size": 743},
-        {"name": "sel", "size": 5},
-        {"name": "miel", "size": 3812},
-        {"name": "beurre", "size": 743},
-        {"name": "lait", "size": 3938},
-        {"name": "crème fraiche", "size": 743},
-        {"name": "chocolat", "size": 743}
-      ],
-      "temps de préparation": "16h20"
-     }
-    ]
-   },
-
-   {
-    "name": "CROISSANT",
-    "children": [
-     {
-      "name": "ingredients",
-      "children": [
-        {"name": "sucre", "size": 3812},
-        {"name": "farine", "size": 743},
-        {"name": "oeuf", "size": 3938},
-        {"name": "levure fraiche", "size": 743},
-        {"name": "sel", "size": 10},
-        {"name": "miel", "size": 3812},
-        {"name": "beurre", "size": 743},
-        {"name": "lait", "size": 3938},
-        {"name": "crème fraiche", "size": 743}
-      ],
-      "temps de préparation": "25h20"
-
-     }
-    ]
-   },
 
    {
     "name": "BAGUETTE",
@@ -76,6 +17,68 @@
       "temps de préparation": "1h20"
      }
     ]
-   }
+   },
+
+   {
+     "name": "PAIN AU CHOCOLAT",
+     "children": [
+      {
+       "name": "ingredients",
+       "children": [
+         {"name": "sucre", "size": 3812},
+         {"name": "farine", "size": 743},
+         {"name": "oeuf", "size": 3938},
+         {"name": "levure fraiche", "size": 743},
+         {"name": "sel", "size": 5},
+         {"name": "miel", "size": 3812},
+         {"name": "beurre", "size": 743},
+         {"name": "lait", "size": 3938},
+         {"name": "crème fraiche", "size": 743},
+         {"name": "chocolat", "size": 743}
+       ],
+       "temps de préparation": "16h20"
+      }
+     ]
+    },
+    {
+      "name": "TRADITIONAL BAGUETTE",
+      "children": [
+       {
+        "name": "ingredients",
+        "children": [
+         {"name": "farine", "size": 1000},
+         {"name": "eau", "size": 700},
+         {"name": "levure fraiche", "size": 16},
+         {"name": "sel", "size": 22}
+        ],
+        "temps de préparation": "1h20"
+       }
+      ]
+     },
+
+     {
+      "name": "CROISSANT",
+      "children": [
+       {
+        "name": "ingredients",
+        "children": [
+          {"name": "sucre", "size": 3812},
+          {"name": "farine", "size": 743},
+          {"name": "oeuf", "size": 3938},
+          {"name": "levure fraiche", "size": 743},
+          {"name": "sel", "size": 10},
+          {"name": "miel", "size": 3812},
+          {"name": "beurre", "size": 743},
+          {"name": "lait", "size": 3938},
+          {"name": "crème fraiche", "size": 743}
+        ],
+        "temps de préparation": "25h20"
+  
+       }
+      ]
+     }
+
+
+
  ]
 }

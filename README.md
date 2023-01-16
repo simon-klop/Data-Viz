@@ -2,7 +2,7 @@
 
 # TO-DO
 - Observable => github page DONE
-- Mettre photos prototypes dans repo
+- Mettre photos prototypes dans repo DONE
 - opti code
 
 

@@ -184,7 +184,7 @@ function BakeryViz1(dataset) {
     //FIRST INIT
     let initStartDate = d3.min(dataset.map(d => d.date))
     let initEndDate = d3.max(dataset.map(d => d.date))
-    update(10, initStartDate, initEndDate)
+    update(30, initStartDate, initEndDate) // 30 Buckets
 
     //DYNAMIC (better with JQuery slider)
     const minDate = d3.min(dataset.map(d => d.date))

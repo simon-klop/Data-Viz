@@ -804,7 +804,30 @@ function BakeryViz4(alldata, dataset) {
     const h_r = 300
 
     alldata_filtre = alldata.filter(function (d) { return article.includes(d.article) })
-    price_by_article = d3.rollups(alldata_filtre, v => d3.mean(v, d => d.unit_price), d => d.article)
+    price_by_article = d3.rollup(alldata_filtre, v => d3.mean(v, d => d.unit_price), d => d.article)
+
+    console.log(dataset.mean_price)
+    
+    var prices = new Map();
+    dataset.mean_price.forEach(function(item) {
+        prices.set(item.name, item.price);
+    })
+
+    console.log(prices)
+    price_ingred = []
+
+    dataset.children.forEach(article => {
+        var tmp = []
+
+        article.children[0].children.forEach(ingredient => {
+            console.log(ingredient.size)
+            tmp.push(ingredient.name, ingredient.size * prices.get(ingredient.name));
+        })
+        tmp.push("total_mean_price", price_by_article.get(article.name))
+        price_ingred.push([article.name, tmp])
+    })
+
+
 
     const svg2 = d3.select("#vis4-benf").append("svg").attr("height", h_r).attr("width", w_r)
 

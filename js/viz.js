@@ -236,8 +236,6 @@ function getFrequentItemCorr(dataset, hour_value) {
 
         return [a, stat]
     })
-
-    console.log('corr_articles', corr_articles)
     return corr_articles
 
 }
@@ -305,7 +303,6 @@ function BakeryViz2(dataset) {
             return !isNaN(value);
         }).slice(-5)[0]
 
-        console.log("maxValues", maxValues)
         const offers = []
 
         for (let i = 0; i < x.length; i++) {
@@ -327,7 +324,6 @@ function BakeryViz2(dataset) {
                         let value_frequent = y[i][x[j]] * 100
 
                         Tooltip.html(function () {
-                            console.log(value_frequent)
                             if (value_frequent > 0) {
                                 return "Lorsque qu'un client achète " + x[i] + " à " + hour_value + " heure, il achète avec " + x[j] + " dans " + y[i][x[j]] * 100 + "% des cas"
                             }
@@ -426,7 +422,6 @@ function BakeryViz2(dataset) {
     d3.select("#aricleName").on("change", function () {
         const checked = document.getElementById("aricleName");
         if ("Tous les articles" == checked.value && !stateVis2) {
-            console.log("pas de changement d'etat")
         } else {
             const body = document.getElementById("corr_viz");
             d3.csv(
@@ -435,7 +430,6 @@ function BakeryViz2(dataset) {
                 function (d) {
                     if (!stateVis2) {
                         body.innerHTML = ``
-                        console.log("zoom");
                         stateVis2 = true
                         BakeryViz2Bis(d, checked.value)
                     }
@@ -576,7 +570,6 @@ function BakeryViz2Bis(dataset) {
     d3.select("#aricleName").on("change", function () {
         const checked = document.getElementById("aricleName");
         if ("Tous les articles" == checked.value && !stateVis2) {
-            console.log("pas de changement d'etat")
         } else {
             const body = document.getElementById("corr_viz");
             d3.csv(
@@ -585,20 +578,17 @@ function BakeryViz2Bis(dataset) {
                 function (data) {
                     if ("Tous les articles" == checked.value && stateVis2) {
                         body.innerHTML = ``
-                        console.log("dezoom");
                         stateVis2 = false
                         Tooltip
                             .style("opacity", 0)
                         BakeryViz2(data)
                     } else if (!stateVis2) {
                         body.innerHTML = ``
-                        console.log("zoom");
                         stateVis2 = true
                         Tooltip
                             .style("opacity", 0)
                         BakeryViz2Bis(data)
                     } else {
-                        console.log("zoom_update");
                         stateVis2 = true
                         Tooltip
                             .style("opacity", 0)
@@ -633,7 +623,7 @@ function BakeryViz3(dataset) {
     select.innerHTML = contenu;
 
     const c = d3.scaleOrdinal().domain(
-        new Set(dataset.map(d => d.article))).range(["red", "green", "blue", "yellow", "pink", "purple", "orange", "black", "cyan", "brown"])
+        new Set(dataset.map(d => d.article))).range(["red", "green", "blue", "purple", "orange", "black", "grey", "brown", "pink", "#FF8C00"])
 
     // create a tooltip
     var Tooltip = d3.select("#linechart")
@@ -841,7 +831,7 @@ function invertJson(jsonData) {
 
 function BakeryViz4(dataset) {
     const select = document.getElementById("vis4select");
-    const c = ["#FF8C00", "red", "green", "blue", "purple", "orange", "black", "grey", "brown", "pink"]
+    const c = ["red", "green", "blue", "purple", "orange", "black", "grey", "brown", "pink", "#FF8C00"]
 
     let article = []
     let ingredient = []

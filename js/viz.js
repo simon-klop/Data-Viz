@@ -419,7 +419,6 @@ function BakeryViz2(dataset) {
             }
             list.innerHTML = contenu;
         } else {
-            console.log(changed_hour)
             svg.selectAll("text").remove()
 
             //Computation with the value of the slider
@@ -525,15 +524,12 @@ function BakeryViz2(dataset) {
         const checked = document.getElementById("aricleName");
 
         if ("Tous les articles" != checked.value && !zoom) {
-            console.log("zoom")
             zoom = true
             update(zoom, false)
         } else if ("Tous les articles" == checked.value && zoom) {
-            console.log("dezoom")
             zoom = false
             update(zoom, false)
         } else {
-            console.log("update")
             update(zoom, true)
         }
 
@@ -769,7 +765,7 @@ function invertJson(jsonData) {
     return result;
 }
 
-function BakeryViz4(dataset) {
+function BakeryViz4(alldata, dataset) {
     const select = document.getElementById("vis4select");
     const c = ["red", "green", "blue", "purple", "orange", "black", "grey", "brown", "pink", "#FF8C00"]
 
@@ -801,10 +797,49 @@ function BakeryViz4(dataset) {
     var svg = d3.select("#pack").append("svg").attr("height", h).attr("width", w)
 
 
+    //-----------------------
+    // VIS RIGHT - BENEF:
+    const margin_r = ({ top: 10, right: 10, bottom: 35, left: 30 })
+    const w_r = 400
+    const h_r = 300
+
+    alldata_filtre = alldata.filter(function (d) { return article.includes(d.article) })
+    price_by_article = d3.rollups(alldata_filtre, v => d3.mean(v, d => d.unit_price), d => d.article)
+
+    const svg2 = d3.select("#vis4-benf").append("svg").attr("height", h_r).attr("width", w_r)
+
+    // X axis init (static) 
+    var x_r = d3.scaleBand()
+        .range([margin_r.left, w_r])
+        .domain(article)
+        .padding(0.1);
+
+    svg2.append("g")
+        .attr("transform", `translate(0,${h_r - margin_r.bottom})`)
+        .style('font-size', 8)
+        .call(d3.axisBottom(x_r))
+    
+    // Y axis init (dynamic)
+    var y_r = d3.scaleLinear()
+        .range([h_r - margin_r.bottom, margin_r.top])
+        .domain(d3.extent([0, d3.max(price_by_article, d => d[1])]))
+
+
+    svg2.append("g").attr("transform", `translate(${margin_r.left},0)`)
+    .call(d3.axisLeft(y_r))
+
+    svg2.selectAll("mybar")
+            .data(price_by_article)
+            .enter()
+            .append("rect")
+            .attr("x", function (d) { return x_r(d[0]) })
+            .attr("y", function (d) { return y_r(d[1]); })
+            .attr("width", x_r.bandwidth())
+            .attr("height", function (d) { return h_r - y_r(d[1]) - margin_r.bottom; })
+            .style("fill", "blue")
+
     //Dynamic Part
     function update(checked) {
-
-
 
         // Cleaning of the SVG
         svg.selectAll("rect").remove()
@@ -1008,7 +1043,6 @@ function BakeryViz4(dataset) {
 
 var stateVis2 = false;
 LoadBakeryAndDrawV1V2V3()
-LoadBakeryAndDrawV4()
 
 function conversor1(d) {
     d.ticket_number += d.ticket_number
@@ -1029,17 +1063,18 @@ async function LoadBakeryAndDrawV1V2V3() {
         conversor1,
         function (data) {
             BakeryViz1(data),
-                BakeryViz2(data),
-                BakeryViz3(data)
+            BakeryViz2(data),
+            BakeryViz3(data), 
+            LoadBakeryAndDrawV4(data)
         })
 }
 
 
-async function LoadBakeryAndDrawV4() {
+async function LoadBakeryAndDrawV4(dataset) {
     d3.json(
         "https://simon-klop.github.io/Data-Viz/receipts.json",
         function (data) {
-            BakeryViz4(data)
+            BakeryViz4(dataset, data)
         })
 }
 
@@ -1183,6 +1218,7 @@ function init() {
             size="100" readonly/>
     </p>
 
+    <div class="slider-area" style="text-align:center; margin: 0px 40px 0px 40px; padding:20px; border: 1px solid rgb(255, 0, 0); background: #fffefe; border-radius: 25px;">
     <div id="slider-range"></div>
 </div>`
     stateVis2 = false;
@@ -1192,7 +1228,6 @@ function displayMode(mode) {
     if (mode == 0) {
         init()
         LoadBakeryAndDrawV1V2V3()
-        LoadBakeryAndDrawV4()
     } else {
         const vis1 = document.getElementById("vis1");
         const vis2 = document.getElementById("vis2");

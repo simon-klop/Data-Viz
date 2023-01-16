@@ -82,13 +82,13 @@
             Combien de vendeur-euse-s sont nécessaires ? Quels sont les horaires d'ouverture optimum ?
         </div>
         <div id="vis1">
-            <div class="row justify-content-center"  >
+            <div class="row justify-content-center">
                 <div class="col-sm-8">
                     <div class="card">
                         <div class="card-header">
                             Nombre de client en fonction du temps
                         </div>
-                        <div  >
+                        <div>
                             <div class="card-body">
                                 <div id="number_clients"></div>
                             </div>
@@ -109,27 +109,29 @@
             <div class="card-footer text-muted">
                 <p>
                     <label for="amount">Intervalle choisi:</label>
-                    <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;"
-                        size="40" readonly/>
+                    <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;" size="40"
+                        readonly />
                 </p>
-    
-                <div class="slider-area" style="text-align:center; margin: 0px 40px 0px 40px; padding:20px; border: 1px solid rgb(255, 0, 0); background: #fffefe; border-radius: 25px;">
-                        <div id="slider-range"></div>
+
+                <div class="slider-area"
+                    style="text-align:center; margin: 0px 40px 0px 40px; padding:20px; border: 1px solid rgb(255, 0, 0); background: #fffefe; border-radius: 25px;">
+                    <div id="slider-range"></div>
                 </div>
-                
+
             </div>
         </div>
-    
-        
+
+
         </br>
         </br>
         </br>
 
 
         <div class="card-header">
-            Comment placer les articles pour que ceux qui sont souvent achetés ensemble soient côte à côte ? Quelles offres faut-il créer et à quelle heure ?
+            Comment placer les articles pour que ceux qui sont souvent achetés ensemble soient côte à côte ? Quelles
+            offres faut-il créer et à quelle heure ?
         </div>
-        <div class="row justify-content-center"  id="vis2">
+        <div class="row justify-content-center" id="vis2">
             <div class="col-sm-9">
                 <div class="card">
                     <div class="card-header">
@@ -140,18 +142,20 @@
                             <div class="col-sm-6">
                                 <label for="customRange3" class="form-label"></label>
                                 <div class="slider">
-                                    <label>Heure de l'observation sélectionné : </label><p id="rangeValue">8</p>
+                                    <label>Heure de l'observation sélectionné : </label>
+                                    <p id="rangeValue">8</p>
                                     <input type="range" min="8" max="20" value="8" id="sliderCorr"
                                         oninput="rangeValue.innerText = this.value">
                                 </div>
                             </div>
                             <div class="col-sm-6">
-                            </br><label>Quel article voulez-vous observer? </label><select class="form-select" id="aricleName" aria-label="Default select example"></select>
+                                </br><label>Quel article voulez-vous observer? </label><select class="form-select"
+                                    id="aricleName" aria-label="Default select example"></select>
                             </div>
                         </div>
                     </div>
-        
-                    <div class="card-body" >
+
+                    <div class="card-body">
                         <div id="corr_viz"></div>
                     </div>
                 </div>
@@ -162,13 +166,13 @@
                     <div class="card-header">
                         Offres les plus pertinentes :
                     </div>
-                    <div class="card-body"  id="best_offers">
+                    <div class="card-body" id="best_offers">
                     </div>
                 </div>
             </div>
 
         </div>
-    
+
 
         </br>
         </br>
@@ -178,7 +182,7 @@
         <div class="card-header">
             Comment optimiser sa gestion des stocks d'articles ?
         </div>
-        <div class="row justify-content-center"  id="vis3">
+        <div class="row justify-content-center" id="vis3">
             <div class="col-sm-2">
                 <div class="card">
                     <div class="card-header">
@@ -188,7 +192,7 @@
                         <div id="linechart-options"></div>
                     </div>
                 </div></br></br>
-                
+
             </div>
 
             <div class="col-sm-7">
@@ -201,7 +205,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-sm-3">
                 <div class="card">
                     <div class="card-header">
@@ -212,37 +216,48 @@
                     </div>
                 </div>
             </div>
-            
+
 
         </div>
 
-                 
+
         </br>
         </br>
         </br>
 
         <div class="card-header">
-            Comment optimiser sa gestion des stocks d'ingrédients ?
+            Comment optimiser sa gestion des stocks d'ingrédients ? Quelle sera la marge de bénéfice ?
         </div>
-        <div class="row justify-content-center"  id="vis4">
-            <div class="col-sm-3">
+        <div class="row justify-content-center" id="vis4">
+            <div class="col-sm-4">
                 <div class="card">
                     <div class="card-header">
-                        Sélectionnez un mode d'affichage : 
+                        Sélectionnez un mode d'affichage :
                     </div>
                     <div class="card-body">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked">
-                            <label class="form-check-label" for="flexSwitchCheckChecked">Focus sur les ingredients</label>
-                          </div>
+                            <label class="form-check-label" for="flexSwitchCheckChecked">Focus sur les
+                                ingredients</label>
+                        </div>
                     </div>
-                </div></br></br>
+                </div></br>
                 <div class="card">
                     <div class="card-header">
-                        Quel/combien d'article souhaitez-vous produire? 
+                        Quel/combien d'article souhaitez-vous produire?
                     </div>
                     <div class="card-body" id="vis4select"></div>
+                </div></br>
+
+                <div class="card">
+                    <div class="card-header">
+                        Moyenne des coûts/prix par article
+                    </div>
+                    <div class="card-body" id="vis4-benf"></div>
+
                 </div>
+
+
             </div>
 
             <div class="col-sm-7">
@@ -254,7 +269,8 @@
                 </div>
             </div>
 
-        </div>
+
+
 
     </section>
 

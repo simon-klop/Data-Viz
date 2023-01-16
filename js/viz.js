@@ -189,6 +189,7 @@ function BakeryViz1(dataset) {
     //DYNAMIC (better with JQuery slider)
     const minDate = d3.min(dataset.map(d => d.date))
     const maxDate = d3.max(dataset.map(d => d.date))
+    const options = { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' };
     $("#slider-range").slider({
         range: true,
         min: new Date(minDate).getTime() / 1000,
@@ -196,19 +197,21 @@ function BakeryViz1(dataset) {
         step: 86400,
         values: [new Date(minDate).getTime() / 1000, new Date(maxDate).getTime() / 1000],
         slide: function (event, ui) {
-            $("#amount").val((new Date(ui.values[0] * 1000).toDateString()) + " - " + (new Date(ui.values[1] * 1000)).toDateString());
+            $("#amount").val((new Date(ui.values[0] * 1000).toLocaleDateString("fr-FR", options)) + " - " + (new Date(ui.values[1] * 1000)).toLocaleDateString("fr-FR", options))
         },
         change: function (event, ui) {
             let arr = document.getElementById("amount").value.split(" - ")
-            let parseTime = d3.timeParse("%a %b %d %Y");
-            let startDate = parseTime(arr[0])
-            let endDate = parseTime(arr[1])
+            let dates = arr.map(d => d.split(" ")[1])
+            let parseTime = d3.timeParse("%d/%m/%Y");
+            let startDate = parseTime(dates[0])
+            let endDate = parseTime(dates[1])
             update(30, startDate, endDate)
         }
     })
 
-    $("#amount").val((new Date($("#slider-range").slider("values", 0) * 1000).toDateString()) +
-        " - " + (new Date($("#slider-range").slider("values", 1) * 1000)).toDateString())
+
+    $("#amount").val((new Date($("#slider-range").slider("values", 0) * 1000).toLocaleDateString("fr-FR", options)) +
+        " - " + (new Date($("#slider-range").slider("values", 1) * 1000)).toLocaleDateString("fr-FR", options))
 
 }
 

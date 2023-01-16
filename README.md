@@ -1,7 +1,7 @@
 # Data-Viz
 
 # TO-DO
-- Observable => github page
+- Observable => github page DONE
 - Mettre photos prototypes dans repo
 - opti code
 

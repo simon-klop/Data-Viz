@@ -221,8 +221,11 @@ function getFrequentItemCorr(dataset, hour_value) {
     let corr_articles = articles.map(function (a) {
         let filtrage = opti.filter(d => d[1].map(k => k.article).includes(a) && d[1].map(k => k.hours).includes(hour_value))
         let nb_tickets = filtrage.length
+        //console.log("arr",filtrage.map(d => d[1].map(k => k.article)))
         let liste_achats = filtrage.map(d => d[1].map(k => k.article)).reduce(function (prev, next) { return prev.concat(next) }).sort()
+        //console.log("liste", liste_achats)
         let stat = d3.rollup(liste_achats, v => v.length / nb_tickets, d => d)
+        //console.log(stat)
 
         //handle the pairs(example: several croissants in the same ticket)
         //we remove the duplicates on the tickets to keep the value of remaining article
@@ -256,7 +259,7 @@ function BakeryViz2(dataset) {
     const h = 400
     const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
 
-
+    var zoom = false
     const list = document.getElementById("best_offers");
 
     const max_corr = 0.6
@@ -270,187 +273,6 @@ function BakeryViz2(dataset) {
     }
     select.innerHTML = contenu;
 
-    //Dynamic Part
-    function update() {
-
-        // Cleaning of the SVG
-        svg.selectAll("rect").remove()
-        svg.selectAll("g").remove()
-
-
-        // create a tooltip
-        var Tooltip = d3.select("#corr_viz")
-            .append("div")
-            .style("opacity", 0)
-            .attr("class", "tooltip")
-            .style("background-color", "white")
-            .style("border", "solid")
-            .style("border-width", "2px")
-            .style("border-radius", "5px")
-            .style("padding", "5px")
-
-        //Computation with the value of the slider
-        hour_value = Number(document.getElementById("sliderCorr").value)
-        data = getFrequentItemCorr(dataset, hour_value)
-
-        x = data.map(d => d[0])
-        y = data.map(d => Array.from(d[1]).reduce((acc, [key, value]) => {
-            acc[key] = value;
-            return acc;
-        }, {}))
-
-        let maxValues = y.map(Object.values).flat().sort().filter(function (value) {
-            return !isNaN(value);
-        }).slice(-5)[0]
-
-        const offers = []
-
-        for (let i = 0; i < x.length; i++) {
-            for (let j = 0; j < x.length; j++) {
-                svg.append("rect")
-                    .attr('x', 100 + i * 90)
-                    .attr('y', 67 + 30 * j)
-                    .attr('width', 90)
-                    .attr('height', 30)
-                    .attr('fill', function () { return myColor(y[i][x[j]]) })
-                    .on('mouseover', function (d, i) {
-                        Tooltip.style("opacity", 1)
-                        d3.select(this).transition()
-                            .duration('50')
-                            .attr('opacity', '.80')
-
-                    })
-                    .on("mousemove", function (d, f) {
-                        let value_frequent = y[i][x[j]] * 100
-
-                        Tooltip.html(function () {
-                            if (value_frequent > 0) {
-                                return "Lorsque qu'un client achète " + x[i] + " à " + hour_value + " heure, il achète avec " + x[j] + " dans " + y[i][x[j]] * 100 + "% des cas"
-                            }
-                            else {
-                                return "Lorsque " + x[i] + " est acheté à " + hour_value + " heure, les clients n'achètent pas en plus " + x[j]
-                            }
-                        })
-                            .style("left", (d3.mouse(this)[0]) + 100 + "px")
-                            .style("top", (d3.mouse(this)[1]) + 100 + "px")
-                    })
-
-                    .on('mouseout', function (d, i) {
-                        Tooltip
-                            .style("opacity", 0)
-                        d3.select(this).transition()
-                            .duration('50')
-                            .attr('opacity', '1')
-                    })
-
-                if (y[i][x[j]] >= maxValues) {
-                    offers.push(x[i] + ' + ' + x[j])
-                }
-            }
-        }
-
-
-        // Axe X
-        svg.append("g").selectAll("text").data(x).enter()
-            .append("text")
-            .attr("x", (d, i) => margin.left + i * 90)
-            .attr("y", d => 40)
-            .text(d => d)
-            .attr("font-size", "7.5px")
-
-        // Axe Y
-        svg.append("g").selectAll("text").data(x).enter()
-            .append("text")
-            .attr("x", d => 10)
-            .attr("y", (d, i) => 75 + i * 30)
-            .text(d => d)
-            .attr("font-size", "8px")
-
-        // Legend 
-        let space_divisor = (w - margin.left) / ((max_corr * 10) + 1)
-        svg.append("g").selectAll("text").data(d3.range(0, max_corr, 0.1)).enter()
-            .append("rect")
-            .attr('x', (d, i) => (margin.left + space_divisor) + space_divisor * i)
-            .attr('y', 380)
-            .attr('width', space_divisor)
-            .attr('height', 10)
-            .attr('fill', function (d) { return myColor(d) })
-
-        svg.append("g")
-            .append("rect")
-            .attr('x', (d, i) => margin.left)
-            .attr('y', 380)
-            .attr('width', space_divisor)
-            .attr('height', 10)
-            .attr('fill', 'black')
-
-        // Legend info
-        svg.append("g").selectAll("text").data(d3.range(0, max_corr * 100 + 10, 10)).enter()
-            .append("text")
-            .attr('x', (d, i) => (margin.left + space_divisor) + space_divisor * i)
-            .attr('y', 400)
-            .text(d => d + "%")
-            .attr("font-size", "10px")
-
-        svg.append("g")
-            .append("text")
-            .attr('x', (d, i) => margin.left)
-            .attr('y', 400)
-            .attr("font-size", "10px")
-            .text("Pas acheté ensemble")
-
-
-        contenu = ``
-        for (let i = 0; i < offers.length; i++) {
-                contenu += `<li class="list-group-item d-flex justify-content-between align-items-center">
-                <span class="badge bg-primary rounded-pill">Top ${i+ 1}</span>
-                ${offers[i].toLowerCase()}
-                </li>`
-        }
-        list.innerHTML = contenu;
-    }
-
-
-    // first init
-    update()
-
-    // DYNAMIC
-    d3.select("#sliderCorr").on("click", function () {
-        update()
-    })
-
-    d3.select("#aricleName").on("change", function () {
-        const checked = document.getElementById("aricleName");
-        if ("Tous les articles" == checked.value && !stateVis2) {
-        } else {
-            const body = document.getElementById("corr_viz");
-            d3.csv(
-                "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
-                conversor1,
-                function (d) {
-                    if (!stateVis2) {
-                        body.innerHTML = ``
-                        stateVis2 = true
-                        BakeryViz2Bis(d, checked.value)
-                    }
-                }
-            )
-        }
-    })
-}
-
-function BakeryViz2Bis(dataset) {
-    const margin = ({ top: 10, right: 250, bottom: 30, left: 40 })
-
-    const w = 1000
-    const h = 400
-    const list = document.getElementById("best_offers");
-    list.innerHTML = ``;
-    const svg = d3.select("#corr_viz").append("svg").attr("height", h).attr("width", w)
-    const max_corr = 0.6
-    var myColor = d3.scaleLinear().domain([0.01, max_corr]).range(["#f4cccc", "#cc0000"])
-    var articles = getArticles(dataset)
-
     // create a tooltip
     var Tooltip = d3.select("#corr_viz")
         .append("div")
@@ -462,143 +284,255 @@ function BakeryViz2Bis(dataset) {
         .style("border-radius", "5px")
         .style("padding", "5px")
 
-
     //Dynamic Part
-    function update(changed_hour) {
+    function update(zoom, changed_hour) {
 
         // Cleaning of the SVG
         svg.selectAll("rect").remove()
         svg.selectAll("g").remove()
-        svg.selectAll("text").remove()
 
-        //Computation with the value of the slider
-        hour_value = Number(document.getElementById("sliderCorr").value)
-        product = document.getElementById("aricleName").value
 
-        if (changed_hour)
+        if (!zoom) {
+            //Computation with the value of the slider
+            hour_value = Number(document.getElementById("sliderCorr").value)
             data = getFrequentItemCorr(dataset, hour_value)
 
-        y_arr = data.map(d => Array.from(d[1]).reduce((acc, [key, value]) => {
-            acc[key] = value;
-            return acc;
-        }, {}))[articles.indexOf(product)]
+            x = data.map(d => d[0])
+            y = data.map(d => Array.from(d[1]).reduce((acc, [key, value]) => {
+                acc[key] = value;
+                return acc;
+            }, {}))
+
+            let maxValues = y.map(Object.values).flat().sort().filter(function (value) {
+                return !isNaN(value);
+            }).slice(-5)[0]
+
+            const offers = []
+
+            for (let i = 0; i < x.length; i++) {
+                for (let j = 0; j < x.length; j++) {
+                    svg.append("rect")
+                        .attr('x', 100 + i * 90)
+                        .attr('y', 67 + 30 * j)
+                        .attr('width', 90)
+                        .attr('height', 30)
+                        .attr('fill', function () { return myColor(y[i][x[j]]) })
+                        .on('mouseover', function (d, i) {
+                            Tooltip.style("opacity", 1)
+                            d3.select(this).transition()
+                                .duration('50')
+                                .attr('opacity', '.80')
+
+                        })
+                        .on("mousemove", function (d, f) {
+                            let value_frequent = y[i][x[j]] * 100
+
+                            Tooltip.html(function () {
+                                if (value_frequent > 0) {
+                                    return "Lorsque qu'un client achète " + x[i] + " à " + hour_value + " heure, il achète avec " + x[j] + " dans " + y[i][x[j]] * 100 + "% des cas"
+                                }
+                                else {
+                                    return "Lorsque " + x[i] + " est acheté à " + hour_value + " heure, les clients n'achètent pas en plus " + x[j]
+                                }
+                            })
+                                .style("left", (d3.mouse(this)[0]) + 100 + "px")
+                                .style("top", (d3.mouse(this)[1]) + 100 + "px")
+                        })
+
+                        .on('mouseout', function (d, i) {
+                            Tooltip
+                                .style("opacity", 0)
+                            d3.select(this).transition()
+                                .duration('50')
+                                .attr('opacity', '1')
+                        })
+
+                    if (y[i][x[j]] >= maxValues) {
+                        offers.push(x[i] + ' + ' + x[j])
+                    }
+                }
+            }
 
 
-        // y_arr[product] =  y_arr[product] - 1
+            // Axe X
+            svg.append("g").selectAll("text").data(x).enter()
+                .append("text")
+                .attr("x", (d, i) => margin.left + i * 90)
+                .attr("y", d => 40)
+                .text(d => d)
+                .attr("font-size", "7.5px")
 
-        y = Object.entries(y_arr).sort((a, b) => b[1] - a[1]).reduce((acc, [key, value]) => {
-            acc[key] = value;
-            return acc;
-        }, {})
+            // Axe Y
+            svg.append("g").selectAll("text").data(x).enter()
+                .append("text")
+                .attr("x", d => 10)
+                .attr("y", (d, i) => 75 + i * 30)
+                .text(d => d)
+                .attr("font-size", "8px")
+
+            // Legend 
+            let space_divisor = (w - margin.left) / ((max_corr * 10) + 1)
+            svg.append("g").selectAll("text").data(d3.range(0, max_corr, 0.1)).enter()
+                .append("rect")
+                .attr('x', (d, i) => (margin.left + space_divisor) + space_divisor * i)
+                .attr('y', 380)
+                .attr('width', space_divisor)
+                .attr('height', 10)
+                .attr('fill', function (d) { return myColor(d) })
+
+            svg.append("g")
+                .append("rect")
+                .attr('x', (d, i) => margin.left)
+                .attr('y', 380)
+                .attr('width', space_divisor)
+                .attr('height', 10)
+                .attr('fill', 'black')
+
+            // Legend info
+            svg.append("g").selectAll("text").data(d3.range(0, max_corr * 100 + 10, 10)).enter()
+                .append("text")
+                .attr('x', (d, i) => (margin.left + space_divisor) + space_divisor * i)
+                .attr('y', 400)
+                .text(d => d + "%")
+                .attr("font-size", "10px")
+
+            svg.append("g")
+                .append("text")
+                .attr('x', (d, i) => margin.left)
+                .attr('y', 400)
+                .attr("font-size", "10px")
+                .text("Pas acheté ensemble")
 
 
-        x = Object.keys(y)
+            contenu = ``
+            for (let i = 0; i < offers.length; i++) {
+                contenu += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="badge bg-primary rounded-pill">Top ${i + 1}</span>
+                    ${offers[i].toLowerCase()}
+                    </li>`
+            }
+            list.innerHTML = contenu;
+        } else {
+            console.log(changed_hour)
+            svg.selectAll("text").remove()
 
-        item = x.indexOf(product)
+            //Computation with the value of the slider
+            hour_value = Number(document.getElementById("sliderCorr").value)
+            product = document.getElementById("aricleName").value
 
-        for (let i = 0; i < x.length; i++) {
-            svg.append("rect")
-                .attr('x', 100)
-                .attr('y', 67 + 30 * i)
-                .attr('width', 900)
-                .attr('height', 30)
-                .attr('fill', function () { return myColor(y[x[i]]) })
-                .on('mouseover', function (d, i) {
-                    Tooltip.style("opacity", 1)
-                    d3.select(this).transition()
-                        .duration('50')
-                        .attr('opacity', '.80')
+            if (changed_hour)
+                data = getFrequentItemCorr(dataset, hour_value)
 
-                })
-                .on("mousemove", function (d, f) {
-                    Tooltip
-                        .html("Lorsqu'un/une " + product + " est acheté/e, on achète un/une " + x[i] + " avec " + y[x[i]] * 100 + "% du temps à " + hour_value + " heure")
-                        .style("left", (d3.mouse(this)[0]) + 100 + "px")
-                        .style("top", (d3.mouse(this)[1]) + 100 + "px")
-                })
-                .on('mouseout', function (d, i) {
-                    Tooltip
-                        .style("opacity", 0)
-                    d3
-                        .select(this).transition()
-                        .duration('50')
-                        .attr('opacity', '1')
-                })
+            y_arr = data.map(d => Array.from(d[1]).reduce((acc, [key, value]) => {
+                acc[key] = value;
+                return acc;
+            }, {}))[articles.indexOf(product)]
+
+
+            // y_arr[product] =  y_arr[product] - 1
+
+            y = Object.entries(y_arr).sort((a, b) => b[1] - a[1]).reduce((acc, [key, value]) => {
+                acc[key] = value;
+                return acc;
+            }, {})
+
+
+            x = Object.keys(y)
+
+            item = x.indexOf(product)
+
+            for (let i = 0; i < x.length; i++) {
+                svg.append("rect")
+                    .attr('x', 100)
+                    .attr('y', 67 + 30 * i)
+                    .attr('width', 900)
+                    .attr('height', 30)
+                    .attr('fill', function () { return myColor(y[x[i]]) })
+                    .on('mouseover', function (d, i) {
+                        Tooltip.style("opacity", 1)
+                        d3.select(this).transition()
+                            .duration('50')
+                            .attr('opacity', '.80')
+
+                    })
+                    .on("mousemove", function (d, f) {
+                        Tooltip
+                            .html("Lorsqu'un/une " + product + " est acheté/e, on achète un/une " + x[i] + " avec " + y[x[i]] * 100 + "% du temps à " + hour_value + " heure")
+                            .style("left", (d3.mouse(this)[0]) + 100 + "px")
+                            .style("top", (d3.mouse(this)[1]) + 100 + "px")
+                    })
+                    .on('mouseout', function (d, i) {
+                        Tooltip
+                            .style("opacity", 0)
+                        d3
+                            .select(this).transition()
+                            .duration('50')
+                            .attr('opacity', '1')
+                    })
+            }
+
+            // Axe Y
+            svg.append("g").selectAll("text").data(x).enter()
+                .append("text")
+                .attr("x", d => 10)
+                .attr("y", (d, i) => 75 + i * 30)
+                .text(d => d)
+                .attr("font-size", "8px")
+
+            // Legend 
+            svg.append("g").selectAll("text").data(d3.range(0, max_corr, 0.1)).enter()
+                .append("rect")
+                .attr('x', (d, i) => 100 + 148 * i)
+                .attr('y', 380)
+                .attr('width', 400)
+                .attr('height', 10)
+                .attr('fill', function (d) { return myColor(d) })
+
+            // Legend info
+            svg.append("g").selectAll("text").data(d3.range(0, max_corr * 100 + 10, 10)).enter()
+                .append("text")
+                .attr('x', (d, i) => 100 + 148 * i)
+                .attr('y', 400)
+                .text(d => d)
+                .attr("font-size", "10px")
+
+            // Titre
+            svg.append("text")
+                .attr("x", 5)
+                .attr("y", margin.top + 5)
+                .text("Produits les plus vendus avec un/une " + product + " à " + hour_value + " heure")
+
         }
 
-        // Axe Y
-        svg.append("g").selectAll("text").data(x).enter()
-            .append("text")
-            .attr("x", d => 10)
-            .attr("y", (d, i) => 75 + i * 30)
-            .text(d => d)
-            .attr("font-size", "8px")
 
-        // Legend 
-        svg.append("g").selectAll("text").data(d3.range(0, max_corr, 0.1)).enter()
-            .append("rect")
-            .attr('x', (d, i) => 100 + 148 * i)
-            .attr('y', 380)
-            .attr('width', 400)
-            .attr('height', 10)
-            .attr('fill', function (d) { return myColor(d) })
-
-        // Legend info
-        svg.append("g").selectAll("text").data(d3.range(0, max_corr * 100 + 10, 10)).enter()
-            .append("text")
-            .attr('x', (d, i) => 100 + 148 * i)
-            .attr('y', 400)
-            .text(d => d)
-            .attr("font-size", "10px")
-
-        // Titre
-        svg.append("text")
-            .attr("x", 5)
-            .attr("y", margin.top + 5)
-            .text("Produits les plus vendus avec un/une " + product + " à " + hour_value + " heure")
     }
-
     // first init
-    update(true)
+    update(zoom, false)
 
     // DYNAMIC
     d3.select("#sliderCorr").on("click", function () {
-        // const checked = document.getElementById("aricleName");
-        update(true)
+        update(zoom, true)
     })
 
     d3.select("#aricleName").on("change", function () {
-        const checked = document.getElementById("aricleName");
-        if ("Tous les articles" == checked.value && !stateVis2) {
-        } else {
-            const body = document.getElementById("corr_viz");
-            d3.csv(
-                "https://simon-klop.github.io/Data-Viz/Bakery_cleaned2.csv",
-                conversor1,
-                function (data) {
-                    if ("Tous les articles" == checked.value && stateVis2) {
-                        body.innerHTML = ``
-                        stateVis2 = false
-                        Tooltip
-                            .style("opacity", 0)
-                        BakeryViz2(data)
-                    } else if (!stateVis2) {
-                        body.innerHTML = ``
-                        stateVis2 = true
-                        Tooltip
-                            .style("opacity", 0)
-                        BakeryViz2Bis(data)
-                    } else {
-                        stateVis2 = true
-                        Tooltip
-                            .style("opacity", 0)
-                        update(false)
-                    }
-                }
-            )
-        }
-    })
 
+        const checked = document.getElementById("aricleName");
+
+        if ("Tous les articles" != checked.value && !zoom) {
+            console.log("zoom")
+            zoom = true
+            update(zoom, false)
+        } else if ("Tous les articles" == checked.value && zoom) {
+            console.log("dezoom")
+            zoom = false
+            update(zoom, false)
+        } else {
+            console.log("update")
+            update(zoom, true)
+        }
+
+
+    })
 }
 
 //-----------------VIZ 3---------------------
@@ -864,7 +798,7 @@ function BakeryViz4(dataset) {
 
     //Dynamic Part
     function update(checked) {
-        
+
 
 
         // Cleaning of the SVG
@@ -1040,9 +974,9 @@ function BakeryViz4(dataset) {
 
 // ______________________________ LOAD DATA AND OTHER FUNCTION ______________________________
 
+var stateVis2 = false;
 LoadBakeryAndDrawV1V2V3()
 LoadBakeryAndDrawV4()
-var stateVis2 = false;
 
 function conversor1(d) {
     d.ticket_number += d.ticket_number

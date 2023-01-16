@@ -78,3 +78,10 @@ function fadeIn(el, display) {
         }
     })();
 };
+
+
+
+function displayValue(val){
+        let result = parseInt(val)+1
+    rangeValue.innerText = "De " + val + "h à " + result + "h";
+}

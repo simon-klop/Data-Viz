@@ -335,10 +335,10 @@ function BakeryViz2(dataset) {
 
                             Tooltip.html(function () {
                                 if (value_frequent > 0) {
-                                    return "Lorsque qu'un client achète " + x[i] + " à " + hour_value + " heure, il achète avec " + x[j] + " dans " + y[i][x[j]] * 100 + "% des cas"
+                                    return "1 vente de " + x[i] + " => " + parseFloat(y[i][x[j]] * 100).toFixed(2) + "% de chances de vendre aussi " + x[j]
                                 }
                                 else {
-                                    return "Lorsque " + x[i] + " est acheté à " + hour_value + " heure, les clients n'achètent pas en plus " + x[j]
+                                    return "Lorsque " + x[i] + " est acheté, les clients n'achètent pas en plus " + x[j]
                                 }
                             })
                                 .style("left", (d3.mouse(this)[0]) + 100 + "px")
@@ -397,15 +397,15 @@ function BakeryViz2(dataset) {
             // Legend info
             svg.append("g").selectAll("text").data(d3.range(0, max_corr * 100 + 10, 10)).enter()
                 .append("text")
-                .attr('x', (d, i) => (margin.left + space_divisor) + space_divisor * i)
-                .attr('y', 400)
-                .text(d => d + "%")
+                .attr('x', (d, i) => (margin.left + space_divisor * 1.3) + space_divisor * i)
+                .attr('y', 398)
+                .text(d => "]"+ d +"% - " + (d+ 10)+"%]")
                 .attr("font-size", "10px")
 
             svg.append("g")
                 .append("text")
                 .attr('x', (d, i) => margin.left)
-                .attr('y', 400)
+                .attr('y', 398)
                 .attr("font-size", "10px")
                 .text("Pas acheté ensemble")
 
@@ -517,6 +517,13 @@ function BakeryViz2(dataset) {
     // DYNAMIC
     d3.select("#sliderCorr").on("change", function () {
         update(zoom, true)
+    })
+
+    const slider = document.getElementById("sliderCorr")
+    const valueDisplay = document.getElementById("sliderValue")
+
+    slider.addEventListener("input", function() {
+        valueDisplay.textContent = "The current value is: " + this.value;
     })
 
     d3.select("#aricleName").on("change", function () {

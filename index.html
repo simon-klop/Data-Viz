@@ -79,7 +79,7 @@
         </div></br></br>
 
         <div class="card-header">
-            Combien de vendeur-euse-s sont nécessaires ? Quels sont les horaires d'ouverture optimum ?
+            Combien de vendeur-euse-s sont nécessaires ? Quelles sont les horaires d'ouverture optimum ?
         </div>
         <div id="vis1">
             <div class="row justify-content-center">
@@ -135,17 +135,17 @@
             <div class="col-sm-9">
                 <div class="card">
                     <div class="card-header">
-                        TO DO TITLE
+                        Habitudes des paires d'achats par période de la journée
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-6">
                                 <label for="customRange3" class="form-label"></label>
                                 <div class="slider">
-                                    <label>Heure de l'observation sélectionné : </label>
-                                    <p id="rangeValue">8</p>
+                                    <label>Heure de l'observation sélectionnée : </label>
+                                    <p id="rangeValue">De 8h à 9h</p>
                                     <input type="range" min="8" max="20" value="8" id="sliderCorr"
-                                        oninput="rangeValue.innerText = this.value">
+                                        oninput="displayValue(this.value)">
                                 </div>
                             </div>
                             <div class="col-sm-6">

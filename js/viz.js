@@ -875,6 +875,8 @@ function BakeryViz4(alldata, dataset) {
             prices.set(item.name, item.price);
         })
 
+        console.log(prices)
+        
         var cost_by_article = [];
 
         dataset.children.forEach(article => {

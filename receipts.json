@@ -70,8 +70,8 @@
  ],
  "mean_price": [
     {"name": "farine", "price": 0.001},
-    {"name": "sel", "price": 0.005},
-    {"name": "lait", "price": 0.01},
+    {"name": "sel", "price": 0.001},
+    {"name": "lait", "price": 0.001},
     {"name": "beurre", "price": 0.001},
     {"name": "oeuf", "price": 0.001},
     {"name": "levure", "price": 0.001},

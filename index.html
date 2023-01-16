@@ -79,7 +79,7 @@
         </div></br></br>
 
         <div class="card-header">
-            Combien de vendeur-euse-s sont nécessaires ?
+            Combien de vendeur-euse-s sont nécessaires ? Quels sont les horaires d'ouverture optimum ?
         </div>
         <div id="vis1">
             <div class="row justify-content-center"  >
@@ -127,14 +127,15 @@
         </div></br>
 
 
+        <div class="card-header">
+            Comment placer les articles pour que ceux qui sont souvent achetés ensemble soient côte à côte ? Quelles offres faut-il créer et à quelle heure ?
+        </div>
         <div class="col d-flex justify-content-center">
             <div class="card text-center w-75">
-                <div class="card-header">
-                    Comment placer les articles pour que ceux qui sont souvent achetés ensemble soient côte à côte ? Quelles offres faut-il créer et à quelle heure ?
-                </div>
-
                 <div id="vis2">
-                    
+                    <div class="card-header">
+                        TO DO TITLE
+                    </div>
                     <div class="card-footer text-muted">
                         <div class="row">
                             <div class="col-sm-6">
@@ -165,35 +166,49 @@
         </div></br>
 
         <div class="card-header">
-            Combien d'articles faut-il en rayon en fonction des heures ?
+            Comment optimiser sa gestion des stocks d'articles ?
         </div>
-        <div class="col d-flex justify-content-center" id="vis3">
-            <div class="col-sm-3"> 
+        <div class="row justify-content-center"  id="vis3">
+            <div class="col-sm-2">
                 <div class="card">
-                    <div class="card-header">Sélectionnez les articles que vous souhaitez observer :</div>
+                    <div class="card-header">
+                        Sélectionnez les articles que vous souhaitez observer :
+                    </div>
                     <div class="card-body">
                         <div id="linechart-options"></div>
                     </div>
-                </div></br>
+                </div></br></br>
+                
+            </div>
+
+            <div class="col-sm-7">
                 <div class="card">
-                    <div class="card-header">Total par jour</div>
+                    <div class="card-header">
+                        Nombre moyen d'article en moyenne par heure
+                    </div>
                     <div class="card-body">
-                        <ul class="list-group" id="linechart-total"></ul><div ></div>
+                        <div id="linechart"></div>
                     </div>
                 </div>
             </div>
-                
-            <div class="col-sm-7">
-                <div class="card-body">
-                    <div id="linechart"></div>
+            
+            <div class="col-sm-3">
+                <div class="card">
+                    <div class="card-header">
+                        Total par jour
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group" id="linechart-total"></ul>
+                    </div>
                 </div>
             </div>
-                
-            </div>
+            
+
         </div></br>
 
+
         <div class="card-header">
-            Comment optimiser sa gestion des stocks ?
+            Comment optimiser sa gestion des stocks d'ingrédients ?
         </div>
         <div class="row justify-content-center"  id="vis4">
             <div class="col-sm-3">
@@ -218,6 +233,7 @@
 
             <div class="col-sm-7">
                 <div class="card">
+                    <div id="title-vis4" class="card-header"></div>
                     <div class="card-body">
                         <div id="pack"></div>
                     </div>

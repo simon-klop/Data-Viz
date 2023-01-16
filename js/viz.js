@@ -6,7 +6,7 @@ function BakeryViz1(dataset) {
     const h = 400
 
     const svg = d3.select("#number_clients").append("svg").attr("height", h).attr("width", w)
-    
+
     // X label
     svg.append('text')
         .attr('x', w / 2 - 30)
@@ -43,30 +43,30 @@ function BakeryViz1(dataset) {
 
     // X label
     svg_by_hours.append('text')
-            .attr('x', w_r / 2)
-            .attr('y', h_r )
-            .attr('text-anchor', 'middle')
-            .style('font-family', 'Helvetica')
-            .style('font-size', 12)
-            .text('Heure')
+        .attr('x', w_r / 2)
+        .attr('y', h_r)
+        .attr('text-anchor', 'middle')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 12)
+        .text('Heure')
 
     // Y label
     svg_by_hours.append('text')
-            .attr('text-anchor', 'middle')
-            .attr('transform', 'translate(20,' + h / 2 + ')rotate(-90)')
-            .style('font-family', 'Helvetica')
-            .style('font-size', 12)
-            .text("Nombre de clients");
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(20,' + h / 2 + ')rotate(-90)')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 12)
+        .text("Nombre de clients");
 
     // X axis init (static) 
     var x_r = d3.scaleBand()
-        .range([ margin_r.left, w_r ])
-        .domain([7,8,9,10,11,12,13,14,15,16,17,18,19,20])
+        .range([margin_r.left, w_r])
+        .domain([7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
         .padding(0.1);
-    
+
     svg_by_hours.append("g")
-                .attr("transform", `translate(0,${h_r - margin_r.bottom})`)
-                .call(d3.axisBottom(x_r))
+        .attr("transform", `translate(0,${h_r - margin_r.bottom})`)
+        .call(d3.axisBottom(x_r))
 
     // Y axis init (dynamic)
     var y_r = d3.scaleLinear().range([h_r - margin_r.bottom, margin_r.top])
@@ -128,15 +128,14 @@ function BakeryViz1(dataset) {
             .remove()
 
 
-        
-        
-        
+
+
+
         // VIS RIGHT :
 
         // Cleaning of the rects
         svg_by_hours.selectAll("rect").remove()
 
-        // TO DO ICI SORT DATASETTIME
         number_of_day = d3.groups(datasettime, d => d.date).length
         groupData = d3.groups(datasettime, d => d.hours, d => d.ticket_number)
 
@@ -149,13 +148,13 @@ function BakeryViz1(dataset) {
 
         // Rect drawing
         svg_by_hours.selectAll("mybar")
-        .data(groupData)
-        .enter()
-        .append("rect")
-            .attr("x", function(d) { return x_r(d[0]) })
-            .attr("y", function(d) { return y_r(d[1].length / number_of_day) ; })
+            .data(groupData)
+            .enter()
+            .append("rect")
+            .attr("x", function (d) { return x_r(d[0]) })
+            .attr("y", function (d) { return y_r(d[1].length / number_of_day); })
             .attr("width", x_r.bandwidth())
-            .attr("height", function(d) { return h_r - y_r(d[1].length / number_of_day) - margin_r.bottom; })
+            .attr("height", function (d) { return h_r - y_r(d[1].length / number_of_day) - margin_r.bottom; })
             .style("fill", "red")
             .on('mouseover', function (d, i) {
                 Tooltip.style("opacity", 1)
@@ -166,8 +165,8 @@ function BakeryViz1(dataset) {
             })
             .on("mousemove", function (d, f) {
                 Tooltip
-                    .html("En moyenne, il y a " + d[1].length / number_of_day+  " clients à " + d[0] + " heures")
-                    .style("left", (d3.mouse(this)[0]) - 300+ "px")
+                    .html("En moyenne, il y a " + d[1].length / number_of_day + " clients à " + d[0] + " heures")
+                    .style("left", (d3.mouse(this)[0]) - 300 + "px")
                     .style("top", (d3.mouse(this)[1]) + 10 + "px")
             })
             .on('mouseout', function (d, i) {
@@ -178,7 +177,7 @@ function BakeryViz1(dataset) {
                     .duration('50')
                     .attr('opacity', '1')
             })
-            
+
     }
 
 
@@ -224,7 +223,7 @@ function getFrequentItemCorr(dataset, hour_value) {
         let nb_tickets = filtrage.length
         let liste_achats = filtrage.map(d => d[1].map(k => k.article)).reduce(function (prev, next) { return prev.concat(next) }).sort()
         let stat = d3.rollup(liste_achats, v => v.length / nb_tickets, d => d)
-        
+
         //handle the pairs(example: several croissants in the same ticket)
         //we remove the duplicates on the tickets to keep the value of remaining article
         let pair = stat.get(a) - 1
@@ -301,7 +300,7 @@ function BakeryViz2(dataset) {
             return acc;
         }, {}))
 
-        let maxValues = y.map(Object.values).flat().sort().filter(function(value) {
+        let maxValues = y.map(Object.values).flat().sort().filter(function (value) {
             return !isNaN(value);
         }).slice(-5)[0]
 
@@ -325,19 +324,19 @@ function BakeryViz2(dataset) {
                     })
                     .on("mousemove", function (d, f) {
                         let value_frequent = y[i][x[j]] * 100
-  
-                        Tooltip.html(function(){
-                                console.log(value_frequent)
-                                if (value_frequent > 0) {
-                                    return "Lorsque qu'un client achète" + x[i] +" à "  + hour_value + " heure, il achète avec " + x[j] + " dans " + y[i][x[j]] * 100 + "% des cas"
-                                } 
-                                else {
-                                    return "Lorsque " + x[i] +" est acheté à " + hour_value + " heure, les clients n'achètent pas en plus " + x[j]
-                                }
-                            })
-                            .style("left", (d3.mouse(this)[0]) +100+ "px")
-                            .style("top", (d3.mouse(this)[1]) + 100 + "px")
+
+                        Tooltip.html(function () {
+                            console.log(value_frequent)
+                            if (value_frequent > 0) {
+                                return "Lorsque qu'un client achète" + x[i] + " à " + hour_value + " heure, il achète avec " + x[j] + " dans " + y[i][x[j]] * 100 + "% des cas"
+                            }
+                            else {
+                                return "Lorsque " + x[i] + " est acheté à " + hour_value + " heure, les clients n'achètent pas en plus " + x[j]
+                            }
                         })
+                            .style("left", (d3.mouse(this)[0]) + 100 + "px")
+                            .style("top", (d3.mouse(this)[1]) + 100 + "px")
+                    })
 
                     .on('mouseout', function (d, i) {
                         Tooltip
@@ -347,10 +346,9 @@ function BakeryViz2(dataset) {
                             .attr('opacity', '1')
                     })
 
-            if  (y[i][x[j]] >= maxValues)
-            {
-                offers.push(x[i] + ' + ' + x[j])
-            }
+                if (y[i][x[j]] >= maxValues) {
+                    offers.push(x[i] + ' + ' + x[j])
+                }
             }
         }
 
@@ -372,7 +370,7 @@ function BakeryViz2(dataset) {
             .attr("font-size", "8px")
 
         // Legend 
-        let space_divisor = (w - margin.left)/((max_corr*10) + 1)
+        let space_divisor = (w - margin.left) / ((max_corr * 10) + 1)
         svg.append("g").selectAll("text").data(d3.range(0, max_corr, 0.1)).enter()
             .append("rect")
             .attr('x', (d, i) => (margin.left + space_divisor) + space_divisor * i)
@@ -411,13 +409,14 @@ function BakeryViz2(dataset) {
             .text("Offres les plus pertinentes :")
             .attr("font-size", "20px")
 
-        
-        
+
+
         for (let i = 0; i < offers.length; i++) {
             svg2.append("text")
                 .attr("x", 5)
-                .attr("y", margin.bottom + (i+1) * 20)
-                .text(offers[i])}
+                .attr("y", margin.bottom + (i + 1) * 20)
+                .text(offers[i])
+        }
     }
 
 
@@ -525,7 +524,7 @@ function BakeryViz2Bis(dataset) {
                 .on("mousemove", function (d, f) {
                     Tooltip
                         .html("Lorsqu'un/une " + product + " est acheté/e, on achète un/une " + x[i] + " avec " + y[x[i]] * 100 + "% du temps à " + hour_value + " heure")
-                        .style("left", (d3.mouse(this)[0]) +100+  "px")
+                        .style("left", (d3.mouse(this)[0]) + 100 + "px")
                         .style("top", (d3.mouse(this)[1]) + 100 + "px")
                 })
                 .on('mouseout', function (d, i) {
@@ -624,7 +623,7 @@ function BakeryViz3(dataset) {
     const margin = ({ top: 10, right: 210, bottom: 30, left: 60 })
 
     const w = 1000
-    const h = 750
+    const h = 650
 
     const svg = d3.select("#linechart").append("svg").attr("height", h).attr("width", w)
 
@@ -634,10 +633,13 @@ function BakeryViz3(dataset) {
     const article = d3.group(dataset, d => d.article);
     for (let key of article.keys()) {
         contenu += `<input class="form-check-input" type="checkbox" id="vis3-${key.split(' ')[0]}" checked>
-                    <label class="form-check-label" for="vis3-${key.split(' ')[0]}">${key}</label></br>`
+                    <label class="form-check-label" for="vis3-${key.split(' ')[0]}">${key.toLowerCase()}</label></br>`
     }
     select.innerHTML = contenu;
-    
+
+    const c = d3.scaleOrdinal().domain(
+        new Set(dataset.map(d => d.article))).range(["red", "green", "blue", "yellow", "pink", "purple", "orange", "black", "cyan", "brown"])
+
     // create a tooltip
     var Tooltip = d3.select("#linechart")
         .append("div")
@@ -651,18 +653,18 @@ function BakeryViz3(dataset) {
 
 
     function update() {
-        
+
         svg.selectAll("rect").remove()
         svg.selectAll("g").remove()
         svg.selectAll("text").remove()
         svg.selectAll("path").remove()
         svg.selectAll("circle").remove()
-        
+
         var dataset_filtre = dataset
         for (let key of article.keys()) {
-            
-            if (!document.getElementById("vis3-"+key.split(' ')[0]).checked) {
-                dataset_filtre = dataset_filtre.filter(function(d){ return d.article != key })
+
+            if (!document.getElementById("vis3-" + key.split(' ')[0]).checked) {
+                dataset_filtre = dataset_filtre.filter(function (d) { return d.article != key })
             }
         }
 
@@ -679,7 +681,7 @@ function BakeryViz3(dataset) {
                     + '}')
             )
         )
-        
+
 
         var points = []
         for (let i = 0; i < group_points.length; i++) {
@@ -691,8 +693,8 @@ function BakeryViz3(dataset) {
         contenu = ``
         for (let key of d3.group(dataset_filtre, d => d.article).keys()) {
             var total = 0
-            for (let i=0; i<group_points.length; i++){
-                total += group_points[i].filter(function(d){ return d.Article == key })[0].Counts
+            for (let i = 0; i < group_points.length; i++) {
+                total += group_points[i].filter(function (d) { return d.Article == key })[0].Counts
             }
             contenu += `<li class="list-group-item d-flex justify-content-between align-items-center">${key}
                             <span class="badge bg-primary rounded-pill">${Math.ceil(total)}</span>
@@ -702,8 +704,6 @@ function BakeryViz3(dataset) {
 
         const x = d3.scaleLinear().domain(d3.extent(points, d => d.Hours)).range([margin.left, w - margin.left - margin.right])
         const y = d3.scaleLinear().domain(d3.extent(points, d => d.Counts)).range([h - margin.bottom, margin.top])
-        const c = d3.scaleOrdinal().domain(
-            new Set(points.map(d => d.Article))).range(["red", "green", "blue", "yellow", "pink", "purple", "orange", "black", "cyan", "brown"])
 
         // abscisse et ordonnée
         svg.append("g")
@@ -753,14 +753,15 @@ function BakeryViz3(dataset) {
             })
             .on("mousemove", function (d, f) {
                 Tooltip
-                    .html("En moyenne, on vend à " + d.Hours +" heures, " + d.Counts + " " + d.Article)
-                    .style("left", (d3.mouse(this)[0]) + 300 + "px")
+                    .html("En moyenne, on vend à " + d.Hours + " heures, " + d.Counts + " " + d.Article)
+                    .style("left", (d3.mouse(this)[0]) + "px")
+                    .style("top", (d3.mouse(this)[1]) - 75 + "px")
 
             })
             .attr("r", d => 0)
             .transition()
-                .duration(500)
-                .attr("r", d => 4)
+            .duration(500)
+            .attr("r", d => 4)
 
         // lines
         const group_point = d3.groups(points, d => d.Article)
@@ -774,11 +775,11 @@ function BakeryViz3(dataset) {
                 }
             })
         })
-        
+
         const line = d3.line()
             .x(d => x(d.Hours))
             .y(d => y(d.Counts))
-        
+
         svg.selectAll(".line")
             .data(lines)
             .enter()
@@ -786,20 +787,20 @@ function BakeryViz3(dataset) {
             .attr("stroke", (d) => c(d[0].Article))
             .attr("fill", "none")
             .attr("stroke-width", 1.5)
-            .attr("d", (d) => line(d))  
+            .attr("d", (d) => line(d))
 
         // LEGENDE :
 
         // Titre
         svg.append("text")
-            .attr("x", w - margin.right - 50)
+            .attr("x", w - margin.right - 200)
             .attr("y", margin.top + 5)
             .text("Nombre de produits acheté/h")
 
         // rect couleur
         svg.selectAll("rect").data(c.domain()).enter()
             .append("rect")
-            .attr("x", d => w - margin.right - 40)
+            .attr("x", d => w - margin.right - 190)
             .attr("y", (d, i) => i * 20 + margin.top + 20)
             .attr("width", d => 10)
             .attr("height", d => 10)
@@ -808,11 +809,11 @@ function BakeryViz3(dataset) {
         // Nom d'article
         svg.append("g").selectAll("text").data(c.domain()).enter()
             .append("text")
-            .attr("x", d => w - margin.right - 30)
+            .attr("x", d => w - margin.right - 175)
             .attr("y", (d, i) => i * 20 + 10 + margin.top + 20)
             .text(d => d)
-        }
-    
+    }
+
     update()
 
     // DYNAMIC
@@ -868,6 +869,7 @@ function BakeryViz4(dataset) {
         article.push(dataset.children[i].name);
     }
 
+    var title = document.getElementById("title-vis4");
     select.innerHTML = contenu;
     const margin = ({ top: 35, right: 70, bottom: 35, left: 70 })
     const w = 750
@@ -877,6 +879,8 @@ function BakeryViz4(dataset) {
 
     //Dynamic Part
     function update(checked) {
+        
+
 
         // Cleaning of the SVG
         svg.selectAll("rect").remove()
@@ -884,6 +888,7 @@ function BakeryViz4(dataset) {
         svg.selectAll("text").remove()
 
         if (!checked) {
+            title.innerHTML = `TITRE1`
             var stratify = d3.stratify()
                 .parentId(function (d) { return d.id.substring(0, d.id.lastIndexOf(".")); });
 
@@ -957,16 +962,8 @@ function BakeryViz4(dataset) {
                 .attr("font-size", "12px")
                 .attr("fill", function (d) { return c[article.indexOf(d.data.name)] })
 
-            // Add title for the 3 groups
-            svg
-                .append("text")
-                .attr("x", 0)
-                .attr("y", 14)    // +20 to adjust position (lower)
-                .text("TO DO AJOUTER TITRE 1")
-                .attr("font-size", "19px")
-                .attr("fill", "grey")
-
         } else {
+            title.innerHTML = `TITRE2`
             let ingredient = []
             const invertdataset = invertJson(dataset);
 
@@ -1031,17 +1028,6 @@ function BakeryViz4(dataset) {
                 .text(function (d) { return d.data.name.toUpperCase() })
                 .attr("font-size", "12px")
                 .attr("fill", function (d) { return c[ingredient.indexOf(d.data.name)] })
-
-
-            // Add title for the 3 groups
-            svg
-                .append("text")
-                .attr("x", 0)
-                .attr("y", 14)    // +20 to adjust position (lower)
-                .text("TO DO AJOUTER TITRE 2")
-                .attr("font-size", "19px")
-                .attr("fill", "grey")
-
         }
 
 
@@ -1092,8 +1078,8 @@ async function LoadBakeryAndDrawV1V2V3() {
         conversor1,
         function (data) {
             BakeryViz1(data),
-            BakeryViz2(data),
-            BakeryViz3(data)
+                BakeryViz2(data),
+                BakeryViz3(data)
         })
 }
 
@@ -1132,6 +1118,7 @@ function init() {
 
 <div class="col-sm-7">
     <div class="card">
+        <div id="title-vis4" class="card-header"></div>
         <div class="card-body">
             <div id="pack"></div>
         </div>
@@ -1140,29 +1127,46 @@ function init() {
 
     body = document.getElementById("vis3");
     body.innerHTML = `
-            <div class="col-sm-3"> 
+    <div class="col-sm-2">
                 <div class="card">
-                    <div class="card-header">Sélectionnez les articles que vous souhaitez observer :</div>
+                    <div class="card-header">
+                        Sélectionnez les articles que vous souhaitez observer :
+                    </div>
                     <div class="card-body">
                         <div id="linechart-options"></div>
                     </div>
-                </div></br>
+                </div></br></br>
+                
+            </div>
+
+            <div class="col-sm-7">
                 <div class="card">
-                    <div class="card-header">Total par jour</div>
+                    <div class="card-header">
+                        Nombre moyen d'article en moyenne par heure
+                    </div>
+                    <div class="card-body">
+                        <div id="linechart"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-sm-3">
+                <div class="card">
+                    <div class="card-header">
+                        Total par jour
+                    </div>
                     <div class="card-body">
                         <ul class="list-group" id="linechart-total"></ul>
                     </div>
                 </div>
-            </div>
-        
-            <div class="col-sm-8">
-                <div class="card-body">
-                    <div id="linechart"></div>
-                </div>
             </div>`
 
     body = document.getElementById("vis2");
-    body.innerHTML = ` <div class="card-footer text-muted">
+    body.innerHTML = ` 
+    <div class="card-header">
+        TO DO TITLE
+    </div>
+    <div class="card-footer text-muted">
         <div class="row">
             <div class="col-sm-6">
                 <label for="customRange3" class="form-label"></label>

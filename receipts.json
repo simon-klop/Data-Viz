@@ -8,10 +8,10 @@
      {
       "name": "ingredients",
       "children": [
-        {"name": "farine", "size": 500},
-        {"name": "eau", "size": 350},
-        {"name": "levure", "size": 3},
-        {"name": "sel", "size": 7}
+        {"name": "farine", "size": 83},
+        {"name": "eau", "size": 5.5},
+        {"name": "levure", "size": 1.25},
+        {"name": "sel", "size": 1.5}
       ]
      }
     ]
@@ -23,14 +23,14 @@
       {
        "name": "ingredients",
        "children": [
-        {"name": "farine", "size": 250},
-        {"name": "sel", "size": 5},
-        {"name": "eau", "size": 125},
+        {"name": "farine", "size": 83},
+        {"name": "sel", "size": 1.5},
+        {"name": "eau", "size": 50},
         {"name": "lait", "size": 250},
-        {"name": "beurre", "size": 125},
+        {"name": "beurre", "size": 41.5},
         {"name": "crème fraiche", "size": 30},
         {"name": "oeuf", "size": 60},
-        {"name": "chocolat", "size": 100}
+        {"name": "chocolat", "size": 8.5}
        ]
       }
      ]
@@ -41,10 +41,10 @@
        {
         "name": "ingredients",
         "children": [
-         {"name": "farine", "size": 500},
-         {"name": "eau", "size": 350},
-         {"name": "levure", "size": 7},
-         {"name": "sel", "size": 7}
+          {"name": "farine", "size": 250},
+          {"name": "eau", "size": 175},
+          {"name": "levure", "size": 3.5},
+          {"name": "sel", "size": 3.5}
         ]
        }
       ]
@@ -56,11 +56,11 @@
        {
         "name": "ingredients",
         "children": [
-          {"name": "farine", "size": 500},
-          {"name": "sel", "size": 7},
-          {"name": "levure", "size": 3},
-          {"name": "lait", "size": 250},
-          {"name": "beurre", "size": 100},
+          {"name": "farine", "size": 83.5},
+          {"name": "sel", "size": 72.5},
+          {"name": "levure", "size": 4},
+          {"name": "lait", "size": 40},
+          {"name": "beurre", "size": 33.5},
           {"name": "oeuf", "size": 60}
         ]
   
@@ -69,14 +69,14 @@
      }
  ],
  "mean_price": [
-    {"name": "farine", "price": 0.001},
-    {"name": "sel", "price": 0.001},
-    {"name": "lait", "price": 0.001},
-    {"name": "beurre", "price": 0.001},
-    {"name": "oeuf", "price": 0.001},
-    {"name": "levure", "price": 0.001},
-    {"name": "crème fraiche", "price": 0.001},
-    {"name": "eau", "price": 0.001},
-    {"name": "chocolat", "price":0.001}
+    {"name": "farine", "price": 0.00075},
+    {"name": "sel", "price": 0.00060},
+    {"name": "lait", "price": 0.00134},
+    {"name": "beurre", "price": 0.0091},
+    {"name": "oeuf", "price": 0.0027},
+    {"name": "levure", "price": 0.014},
+    {"name": "crème fraiche", "price": 0.00378},
+    {"name": "eau", "price": 0.00331},
+    {"name": "chocolat", "price":0.00525}
  ]
 }

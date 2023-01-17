@@ -1,6 +1,6 @@
 # Data-Viz
 
- [Site Oui Oui Baguette] (https://simon-klop.github.io/Data-Viz/)
+ [Site Oui Oui Baguette](https://simon-klop.github.io/Data-Viz/)
 
 ## Auteurs
 KLOPFENSTEIN Simon

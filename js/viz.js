@@ -99,10 +99,8 @@ function BakeryViz1(dataset) {
         let option2 = document.getElementById("option2");
 
         if (option1.checked) {
-            console.log("Option 1 is selected");
             nb_bins = number_of_months
         } else if (option2.checked) {
-            console.log("Option 2 is selected");
             nb_bins = number_of_day
         }
 
@@ -326,6 +324,7 @@ function BakeryViz2(dataset) {
         // Cleaning of the SVG
         svg.selectAll("rect").remove()
         svg.selectAll("g").remove()
+        svg.selectAll("text").remove()
 
 
         if (!zoom) {
@@ -492,7 +491,8 @@ function BakeryViz2(dataset) {
                     })
                     .on("mousemove", function (d, f) {
                         Tooltip
-                            .html("Lorsqu'un/une " + product + " est acheté/e, on achète un/une " + x[i] + " avec " + y[x[i]] * 100 + "% du temps à " + hour_value + " heure")
+                            .html("Lorsqu'un/une " + product + " est acheté/e, on achète un/une " + x[i] + " avec " 
+                            + y[x[i]] * 100 + "% du temps de " + hour_value + " heure à "+ parseInt(hour_value + 1) + " heure")
                             .style("left", (d3.mouse(this)[0]) + 100 + "px")
                             .style("top", (d3.mouse(this)[1]) + 100 + "px")
                     })
@@ -535,7 +535,7 @@ function BakeryViz2(dataset) {
             svg.append("text")
                 .attr("x", 5)
                 .attr("y", margin.top + 5)
-                .text("Produits les plus vendus avec un/une " + product + " à " + hour_value + " heure")
+                .text("Produits les plus vendus avec un/une " + product + "  de " + hour_value + " heure à "+ parseInt(hour_value + 1) + " heure")
 
         }
 
@@ -888,7 +888,19 @@ function BakeryViz4(alldata, dataset) {
             cost_by_article.push([article.name, tmp])
         })
 
+        var benef_by_article = [];
+        let i = 0
 
+        dataset.children.forEach(article => {
+
+            var tmp = 0
+            tmp = price_by_article[i][1] * document.getElementById(article.name.split(' ')[0]).value - cost_by_article[i][1]
+            benef_by_article.push([article.name, tmp])
+            i = i + 1
+        })
+
+        console.log(benef_by_article)
+        
         // X axis init (static) 
         var x_r = d3.scaleBand()
             .range([margin_r.left, w_r])
@@ -897,7 +909,7 @@ function BakeryViz4(alldata, dataset) {
 
         svg2.append("g")
             .attr("transform", `translate(0,${h_r - margin_r.bottom})`)
-            .style('font-size', 8)
+            .style('font-size', 7)
             .call(d3.axisBottom(x_r))
 
         // Y axis init (dynamic)
@@ -909,7 +921,38 @@ function BakeryViz4(alldata, dataset) {
         svg2.append("g").attr("transform", `translate(${margin_r.left},0)`)
             .call(d3.axisLeft(y_r))
 
-        console.log(cost_by_article)
+
+        svg2.selectAll("mybarBenef")
+            .data(benef_by_article)
+            .enter()
+            .append("rect")
+            .attr("x", function (d) { return x_r(d[0]) + 2 *  x_r.bandwidth() / 3  })
+            .attr("y", function (d) { return y_r(d[1]); })
+            .attr("width", x_r.bandwidth() / 3 )
+            .attr("height", function (d) { return h_r - y_r(d[1]) - margin_r.bottom; })
+            .style("fill", "green")
+            .on('mouseover', function (d, i) {
+                Tooltip.style("opacity", 1)
+                d3.select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '.50')
+
+            })
+            .on('mouseout', function (d, i) {
+                Tooltip.style("opacity", 0)
+                d3
+                    .select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '1')
+            })
+            .on("mousemove", function (d, f) {
+                Tooltip
+                    .html("Le marge net moyenne d'un(e) " + d[0] + " est de " + d[1]+ " euro")
+                    .style("left", (d3.mouse(this)[0]) + "px")
+                    .style("top", (d3.mouse(this)[1]) - 75 + "px")
+
+            })
+
         
         svg2.selectAll("mybarPrice")
             .data(cost_by_article)
@@ -917,7 +960,7 @@ function BakeryViz4(alldata, dataset) {
             .append("rect")
             .attr("x", function (d) { return x_r(d[0]) })
             .attr("y", function (d) { return y_r(d[1]); })
-            .attr("width", x_r.bandwidth() / 2 )
+            .attr("width", x_r.bandwidth() / 3 )
             .attr("height", function (d) { return h_r - y_r(d[1]) - margin_r.bottom; })
             .style("fill", "blue")
             .on('mouseover', function (d, i) {
@@ -936,7 +979,7 @@ function BakeryViz4(alldata, dataset) {
             })
             .on("mousemove", function (d, f) {
                 Tooltip
-                    .html("Le coût de production moyen d'un(e) " + d[0] + " est de " + d[1] * document.getElementById(d[0].split(' ')[0]).value)
+                    .html("Le coût de production moyen d'un(e) " + d[0] + " est de " + d[1]+ " euro")
                     .style("left", (d3.mouse(this)[0]) + "px")
                     .style("top", (d3.mouse(this)[1]) - 75 + "px")
 
@@ -946,9 +989,9 @@ function BakeryViz4(alldata, dataset) {
             .data(price_by_article)
             .enter()
             .append("rect")
-            .attr("x", function (d) { return x_r(d[0]) + x_r.bandwidth() / 2 })
+            .attr("x", function (d) { return x_r(d[0]) + x_r.bandwidth() / 3 })
             .attr("y", function (d) { return y_r(d[1] * document.getElementById(d[0].split(' ')[0]).value); })
-            .attr("width", x_r.bandwidth() / 2)
+            .attr("width", x_r.bandwidth() / 3)
             .attr("height", function (d) { return h_r - y_r(d[1] * document.getElementById(d[0].split(' ')[0]).value) - margin_r.bottom; })
             .style("fill", "red")
             .on('mouseover', function (d, i) {
@@ -967,14 +1010,14 @@ function BakeryViz4(alldata, dataset) {
             })
             .on("mousemove", function (d, f) {
                 Tooltip
-                    .html("Le prix moyen d'un(e) " + d[0] + " est de " + d[1] * document.getElementById(d[0].split(' ')[0]).value)
+                    .html("Le revenue moyen des ventes de " + d[0] + " est de " + d[1] * document.getElementById(d[0].split(' ')[0]).value + " euro")
                     .style("left", (d3.mouse(this)[0]) + "px")
                     .style("top", (d3.mouse(this)[1]) - 75 + "px")
 
             })
 
         if (!checked) {
-            title.innerHTML = `TITRE1`
+            title.innerHTML = `Ingrédients nécessaires par article - Recette`
             var stratify = d3.stratify()
                 .parentId(function (d) { return d.id.substring(0, d.id.lastIndexOf(".")); });
 
@@ -1062,7 +1105,7 @@ function BakeryViz4(alldata, dataset) {
                 .attr("fill", function (d) { return c[article.indexOf(d.data.name)] })
 
         } else {
-            title.innerHTML = `TITRE2`
+            title.innerHTML = `Répartition des quantités d'ingrédients par article - Liste de course`
             let ingredient = []
             const invertdataset = invertJson(dataset);
 
@@ -1211,24 +1254,35 @@ async function LoadBakeryAndDrawV4(dataset) {
 function init() {
     var body = document.getElementById("vis4");
 
-    body.innerHTML = `<div class="col-sm-3">
+    body.innerHTML = `<div class="col-sm-4">
     <div class="card">
         <div class="card-header">
-            Sélectionnez un mode d'affichage : 
+            Sélectionnez un mode d'affichage :
         </div>
         <div class="card-body">
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked">
-                <label class="form-check-label" for="flexSwitchCheckChecked">Focus sur les ingredients</label>
-              </div>
+                <label class="form-check-label" for="flexSwitchCheckChecked">Focus sur les
+                    ingredients</label>
+            </div>
         </div>
-    </div></br></br>
+    </div></br>
     <div class="card">
         <div class="card-header">
-            Quel/combien d'article souhaitez-vous produire? 
+            Quel/combien d'article souhaitez-vous produire?
         </div>
         <div class="card-body" id="vis4select"></div>
+    </div></br>
+
+    <div class="card">
+        <div class="card-header">
+            Moyenne des coûts/prix par article
+        </div>
+        <div class="card-body" id="vis4-benf"></div>
+
     </div>
+
+
 </div>
 
 <div class="col-sm-7">
@@ -1238,7 +1292,8 @@ function init() {
             <div id="pack"></div>
         </div>
     </div>
-</div>`
+</div>
+`
 
     body = document.getElementById("vis3");
     body.innerHTML = `
@@ -1281,25 +1336,27 @@ function init() {
     <div class="col-sm-9">
                 <div class="card">
                     <div class="card-header">
-                        TO DO TITLE
+                        Habitudes des paires d'achats par période de la journée
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-6">
                                 <label for="customRange3" class="form-label"></label>
                                 <div class="slider">
-                                    <label>Heure de l'observation sélectionné : </label><p id="rangeValue">8</p>
+                                    <label>Heure de l'observation sélectionnée : </label>
+                                    <p id="rangeValue">De 8h à 9h</p>
                                     <input type="range" min="8" max="20" value="8" id="sliderCorr"
-                                        oninput="rangeValue.innerText = this.value">
+                                        oninput="displayValue(this.value)">
                                 </div>
                             </div>
                             <div class="col-sm-6">
-                            </br><label>Quel article voulez-vous observer? </label><select class="form-select" id="aricleName" aria-label="Default select example"></select>
+                                </br><label>Quel article voulez-vous observer? </label><select class="form-select"
+                                    id="aricleName" aria-label="Default select example"></select>
                             </div>
                         </div>
                     </div>
-        
-                    <div class="card-body" >
+
+                    <div class="card-body">
                         <div id="corr_viz"></div>
                     </div>
                 </div>
@@ -1310,19 +1367,19 @@ function init() {
                     <div class="card-header">
                         Offres les plus pertinentes :
                     </div>
-                    <div class="card-body"  id="best_offers">
+                    <div class="card-body" id="best_offers">
                     </div>
                 </div>
             </div>`
 
     body = document.getElementById("vis1");
-    body.innerHTML = `<div class="row justify-content-center"  >
+    body.innerHTML = `<div class="row justify-content-center">
     <div class="col-sm-8">
         <div class="card">
             <div class="card-header">
                 Nombre de client en fonction du temps
             </div>
-            <div  >
+            <div>
                 <div class="card-body">
                     <div id="number_clients"></div>
                 </div>
@@ -1332,7 +1389,7 @@ function init() {
     <div class="col-sm-4">
         <div class="card">
             <div class="card-header">
-            Nombre de client en moyenne par heure
+                Nombre de client en moyenne par heure
             </div>
             <div class="card-body">
                 <div id="number_clients_hours"></div>
@@ -1343,13 +1400,23 @@ function init() {
 <div class="card-footer text-muted">
     <p>
         <label for="amount">Intervalle choisi:</label>
-        <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;"
-            size="100" readonly/>
+        <input type="text" id="amount" style="border: 0; color: #FF0000; font-weight: bold;" size="40"
+            readonly />
     </p>
 
-    <div class="slider-area" style="text-align:center; margin: 0px 40px 0px 40px; padding:20px; border: 1px solid rgb(255, 0, 0); background: #fffefe; border-radius: 25px;">
-    <div id="slider-range"></div>
-</div>`
+    <div class="slider-area"
+        style="text-align:center; margin: 0px 40px 0px 40px; padding:20px; border: 1px solid rgb(255, 0, 0); background: #fffefe; border-radius: 25px;">
+        <div id="slider-range"></div>
+    </div>
+
+    <div class="btn-group btn-group-toggle" data-toggle="buttons" id="bin_selector">
+        <label class="btn btn-secondary active bg-danger">
+          <input type="radio" name="options" id="option1" autocomplete="off" checked> Par mois
+        </label>
+        <label class="btn btn-secondary bg-danger">
+          <input type="radio" name="options" id="option2" autocomplete="off"> Par jour
+        </label>
+    </div>`
     stateVis2 = false;
 }
 

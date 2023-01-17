@@ -1,9 +1,18 @@
 # Data-Viz
 
+ [Site Oui Oui Baguette] (https://simon-klop.github.io/Data-Viz/)
+
+## Auteurs
+KLOPFENSTEIN Simon
+ISMAIL Lina
+FORESTIER Ryan
+LAFOURCADE Emie
+
+
 # TO-DO
 - Observable => github page DONE
 - Mettre photos prototypes dans repo DONE
-- opti code
+- opti code DONE
 
 
 # Resume réu du 10/01
@@ -21,8 +30,8 @@
     - mettre le rollup dans la visu DONE 
 
 + Visu 3 RYAN
-    - remettre le bon titre/question
-    - cliquer sur la legende pour masquer les autres et réajuster l'echelle
+    - remettre le bon titre/question DONE
+    - cliquer sur la legende pour masquer les autres et réajuster l'echelle DONE
 
 + Visu 4 LINA?
     - Selecteur pour aggreger par ingredient ou article DONE

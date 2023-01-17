@@ -3,10 +3,10 @@
  [Site Oui Oui Baguette](https://simon-klop.github.io/Data-Viz/)
 
 ## Auteurs
-KLOPFENSTEIN Simon
-ISMAIL Lina
-FORESTIER Ryan
-LAFOURCADE Emie
+- KLOPFENSTEIN Simon
+- ISMAIL Lina
+- FORESTIER Ryan
+- LAFOURCADE Emie
 
 
 # TO-DO

@@ -1019,7 +1019,7 @@ function BakeryViz4(alldata, dataset) {
             })
             .on("mousemove", function (d, f) {
                 Tooltip
-                    .html("Le marge brut moyenne d'un(e) " + d[0] + " est de " + d[1]+ " euro")
+                    .html("Le marge moyenne d'un(e) " + d[0] + " est de " + d[1]+ " euro")
                     .style("left", (d3.mouse(this)[0]) + "px")
                     .style("top", (d3.mouse(this)[1]) - 75 + "px")
 

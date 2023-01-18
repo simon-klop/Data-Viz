@@ -351,7 +351,9 @@ function BakeryViz2(dataset) {
                         .attr('y', 67 + 30 * j)
                         .attr('width', 90)
                         .attr('height', 30)
-                        .attr('fill', function () { return myColor(y[i][x[j]]) })
+                        .attr('fill', function () { if (y[i][x[j]] > 0)
+                                                    return myColor(y[i][x[j]])
+                                                    else return "white" })
                         .on('mouseover', function (d, i) {
                             Tooltip.style("opacity", 1)
                             d3.select(this).transition()
@@ -407,21 +409,26 @@ function BakeryViz2(dataset) {
 
             // Legend 
             let space_divisor = (w - margin.left) / ((max_corr * 10) + 1)
+            
             svg.append("g").selectAll("text").data(d3.range(0, max_corr, 0.1)).enter()
                 .append("rect")
                 .attr('x', (d, i) => (margin.left + space_divisor) + space_divisor * i)
                 .attr('y', 380)
                 .attr('width', space_divisor)
                 .attr('height', 10)
-                .attr('fill', function (d) { return myColor(d) })
+                .attr('fill', function (d) {return myColor(d)})
+                .attr("style", "outline: thin solid grey;")
+
 
             svg.append("g")
                 .append("rect")
+                .attr("style", "outline: thin solid grey;")
                 .attr('x', (d, i) => margin.left)
                 .attr('y', 380)
                 .attr('width', space_divisor)
                 .attr('height', 10)
-                .attr('fill', 'black')
+                .attr('fill', 'white')
+
 
             // Legend info
             svg.append("g").selectAll("text").data(d3.range(0, max_corr * 100 + 10, 10)).enter()

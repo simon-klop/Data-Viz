@@ -843,9 +843,9 @@ function BakeryViz4(alldata, dataset) {
 
     //-----------------------
     // VIS RIGHT - BENEF:
-    const margin_r = ({ top: 10, right: 10, bottom: 35, left: 30 })
+    const margin_r = ({ top: 10, right: 10, bottom: 70, left: 40 })
     const w_r = 400
-    const h_r = 300
+    const h_r = 285 
 
     alldata_filtre = alldata.filter(function (d) { return article.includes(d.article) })
     price_by_article = d3.rollups(alldata_filtre, v => d3.mean(v, d => d.unit_price), d => d.article)
@@ -875,7 +875,6 @@ function BakeryViz4(alldata, dataset) {
         svg2.selectAll("rect").remove()
         svg2.selectAll("g").remove()
         svg2.selectAll("text").remove()
-
 
         var prices = new Map();
         dataset.mean_price.forEach(function (item) {
@@ -924,6 +923,72 @@ function BakeryViz4(alldata, dataset) {
             .range([h_r - margin_r.bottom, margin_r.top])
             .domain(d3.extent([0, d3.max(price_by_article, d => d[1] * document.getElementById(d[0].split(' ')[0]).value)]))
 
+                  // X label
+        svg2.append('text')
+        .attr('x', w_r / 2 + 10)
+        .attr('y', h_r - margin_r.bottom + 40)
+        .attr('text-anchor', 'middle')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 13)
+        .text('Produit');
+        
+        svg2.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(10,' + h_r / 2.5 + ')rotate(-90)')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 13)
+        .text("Euro");
+
+        svg2
+        .append("rect")
+        .attr('x', 65)
+        .attr('y', h_r - margin_r.bottom + 60)
+        .attr("width", 20)
+        .attr("height", 10)
+        .style("fill", "blue")
+
+        svg2.append('text')
+        .attr('x', 100)
+        .attr('y', h_r - margin_r.bottom + 70)
+        .attr('text-anchor', 'middle')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 13)
+        .text('Coût');
+
+        svg2
+        .append("rect")
+        .attr('x', w_r / 2 - 20)
+        .attr('y', h_r - margin_r.bottom + 60)
+        .attr("width", 20)
+        .attr("height", 10)
+        .style("fill", "red")
+
+        svg2.append('text')
+        .attr('x', w_r / 2 + 25)
+        .attr('y', h_r - margin_r.bottom + 70)
+        .attr('text-anchor', 'middle')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 13)
+        .text('Revenu');
+
+        svg2
+        .append("rect")
+        .attr('x', w_r - 107)
+        .attr('y', h_r - margin_r.bottom + 60)
+        .attr("width", 20)
+        .attr("height", 10)
+        .style("fill", "green")
+        
+        svg2.append('text')
+        .attr('x', w_r - 60)
+        .attr('y', h_r - margin_r.bottom + 70)
+        .attr('text-anchor', 'middle')
+        .style('font-family', 'Helvetica')
+        .style('font-size', 13)
+        .text('Bénéfice');
+
+        
+        
 
         svg2.append("g").attr("transform", `translate(${margin_r.left},0)`)
             .call(d3.axisLeft(y_r))
@@ -1022,6 +1087,7 @@ function BakeryViz4(alldata, dataset) {
                     .style("top", (d3.mouse(this)[1]) - 75 + "px")
 
             })
+
 
         if (!checked) {
             title.innerHTML = `Ingrédients nécessaires par article - Recette`

@@ -1082,7 +1082,7 @@ function BakeryViz4(alldata, dataset) {
             })
             .on("mousemove", function (d, f) {
                 Tooltip
-                    .html("Le revenue moyen des ventes de " + d[0] + " est de " + d[1] * document.getElementById(d[0].split(' ')[0]).value + " euro")
+                    .html("Le revenu moyen des ventes de " + d[0] + " est de " + d[1] * document.getElementById(d[0].split(' ')[0]).value + " euro")
                     .style("left", (d3.mouse(this)[0]) + "px")
                     .style("top", (d3.mouse(this)[1]) - 75 + "px")
 
